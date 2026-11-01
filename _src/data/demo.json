@@ -1,0 +1,1060 @@
+{
+  "_hinweis": "Demo-Assistent (V4-KONZEPT 3.6.13, V4-TEXTE 5). Alle Namen, Adressen und Zahlen sind erfunden (Muster, Beispiel, example.com). Keine echte KI, keine Verbindung: der Build legt jede Szene im Endzustand als HTML in die Seite, js/demo.js zeigt die Schritte nacheinander. [[...]] markiert wichtige Angaben im Eingang. Bausteine je Schritt: text, felder, chips, liste, tabelle, dokument, hinweis, entscheid. Gruppe: KI-Seiten.",
+  "texte": {
+    "fenster": "Demo-Assistent",
+    "band": "Vorführung mit erfundenen Daten, vorbereitete Antworten. Es wird nichts gesendet.",
+    "auswahl": "Beispiel wählen",
+    "eingang": "Eingang",
+    "assistent": "Was die KI vorbereitet",
+    "weiter": "Nächster Schritt",
+    "alle": "Alle Schritte zeigen",
+    "neu": "Neu starten",
+    "bereit": "Bereit: {gesamt} Schritte",
+    "schritt": "Schritt {n} von {gesamt}",
+    "fertig": "Alle {gesamt} Schritte gezeigt",
+    "arbeitet": "Die KI bereitet vor",
+    "leer": "Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.",
+    "ja": "Freigeben",
+    "nein": "Ändern",
+    "msgJa": "In der Vorführung wird nichts gesendet. Im Alltag ginge der Entwurf jetzt hinaus, mit Ihrem Namen.",
+    "msgNein": "Im Alltag passen Sie den Entwurf hier an, bevor Sie ihn freigeben.",
+    "fuss": "Eine echte Lösung arbeitet in Ihren Programmen. Was bei Ihnen passt, klären wir im KI-Check."
+  },
+  "szenen": {
+    "email": {
+      "label": "Kundenmail beantworten",
+      "kontext": "Malerbetrieb",
+      "eingang": {
+        "typ": "mail",
+        "von": "Reto Beispiel",
+        "adresse": "reto.beispiel@example.com",
+        "betreff": "Wohnung streichen im Frühling",
+        "zeit": "Mo 07.48",
+        "text": [
+          "Grüezi",
+          "Wir möchten im [[Frühling]] unsere [[3.5-Zimmer-Wohnung]] neu streichen lassen. [[Was kostet das ungefähr]] und [[wann hätten Sie Zeit]]?",
+          "Freundliche Grüsse<br>Reto Beispiel"
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Lesen",
+          "text": "Anfrage für Malerarbeiten erkannt. Absender ist nicht in Ihrer Kundenliste: neuer Kunde."
+        },
+        {
+          "name": "Einordnen",
+          "chips": [
+            "Wohnung, 3.5 Zimmer",
+            "Wände",
+            "Frühling 2027"
+          ],
+          "hinweis": "Offen: Decken auch? Adresse? Für einen Preis braucht es eine Besichtigung."
+        },
+        {
+          "name": "Nachschlagen",
+          "text": "Ihre Regel: Preise erst nach Besichtigung nennen. Kalender: freie Besichtigungstermine am Dienstag, 10. November, 17.00 Uhr und am Donnerstag, 12. November, 7.30 Uhr."
+        },
+        {
+          "name": "Entwurf",
+          "dokument": {
+            "art": "mail",
+            "badge": "Entwurf, nicht gesendet",
+            "kopf": [
+              [
+                "An",
+                "Reto Beispiel"
+              ],
+              [
+                "Betreff",
+                "AW: Wohnung streichen im Frühling"
+              ]
+            ],
+            "text": [
+              "Guten Tag Herr Beispiel",
+              "Vielen Dank für Ihre Anfrage. Gerne offerieren wir Ihnen die Malerarbeiten. Damit der Preis stimmt, schauen wir die Wohnung kurz an. Passt Ihnen einer dieser Termine?",
+              "Dienstag, 10. November, 17.00 Uhr<br>Donnerstag, 12. November, 7.30 Uhr",
+              "Bitte senden Sie uns noch die Adresse und ob die Decken auch gestrichen werden sollen.",
+              "Freundliche Grüsse"
+            ]
+          }
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Der Entwurf liegt in Ihrem Entwurfsordner. Freigeben oder ändern.",
+          "entscheid": true
+        }
+      ],
+      "fussnote": "Was die KI nicht gemacht hat: Sie hat keinen Preis geschätzt, weil Ihre Regel das so vorgibt."
+    },
+    "baustelle": {
+      "label": "Sprachnachricht wird Offerte",
+      "kontext": "Schreinerei",
+      "eingang": {
+        "typ": "sprache",
+        "von": "Luca, unterwegs beim Kunden",
+        "dauer": "0:58",
+        "zeit": "Di 16.05",
+        "text": [
+          "Hallo, hier ist Luca. Ich bin bei [[Familie Muster am Musterweg 4]]. Im Gang wollen sie einen [[Einbauschrank, zwei Meter vierzig breit, raumhoch, zwei Meter sechzig]]. [[Zwei Drehtüren, unten zwei Schubladen, Front weiss lackiert]]. Der [[alte Schrank muss raus]]. Wenn möglich [[vor Weihnachten]]."
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Abschreiben",
+          "text": "Sprachnachricht in Text umgewandelt. Die Abschrift bleibt zum Nachlesen beim Entwurf."
+        },
+        {
+          "name": "Positionen erkennen",
+          "liste": [
+            "Einbauschrank 240 x 260 x 60 cm, 2 Drehtüren, 2 Schubladen, Front weiss lackiert",
+            "Demontage und Entsorgung Altschrank",
+            "Montage vor Ort",
+            "Wunschtermin vor Weihnachten"
+          ],
+          "ok": "Familie Muster, Musterweg 4, in Ihrer Kundenliste gefunden. Adresse übernommen."
+        },
+        {
+          "name": "Preise zuordnen",
+          "text": "Preise aus Ihrer Preisliste übernommen. Tiefe 60 cm aus Ihrer Standardausführung, weil sie in der Nachricht fehlt."
+        },
+        {
+          "name": "Offertentwurf",
+          "dokument": {
+            "art": "offerte",
+            "badge": "Entwurf",
+            "kopf": [
+              [
+                "Offerte für",
+                "Familie Muster, Musterweg 4"
+              ]
+            ],
+            "tabelle": {
+              "kopf": [
+                "Pos.",
+                "Leistung",
+                "Menge",
+                "Preis",
+                "Betrag"
+              ],
+              "num": [
+                3,
+                4
+              ],
+              "zeilen": [
+                [
+                  "1",
+                  "Einbauschrank nach Mass, Front weiss lackiert",
+                  "1 Stk.",
+                  "CHF 4’850.00",
+                  "CHF 4’850.00"
+                ],
+                [
+                  "2",
+                  "Demontage und Entsorgung Altschrank",
+                  "pauschal",
+                  "",
+                  "CHF 380.00"
+                ],
+                [
+                  "3",
+                  "Montage vor Ort",
+                  "6 Std.",
+                  "CHF 95.00",
+                  "CHF 570.00"
+                ]
+              ],
+              "fuss": [
+                [
+                  "",
+                  "Zwischentotal",
+                  "",
+                  "",
+                  "CHF 5’800.00"
+                ],
+                [
+                  "",
+                  "MWST 8.1 %",
+                  "",
+                  "",
+                  "CHF 469.80"
+                ],
+                [
+                  "",
+                  "Total",
+                  "",
+                  "",
+                  "CHF 6’269.80"
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "name": "Offene Punkte",
+          "liste": [
+            "Griffe nicht erwähnt: Modell wählen.",
+            "Innenausstattung offen: Tablare oder Kleiderstange?",
+            "Termin vor Weihnachten: Kapazität prüfen."
+          ],
+          "listeArt": "pruefen"
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Der Entwurf liegt in Ihrem Offertprogramm. Prüfen, ergänzen, senden.",
+          "entscheid": true
+        }
+      ],
+      "fussnote": "Beispielpreise. Im Alltag nimmt die KI die Preise aus Ihrer eigenen Preisliste."
+    },
+    "beleg": {
+      "label": "Beleg wird Buchungsvorschlag",
+      "kontext": "Treuhand und Büro",
+      "eingang": {
+        "typ": "pdf",
+        "datei": "Rechnung 2026-118.pdf",
+        "absender": "Bürobedarf Beispiel",
+        "titel": "Rechnung 2026-118",
+        "felder": [
+          [
+            "Datum",
+            "[[14.10.2026]]"
+          ],
+          [
+            "Zahlbar",
+            "[[innert 30 Tagen]]"
+          ]
+        ],
+        "zeilen": [
+          [
+            "Druckerpapier A4, 10 Pakete",
+            ""
+          ],
+          [
+            "Toner schwarz, 2 Stück",
+            ""
+          ]
+        ],
+        "total": [
+          [
+            "Total inklusive [[MWST 8.1 %]]",
+            "[[CHF 248.65]]"
+          ]
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Auslesen",
+          "felder": [
+            [
+              "Lieferant",
+              "Bürobedarf Beispiel"
+            ],
+            [
+              "Datum",
+              "14.10.2026"
+            ],
+            [
+              "Netto",
+              "CHF 230.02"
+            ],
+            [
+              "MWST 8.1 %",
+              "CHF 18.63"
+            ],
+            [
+              "Total",
+              "CHF 248.65"
+            ],
+            [
+              "Fällig am",
+              "13.11.2026"
+            ]
+          ]
+        },
+        {
+          "name": "Nachschlagen",
+          "text": "Gleicher Lieferant in den letzten sechs Monaten fünfmal auf 6500 gebucht. Betrag im üblichen Rahmen."
+        },
+        {
+          "name": "Buchungsvorschlag",
+          "dokument": {
+            "art": "buchung",
+            "badge": "Vorschlag, nicht gebucht",
+            "tabelle": {
+              "kopf": [
+                "Soll",
+                "Haben",
+                "Betrag",
+                "Text"
+              ],
+              "num": [
+                2
+              ],
+              "zeilen": [
+                [
+                  "6500 Büromaterial",
+                  "2000 Kreditoren",
+                  "CHF 230.02",
+                  "Druckerpapier, Toner"
+                ],
+                [
+                  "1171 Vorsteuer MWST",
+                  "2000 Kreditoren",
+                  "CHF 18.63",
+                  "MWST 8.1 %"
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sonderfall prüfen",
+          "text": "Kein Sonderfall erkannt. Bei neuen Lieferanten oder ungewöhnlichen Beträgen markiert die KI den Beleg zur genauen Prüfung."
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Ihre Fachperson prüft und bucht. Ohne Freigabe wird nichts gebucht.",
+          "entscheid": {
+            "ja": "Buchen",
+            "msgJa": "In der Vorführung wird nichts gebucht. Im Alltag ginge die Buchung jetzt mit Ihrer Freigabe in die Buchhaltung.",
+            "msgNein": "Im Alltag passen Sie Konto oder Betrag hier an, bevor Sie buchen."
+          }
+        }
+      ],
+      "fussnote": "Kontonummern nach KMU-Kontenrahmen als Beispiel. Im Alltag gilt Ihr Kontenplan."
+    },
+    "mieter": {
+      "label": "Mieter-Meldung wird Ticket",
+      "kontext": "Verwaltung",
+      "eingang": {
+        "typ": "chat",
+        "kanal": "WhatsApp",
+        "von": "A. Muster",
+        "zeit": "19.42 Uhr",
+        "text": [
+          "Guten Abend. Unter der [[Spüle in der Küche tropft es]] seit heute Nachmittag. Ich habe ein Becken hingestellt. [[Musterweg 4, 2. Stock links]]. Gruss A. Muster"
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Lesen",
+          "text": "Schadenmeldung erkannt."
+        },
+        {
+          "name": "Zuordnen",
+          "text": "Mieterin Anna Muster, Liegenschaft Musterweg 4, Wohnung 2.1 (2. OG links), gefunden in Ihrer Mieterliste."
+        },
+        {
+          "name": "Einstufen",
+          "chips": [
+            "Sanitär",
+            "Dringlichkeit hoch",
+            "Team Nord"
+          ],
+          "text": "Kategorie Sanitär. Dringlichkeit hoch: Wasser ist eines Ihrer festen Notfallwörter. Eingang 19.42 Uhr, ausserhalb der Bürozeit. Zuständig laut Ihrer Liste: Bewirtschaftung Team Nord."
+        },
+        {
+          "name": "Pikett informiert",
+          "text": "Nach Ihrer Regel geht hohe Dringlichkeit ausserhalb der Bürozeit sofort an den Pikett. Dafür wartet die KI nicht auf eine Freigabe. Den Mieter beantwortet sie nicht selbst.",
+          "felder": [
+            [
+              "SMS an",
+              "Pikett heute: P. Beispiel"
+            ],
+            [
+              "Gesendet",
+              "19.43 Uhr"
+            ],
+            [
+              "Inhalt",
+              "Wasser unter Küchenspüle, Musterweg 4, Wohnung 2.1, Mieterin A. Muster"
+            ]
+          ]
+        },
+        {
+          "name": "Ticket",
+          "dokument": {
+            "art": "ticket",
+            "badge": "Ticket, Entwurf",
+            "felder": [
+              [
+                "Eingang",
+                "WhatsApp, 19.42 Uhr"
+              ],
+              [
+                "Objekt",
+                "Musterweg 4, Wohnung 2.1"
+              ],
+              [
+                "Anliegen",
+                "Wasser tropft unter der Küchenspüle, seit Nachmittag"
+              ],
+              [
+                "Dringlichkeit",
+                "hoch"
+              ],
+              [
+                "Pikett",
+                "informiert um 19.43 Uhr"
+              ],
+              [
+                "Zuständig",
+                "Team Nord"
+              ],
+              [
+                "Nächster Schritt",
+                "Pikett entscheidet: Notfall-Sanitär heute oder Auftrag morgen früh"
+              ]
+            ]
+          }
+        },
+        {
+          "name": "Antwortentwurf",
+          "dokument": {
+            "art": "mail",
+            "badge": "Entwurf, nicht gesendet",
+            "kopf": [
+              [
+                "An",
+                "A. Muster, WhatsApp"
+              ]
+            ],
+            "text": [
+              "Guten Abend Frau Muster",
+              "Danke für Ihre Meldung. Unser Pikett-Dienst ist informiert und meldet sich heute Abend noch bei Ihnen. Bitte drehen Sie, wenn möglich, das kleine Ventil unter der Spüle zu und lassen Sie das Becken stehen. Wird es stärker, rufen Sie bitte direkt die Pikett-Nummer gemäss Aushang im Treppenhaus an.",
+              "Freundliche Grüsse, Ihre Verwaltung"
+            ]
+          }
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Die Person im Pikett gibt die Antwort frei und entscheidet, ob der Sanitär noch heute kommt.",
+          "entscheid": true
+        }
+      ],
+      "fussnote": "Erfundenes Beispiel. Welche Wörter als Notfall gelten und wer Pikett hat, bestimmen Sie."
+    },
+    "offerte": {
+      "label": "Frage nach dem Stand einer Offerte",
+      "kontext": "Handwerksbetrieb",
+      "eingang": {
+        "typ": "mail",
+        "von": "Reto Beispiel",
+        "adresse": "reto.beispiel@example.com",
+        "betreff": "Offerte Garagentor",
+        "zeit": "Mo 08.03",
+        "text": [
+          "Guten Tag",
+          "Vor zwei Wochen haben wir eine [[Offerte für ein neues Garagentor]] angefragt. [[Wie ist der Stand?]]",
+          "Freundliche Grüsse<br>Reto Beispiel"
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Lesen",
+          "text": "Anliegen erkannt: Frage nach dem Stand einer Offerte für ein Garagentor."
+        },
+        {
+          "name": "Nachschlagen",
+          "text": "In Ihrer Offertenliste gefunden:",
+          "felder": [
+            [
+              "Offerte",
+              "2026-041"
+            ],
+            [
+              "Status",
+              "in Arbeit"
+            ],
+            [
+              "Versand geplant",
+              "6. November 2026"
+            ],
+            [
+              "Zuständig",
+              "M. Muster"
+            ]
+          ]
+        },
+        {
+          "name": "Entwurf",
+          "dokument": {
+            "art": "mail",
+            "badge": "Entwurf, nicht gesendet",
+            "kopf": [
+              [
+                "An",
+                "Reto Beispiel"
+              ],
+              [
+                "Betreff",
+                "AW: Offerte Garagentor"
+              ]
+            ],
+            "text": [
+              "Guten Tag Herr Beispiel",
+              "Danke für Ihre Nachfrage. Ihre Offerte für das Garagentor ist in Arbeit, Sie erhalten sie bis Freitag, 6. November 2026.",
+              "Freundliche Grüsse<br>M. Muster"
+            ]
+          },
+          "hinweis": "Hinweis der KI: Versanddatum aus der Offertenliste übernommen. Bitte prüfen."
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Der Entwurf liegt in Ihrem Entwurfsordner. Sie prüfen, passen an und senden.",
+          "entscheid": true
+        }
+      ]
+    },
+    "termin": {
+      "label": "Terminwunsch beantworten",
+      "kontext": "Treuhandbüro",
+      "eingang": {
+        "typ": "mail",
+        "von": "Sara Muster",
+        "adresse": "sara.muster@example.com",
+        "betreff": "Termin Jahresabschluss",
+        "zeit": "Mi 09.15",
+        "text": [
+          "Guten Tag",
+          "Ich möchte einen Termin für die [[Besprechung meines Jahresabschlusses]]. Am besten an einem [[Dienstag oder Donnerstag am Nachmittag]].",
+          "Gruss, Sara Muster"
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Lesen",
+          "felder": [
+            [
+              "Anliegen",
+              "Besprechung Jahresabschluss"
+            ],
+            [
+              "Dauer",
+              "60 Minuten laut Ihrer Vorlage"
+            ],
+            [
+              "Wunsch",
+              "Dienstag oder Donnerstag, nachmittags"
+            ]
+          ]
+        },
+        {
+          "name": "Kalender prüfen",
+          "text": "Freie Zeiten in Ihrem Kalender:",
+          "liste": [
+            "Dienstag, 17. November, 14.00 Uhr",
+            "Donnerstag, 19. November, 15.30 Uhr",
+            "Dienstag, 24. November, 13.30 Uhr"
+          ],
+          "listeArt": "termine"
+        },
+        {
+          "name": "Entwurf",
+          "dokument": {
+            "art": "mail",
+            "badge": "Entwurf, nicht gesendet",
+            "kopf": [
+              [
+                "An",
+                "Sara Muster"
+              ],
+              [
+                "Betreff",
+                "AW: Termin Jahresabschluss"
+              ]
+            ],
+            "text": [
+              "Guten Tag Frau Muster",
+              "Gerne besprechen wir Ihren Jahresabschluss. Diese Termine sind frei:",
+              "Dienstag, 17. November, 14.00 Uhr<br>Donnerstag, 19. November, 15.30 Uhr<br>Dienstag, 24. November, 13.30 Uhr",
+              "Die Besprechung dauert rund eine Stunde. Welcher Termin passt Ihnen?",
+              "Freundliche Grüsse"
+            ]
+          }
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Sie senden den Entwurf. Nach der Zusage trägt die KI den Termin ein, auf Wunsch mit einer Erinnerung am Vortag.",
+          "entscheid": true
+        }
+      ]
+    },
+    "lieferscheine": {
+      "label": "Lieferscheine in die Tabelle",
+      "kontext": "Schreinerei",
+      "eingang": {
+        "typ": "dateien",
+        "text": [
+          "Drei Lieferscheine als PDF im Ordner «Eingang Lieferscheine»."
+        ],
+        "dateien": [
+          {
+            "name": "Lieferschein Holzhandel Muster",
+            "info": "26.10.2026, 1 Seite"
+          },
+          {
+            "name": "Lieferschein Beschläge Beispiel",
+            "info": "27.10.2026, 1 Seite"
+          },
+          {
+            "name": "Lieferschein Holzhandel Muster",
+            "info": "28.10.2026, Scan, schlecht lesbar",
+            "unklar": true
+          }
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Lesen",
+          "text": "Datum, Lieferant, Artikel, Menge und Projekt aus drei Lieferscheinen gelesen."
+        },
+        {
+          "name": "Übertragen",
+          "dokument": {
+            "art": "tabelle",
+            "badge": "Neue Zeilen, noch nicht übernommen",
+            "tabelle": {
+              "kopf": [
+                "Datum",
+                "Lieferant",
+                "Artikel",
+                "Menge",
+                "Projekt"
+              ],
+              "zeilen": [
+                [
+                  "26.10.2026",
+                  "Holzhandel Muster",
+                  "Dreischichtplatte Fichte 27 mm",
+                  "12 Stk.",
+                  "Umbau Musterweg 4"
+                ],
+                [
+                  "27.10.2026",
+                  "Beschläge Beispiel",
+                  "Topfscharnier 110°",
+                  "40 Stk.",
+                  "Küche Familie Beispiel"
+                ],
+                [
+                  "28.10.2026",
+                  "Holzhandel Muster",
+                  "Kantenband Eiche 23 mm",
+                  "2 Rollen",
+                  "unklar, bitte prüfen"
+                ]
+              ],
+              "markiert": [
+                2
+              ]
+            }
+          }
+        },
+        {
+          "name": "Markieren",
+          "hinweis": "Hinweis der KI: Zeile 3: Projektnummer nicht lesbar, darum markiert."
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Ihr Team prüft die Markierung, ergänzt das Projekt und übernimmt die Zeilen.",
+          "entscheid": {
+            "ja": "Übernehmen",
+            "msgJa": "In der Vorführung wird nichts übernommen. Im Alltag stünden die Zeilen jetzt in Ihrer Tabelle.",
+            "msgNein": "Im Alltag ergänzen Sie hier die fehlende Projektnummer, bevor Sie übernehmen."
+          }
+        }
+      ]
+    },
+    "anfragen": {
+      "label": "Anfragen in einer Liste",
+      "kontext": "Handwerksbetrieb",
+      "eingang": {
+        "typ": "mehrere",
+        "nachrichten": [
+          {
+            "kanal": "Telefon",
+            "icon": "telefon",
+            "zeit": "Mo 08.12",
+            "von": "Notiz nach dem Anruf",
+            "text": "Reto Beispiel hat angerufen. [[Möchte einen Rückruf wegen der Offerte Garagentor.]]"
+          },
+          {
+            "kanal": "WhatsApp",
+            "icon": "chat",
+            "zeit": "Mo 09.40",
+            "von": "Anna Muster",
+            "text": "Guten Morgen. Bei uns ist eine [[Fensterscheibe gesprungen]], Foto anbei. Können Sie die ersetzen?"
+          },
+          {
+            "kanal": "Mail",
+            "icon": "mail",
+            "zeit": "Mo 10.05",
+            "von": "Sara Muster",
+            "text": "Können Sie für eine [[Besichtigung]] vorbeikommen? Wann hätten Sie Zeit?"
+          },
+          {
+            "kanal": "Website",
+            "icon": "website",
+            "zeit": "Mo 11.30",
+            "von": "Marco Beispiel",
+            "text": "Haben Sie eine [[Preisliste]]?"
+          }
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Sammeln",
+          "text": "Vier Anfragen aus Telefon, WhatsApp, Mail und Website in eine Liste übernommen."
+        },
+        {
+          "name": "Einordnen",
+          "dokument": {
+            "art": "tabelle",
+            "badge": "Liste, Vorschlag der KI",
+            "tabelle": {
+              "kopf": [
+                "Eingang",
+                "Kanal",
+                "Von",
+                "Anliegen",
+                "Dringlichkeit"
+              ],
+              "zeilen": [
+                [
+                  "Mo 08.12",
+                  "Telefon",
+                  "Reto Beispiel",
+                  "Rückruf wegen Offerte Garagentor",
+                  "normal"
+                ],
+                [
+                  "Mo 09.40",
+                  "WhatsApp",
+                  "Anna Muster",
+                  "Foto: Fensterscheibe gesprungen, Ersatz?",
+                  "hoch"
+                ],
+                [
+                  "Mo 10.05",
+                  "Mail",
+                  "Sara Muster",
+                  "Termin für Besichtigung",
+                  "normal"
+                ],
+                [
+                  "Mo 11.30",
+                  "Website",
+                  "Marco Beispiel",
+                  "Frage nach Preisliste",
+                  "tief"
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "name": "Zuständigkeit vorschlagen",
+          "dokument": {
+            "art": "tabelle",
+            "tabelle": {
+              "kopf": [
+                "Anliegen",
+                "Zuständig",
+                "Vorbereitet"
+              ],
+              "zeilen": [
+                [
+                  "Rückruf wegen Offerte Garagentor",
+                  "M. Muster",
+                  "Rückruf vorgemerkt"
+                ],
+                [
+                  "Fensterscheibe gesprungen",
+                  "L. Beispiel",
+                  "Antwortentwurf"
+                ],
+                [
+                  "Termin für Besichtigung",
+                  "M. Muster",
+                  "Entwurf mit freien Zeiten"
+                ],
+                [
+                  "Frage nach Preisliste",
+                  "Sekretariat",
+                  "Antwortentwurf mit Preisliste"
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Ihr Team sieht alles auf einen Blick, bestätigt die Zuteilung und antwortet.",
+          "entscheid": {
+            "ja": "Zuteilung bestätigen",
+            "msgJa": "In der Vorführung wird nichts zugeteilt. Im Alltag sähe jetzt jede zuständige Person ihre Anfragen.",
+            "msgNein": "Im Alltag ändern Sie hier die Zuständigkeit oder die Dringlichkeit."
+          }
+        }
+      ]
+    },
+    "sonderfall": {
+      "label": "Beleg mit Sonderfall",
+      "kontext": "Treuhand und Büro",
+      "eingang": {
+        "typ": "pdf",
+        "datei": "Hotelrechnung 5531.pdf",
+        "absender": "Hotel Muster, Deutschland",
+        "titel": "Rechnung 5531",
+        "felder": [
+          [
+            "Datum",
+            "[[23.10.2026]]"
+          ],
+          [
+            "Zimmer",
+            "[[Doppelzimmer, 2 Personen]]"
+          ],
+          [
+            "Kunde",
+            "Malerei Beispiel"
+          ]
+        ],
+        "zeilen": [
+          [
+            "Übernachtung, 2 Nächte",
+            ""
+          ],
+          [
+            "Frühstück, 2 Personen",
+            ""
+          ]
+        ],
+        "total": [
+          [
+            "Total inklusive [[Mehrwertsteuer Deutschland]]",
+            "[[EUR 412.00]]"
+          ]
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Auslesen",
+          "felder": [
+            [
+              "Lieferant",
+              "Hotel Muster, Deutschland"
+            ],
+            [
+              "Datum",
+              "23.10.2026"
+            ],
+            [
+              "Betrag",
+              "EUR 412.00"
+            ],
+            [
+              "Umgerechnet",
+              "CHF 383.16 (Beispielkurs 0.93)"
+            ],
+            [
+              "Leistung",
+              "2 Nächte, Doppelzimmer, 2 Personen"
+            ]
+          ]
+        },
+        {
+          "name": "Nachschlagen",
+          "text": "Lieferant neu: noch nie gebucht. Mandant ist Einzelfirma, Reisen bisher auf 6640 Reisespesen."
+        },
+        {
+          "name": "Sonderfall erkannt",
+          "liste": [
+            "Neuer Lieferant: Konto nur als Vorschlag, nicht automatisch übernehmen.",
+            "Rechnung in EUR mit deutscher Mehrwertsteuer: keine Schweizer Vorsteuer.",
+            "Doppelzimmer für 2 Personen: möglicher Privatanteil."
+          ],
+          "listeArt": "pruefen"
+        },
+        {
+          "name": "Vorschlag, zurückgestellt",
+          "dokument": {
+            "art": "buchung",
+            "badge": "Vorschlag, wartet auf Antwort",
+            "tabelle": {
+              "kopf": [
+                "Soll",
+                "Haben",
+                "Betrag",
+                "Text"
+              ],
+              "num": [
+                2
+              ],
+              "zeilen": [
+                [
+                  "6640 Reisespesen",
+                  "2000 Kreditoren",
+                  "CHF 383.16",
+                  "Hotel Muster, 2 Nächte, Anteil offen"
+                ]
+              ]
+            }
+          },
+          "hinweis": "Falls die zweite Person privat dabei war: Anteil auf das Privatkonto. Das entscheidet Ihre Fachperson nach der Antwort."
+        },
+        {
+          "name": "Rückfrage an den Mandanten",
+          "dokument": {
+            "art": "mail",
+            "badge": "Entwurf, nicht gesendet",
+            "kopf": [
+              [
+                "An",
+                "Marco Beispiel, Malerei Beispiel"
+              ],
+              [
+                "Betreff",
+                "Kurze Frage zu einer Hotelrechnung"
+              ]
+            ],
+            "text": [
+              "Guten Tag Herr Beispiel",
+              "In Ihren Belegen liegt eine Hotelrechnung vom 23. Oktober über EUR 412.00 für ein Doppelzimmer mit zwei Personen. War die zweite Person geschäftlich dabei? Wenn nicht, buchen wir ihren Anteil als Privatbezug.",
+              "Freundliche Grüsse"
+            ]
+          }
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Ihre Fachperson prüft Konto und Rückfrage und sendet sie. Gebucht wird erst nach der Antwort.",
+          "entscheid": {
+            "ja": "Rückfrage senden",
+            "msgJa": "In der Vorführung wird nichts gesendet. Im Alltag ginge die Rückfrage jetzt an den Mandanten, der Beleg bleibt zurückgestellt.",
+            "msgNein": "Im Alltag passen Sie hier die Rückfrage oder das Konto an."
+          }
+        }
+      ],
+      "fussnote": "Erfundenes Beispiel mit Beispielkurs und Konten nach KMU-Kontenrahmen. Welcher Kurs gilt und wie ein Privatanteil gebucht wird, bestimmt Ihre Fachperson."
+    },
+    "steuern": {
+      "label": "Steuersaison: fehlende Unterlagen",
+      "kontext": "Treuhand und Büro",
+      "eingang": {
+        "typ": "dateien",
+        "text": [
+          "Ordner der Mandantin Sara Muster, Steuererklärung 2026. Bisher eingegangen:"
+        ],
+        "dateien": [
+          {
+            "name": "Lohnausweis 2026",
+            "info": "Arbeitgeber Beispiel AG, 1 Seite"
+          },
+          {
+            "name": "Kontoauszug Bank Muster",
+            "info": "per 31.12.2026, 2 Seiten"
+          },
+          {
+            "name": "Foto einer Quittung",
+            "info": "unscharf, Datum nicht lesbar",
+            "unklar": true
+          }
+        ]
+      },
+      "schritte": [
+        {
+          "name": "Checkliste aus dem Vorjahr",
+          "text": "In der Steuererklärung 2025 kamen diese Unterlagen vor:",
+          "liste": [
+            "Lohnausweis",
+            "Kontoauszug per Jahresende",
+            "Bescheinigung Säule 3a",
+            "Belege Weiterbildung",
+            "Krankheitskosten"
+          ]
+        },
+        {
+          "name": "Abgleichen",
+          "dokument": {
+            "art": "tabelle",
+            "badge": "Abgleich, Vorschlag der KI",
+            "tabelle": {
+              "kopf": [
+                "Unterlage",
+                "Vorjahr",
+                "Dieses Jahr"
+              ],
+              "zeilen": [
+                [
+                  "Lohnausweis",
+                  "vorhanden",
+                  "eingegangen"
+                ],
+                [
+                  "Kontoauszug per Jahresende",
+                  "vorhanden",
+                  "eingegangen"
+                ],
+                [
+                  "Bescheinigung Säule 3a",
+                  "vorhanden",
+                  "fehlt"
+                ],
+                [
+                  "Belege Weiterbildung",
+                  "vorhanden",
+                  "fehlt"
+                ],
+                [
+                  "Krankheitskosten",
+                  "vorhanden",
+                  "unklar: Quittung nicht lesbar"
+                ]
+              ],
+              "markiert": [
+                2,
+                3,
+                4
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rückfrage",
+          "dokument": {
+            "art": "mail",
+            "badge": "Entwurf, nicht gesendet",
+            "kopf": [
+              [
+                "An",
+                "Sara Muster"
+              ],
+              [
+                "Betreff",
+                "Steuererklärung 2026: noch drei Unterlagen"
+              ]
+            ],
+            "text": [
+              "Guten Tag Frau Muster",
+              "Danke für Ihre Unterlagen. Für die Steuererklärung 2026 fehlen uns noch:",
+              "die Bescheinigung der Säule 3a<br>Belege zur Weiterbildung, falls Sie wieder eine besucht haben<br>die Quittung zu den Krankheitskosten als gut lesbares Foto oder PDF",
+              "Freundliche Grüsse"
+            ]
+          },
+          "hinweis": "Hinweis der KI: Weiterbildung nur im Vorjahr belegt. Bitte prüfen, ob die Frage passt."
+        },
+        {
+          "name": "Sie entscheiden",
+          "text": "Ihre Fachperson prüft die Liste, passt die Rückfrage an und sendet sie.",
+          "entscheid": {
+            "ja": "Rückfrage senden",
+            "msgJa": "In der Vorführung wird nichts gesendet. Im Alltag ginge die Rückfrage jetzt an die Mandantin.",
+            "msgNein": "Im Alltag streichen oder ergänzen Sie hier Punkte, bevor Sie senden."
+          }
+        }
+      ],
+      "fussnote": "Erfundenes Beispiel. Welche Unterlagen auf die Liste gehören, bestimmen Sie."
+    }
+  }
+}

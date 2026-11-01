@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="de-CH" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Datenschutz und Sicherheit bei KI | Codani</title>
+<meta name="description" content="Wo Ihre Daten liegen, welche KI-Anbieter ich einsetze, warum nicht mit Ihren Daten trainiert wird und was das DSG verlangt. Einfach erklärt, mit Quellen.">
+<meta name="author" content="Jonas Grüter">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<link rel="canonical" href="https://codani.ch/sicherheit/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_CH">
+<meta property="og:site_name" content="Codani">
+<meta property="og:title" content="Datenschutz und Sicherheit bei KI | Codani">
+<meta property="og:description" content="Wo Ihre Daten liegen, welche KI-Anbieter ich einsetze, warum nicht mit Ihren Daten trainiert wird und was das DSG verlangt. Einfach erklärt, mit Quellen.">
+<meta property="og:url" content="https://codani.ch/sicherheit/">
+<meta property="og:image" content="https://codani.ch/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Büste eines Androiden aus leuchtenden Lichtpunkten vor dunklem Hintergrund">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/geist-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/vertrauen.css">
+<script>document.documentElement.classList.replace('no-js', 'js');</script>
+<script src="../js/site.js" defer></script>
+</head>
+<body id="top" class="page page--sicherheit">
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+<header class="hdr" id="hdr" data-hdr>
+<div class="hdr__bar">
+<a class="hdr__brand" href="../" aria-label="Codani, zur Startseite">
+<span class="mark" aria-hidden="true"></span>
+<span class="hdr__brandtext"><span class="hdr__name">Codani</span><span class="hdr__sub">KI und Websites für KMU</span></span>
+</a>
+<nav class="hdr__nav" aria-label="Hauptnavigation">
+<ul class="hdr__list"><li class="hdr__item"><a class="hdr__link" href="../">Start</a></li>
+<li class="hdr__item hdr__item--split"><a class="hdr__link" href="../ki/" aria-current="true">KI</a><button class="hdr__more" type="button" aria-expanded="false" aria-controls="ki-panel" aria-label="Untermenü KI öffnen" data-label-open="Untermenü KI öffnen" data-label-close="Untermenü KI schliessen"><svg class="hdr__chev" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+<li class="hdr__item"><a class="hdr__link" href="../websites/">Websites</a></li>
+<li class="hdr__item"><a class="hdr__link" href="../preise/">Preise</a></li>
+<li class="hdr__item"><a class="hdr__link" href="../referenzen/">Referenzen</a></li>
+<li class="hdr__item"><a class="hdr__link" href="../ueber-mich/">Über mich</a></li></ul>
+</nav>
+<a class="btn btn--sm hdr__cta" href="../kontakt/">Kontakt</a>
+<button class="hdr__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen" data-label-open="Menü öffnen" data-label-close="Menü schliessen">
+<span class="hdr__toggle-text" aria-hidden="true" data-open="Menü" data-close="Schliessen">Menü</span>
+<span class="hdr__burger" aria-hidden="true"><i></i><i></i></span>
+</button>
+</div>
+<div class="kipanel" id="ki-panel" hidden>
+<div class="kipanel__grid"><div class="kipanel__col">
+<p class="kipanel__title" id="kp-0">Überblick</p>
+<ul aria-labelledby="kp-0">
+<li><a class="kipanel__link" href="../ki/"><span><span class="kipanel__name">KI-Integration</span><span class="kipanel__text">Was KI in Ihrem Betrieb vorbereitet</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/#demo"><span><span class="kipanel__name">Demo ausprobieren</span><span class="kipanel__text">Vorführung mit erfundenen Daten</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/#ablauf"><span><span class="kipanel__name">Ablauf in vier Stufen</span><span class="kipanel__text">Vom KI-Check bis zum Betrieb</span></span></a></li>
+</ul>
+</div>
+<div class="kipanel__col">
+<p class="kipanel__title" id="kp-1">Werkzeuge</p>
+<ul aria-labelledby="kp-1">
+<li><a class="kipanel__link" href="../ki/e-mail/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg><span><span class="kipanel__name">E-Mail</span><span class="kipanel__text">Antwortentwürfe für Ihr Postfach</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/kalender/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kalender"></use></svg><span><span class="kipanel__name">Kalender</span><span class="kipanel__text">Terminvorschläge aus freien Zeiten</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/dokumente/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg><span><span class="kipanel__name">Dokumente</span><span class="kipanel__text">Angaben aus PDFs und Belegen</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/kunden/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kunden"></use></svg><span><span class="kipanel__name">Kunden</span><span class="kipanel__text">Anfragen aus allen Kanälen in einer Liste</span></span></a></li>
+</ul>
+</div>
+<div class="kipanel__col">
+<p class="kipanel__title" id="kp-2">Branchen</p>
+<ul aria-labelledby="kp-2">
+<li><a class="kipanel__link" href="../branchen/handwerk/"><span><span class="kipanel__name">Handwerk</span><span class="kipanel__text">Sprachnachricht wird Offerte</span></span></a></li>
+<li><a class="kipanel__link" href="../branchen/treuhand/"><span><span class="kipanel__name">Treuhand und Büro</span><span class="kipanel__text">Beleg wird Buchungsvorschlag</span></span></a></li>
+<li><a class="kipanel__link" href="../branchen/verwaltung/"><span><span class="kipanel__name">Verwaltung</span><span class="kipanel__text">Mieteranfrage wird Antwort</span></span></a></li>
+</ul>
+</div>
+<div class="kipanel__col">
+<p class="kipanel__title" id="kp-3">Vertrauen</p>
+<ul aria-labelledby="kp-3">
+<li><a class="kipanel__link" href="../sicherheit/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schild"></use></svg><span><span class="kipanel__name">Datenschutz und Sicherheit</span><span class="kipanel__text">Wo Ihre Daten liegen</span></span></a></li>
+<li><a class="kipanel__link" href="../support/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schalter"></use></svg><span><span class="kipanel__name">Betrieb und Support</span><span class="kipanel__text">Was passiert, wenn etwas ausfällt</span></span></a></li>
+</ul>
+</div></div>
+<div class="kipanel__strip">
+<p>Einstieg: KI-Check zum Fixpreis CHF 360</p>
+<a class="more" href="../kontakt/?thema=ki-check">KI-Check anfragen</a>
+</div>
+</div>
+<div class="menu" id="menu" hidden>
+<nav class="menu__nav" aria-label="Menü">
+<ul class="menu__list">
+<li><a class="menu__link" href="../">Start</a></li>
+<li>
+<button class="menu__link menu__group" type="button" aria-expanded="false" aria-controls="menu-ki" data-current="1">KI<svg class="hdr__chev" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<ul class="menu__sub" id="menu-ki" hidden>
+<li><a href="../ki/">Überblick</a></li>
+<li><a href="../ki/e-mail/">E-Mail</a></li>
+<li><a href="../ki/kalender/">Kalender</a></li>
+<li><a href="../ki/dokumente/">Dokumente</a></li>
+<li><a href="../ki/kunden/">Kunden</a></li>
+<li><a href="../branchen/handwerk/">Handwerk</a></li>
+<li><a href="../branchen/treuhand/">Treuhand und Büro</a></li>
+<li><a href="../branchen/verwaltung/">Verwaltung</a></li>
+</ul>
+</li>
+<li><a class="menu__link" href="../websites/">Websites</a></li>
+<li><a class="menu__link" href="../preise/">Preise</a></li>
+<li><a class="menu__link" href="../referenzen/">Referenzen</a></li>
+<li><a class="menu__link" href="../ueber-mich/">Über mich</a></li>
+<li><a class="menu__link" href="../kontakt/">Kontakt</a></li>
+</ul>
+<ul class="menu__small">
+<li><a href="../sicherheit/" aria-current="page">Datenschutz und Sicherheit</a></li>
+<li><a href="../support/">Betrieb und Support</a></li>
+</ul>
+</nav>
+<div class="menu__foot">
+<a class="btn" href="../kontakt/?thema=ki-check">KI-Check anfragen<span class="btn__arrow" aria-hidden="true"></span></a>
+<a class="menu__mail" href="mailto:jonas.grueter.web@gmail.com">jonas.grueter.web@gmail.com</a>
+</div>
+</div>
+</header>
+<main id="inhalt" tabindex="-1">
+<section class="hero hero--compact"><div class="wrap"><div class="hero__text"><nav class="crumbs" aria-label="Brotkrumen"><ol><li><a href="../ki/">KI</a></li><li><span aria-current="page">Datenschutz und Sicherheit</span></li></ol></nav>
+<p class="t-eyebrow">Sicherheit</p>
+<h1 class="t-display">Datenschutz und Sicherheit bei KI, in einfacher Sprache.</h1>
+<p class="t-lead hero__lead">Bevor Sie einer KI Kundendaten anvertrauen, wollen Sie wissen, wohin sie gehen. Hier steht es, mit Quellen.</p>
+<p class="hero__line">Anbieter-Bedingungen geprüft am 31. Oktober 2026</p></div></div></section>
+<section class="sec sec--tint" id="kurz" aria-labelledby="kurz-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Kurz gesagt</p>
+<h2 class="t-h2" id="kurz-t">Das Wichtigste in Kürze.</h2>
+</header>
+<ul class="cards cards--3 cards--white kurz"><li class="card" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#haus"></use></svg></span>
+<h3 class="t-h3 card__title">Daten bleiben bei Ihnen</h3>
+<p class="card__text">Ihre Daten und die Lösung selbst liegen in Ihrem Konto. Zur KI geht nur, was eine Aufgabe braucht.</p>
+</li>
+<li class="card" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schild"></use></svg></span>
+<h3 class="t-h3 card__title">Kein Training</h3>
+<p class="card__text">Ich setze nur Geschäftsangebote ein, deren Bedingungen das Training mit Ihren Daten ausschliessen.</p>
+</li>
+<li class="card" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#ort"></use></svg></span>
+<h3 class="t-h3 card__title">Standard: Schweiz</h3>
+<p class="card__text">Kundendaten verarbeite ich standardmässig in der Schweiz. Etwas anderes nur mit Ihrer schriftlichen Zustimmung, pro Fall.</p>
+</li>
+<li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../sicherheit/#vertraulichkeit">Vertraulich ab dem ersten Gespräch</a></h3>
+<p class="card__text">Auf Wunsch unterschreibe ich vorher eine Vertraulichkeitserklärung. Welcher Anbieter welche Daten erhält, steht im Vertrag.</p>
+<span class="more card__more" aria-hidden="true">So läuft es</span>
+</li>
+<li class="card" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schluessel"></use></svg></span>
+<h3 class="t-h3 card__title">Nur nötige Zugriffe</h3>
+<p class="card__text">Die KI erhält nur die Zugriffe, die sie braucht. Sie können sie jederzeit entziehen.</p>
+</li>
+<li class="card" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#papierkorb"></use></svg></span>
+<h3 class="t-h3 card__title">Löschung bestätigt</h3>
+<p class="card__text">Am Ende entziehen Sie meine Zugänge. Was ich für das Projekt bei mir hatte, lösche ich und bestätige es schriftlich.</p>
+</li></ul>
+</div>
+</section>
+<section class="sec" id="daten" aria-labelledby="daten-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Datenweg</p>
+<h2 class="t-h2" id="daten-t">Wo Ihre Daten liegen.</h2>
+</header>
+<figure class="dweg" role="img" aria-label="Schema: Der Text geht verschlüsselt von Ihrem Programm zum KI-Anbieter, der Entwurf kommt zurück in Ihr Programm. Gespeichert wird bei Ihnen, beim KI-Anbieter wird der Text nur verarbeitet." data-reveal>
+<div class="dweg__box dweg__box--sie">
+<span class="dweg__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#haus"></use></svg></span>
+<p class="dweg__zone">Bei Ihnen</p>
+<p class="dweg__title">Ihr Programm, z. B. Outlook</p>
+<p class="dweg__text">Hier bleiben Ihre Daten gespeichert.</p>
+<p class="dweg__chip"><span class="chip chip--sie">Sie prüfen den Entwurf</span></p>
+</div>
+<div class="dweg__mid">
+<p class="dweg__arrow dweg__arrow--hin"><span>nur der nötige Text</span></p>
+<p class="dweg__lock"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schloss"></use></svg><span>verschlüsselte Verbindung</span></p>
+<p class="dweg__arrow dweg__arrow--zurueck"><span>Entwurf zurück</span></p>
+</div>
+<div class="dweg__box dweg__box--ki">
+<span class="dweg__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#funke"></use></svg></span>
+<p class="dweg__zone">Beim KI-Anbieter</p>
+<p class="dweg__title">verarbeitet den Text</p>
+<p class="dweg__text">Kein Training mit Ihren Daten. Protokolle je nach Anbieter meist bis 30 Tage.</p>
+</div>
+</figure>
+<p class="t-lead sec__foot daten__text" data-reveal>Gespeichert wird bei Ihnen, in Ihren Programmen. Beim KI-Anbieter wird der Text verarbeitet. Je nach Anbieter bewahrt er ihn eine begrenzte Zeit für Missbrauchskontrollen auf, meist bis 30 Tage, und löscht ihn danach.</p>
+</div>
+</section>
+<section class="sec sec--soft" id="loesung" aria-labelledby="loesung-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Betrieb</p>
+<h2 class="t-h2" id="loesung-t">Wo die Lösung läuft.</h2>
+<p class="t-lead">Nicht nur Ihre Daten, auch die Lösung selbst gehört in Ihr Konto: Abläufe, Schlüssel, Zwischenergebnisse und Protokolle. So sieht Ihre IT jederzeit, was läuft, und kann mir den Zugang entziehen.</p>
+</header>
+<div class="ort" data-reveal>
+        <div class="ort__box ort__box--ihr">
+          <p class="ort__zone"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#haus"></use></svg><span>In Ihrem Konto</span></p>
+          <p class="ort__title">Bevorzugt in Ihrem Microsoft-365- oder Azure-Konto, Region Schweiz.</p>
+          <p class="ort__text">Arbeiten Sie nicht mit Microsoft, in einem Konto bei Infomaniak auf Ihren Namen.</p>
+          <ul class="list list--check"><li>Ihre Daten: Mails, Belege, Anfragen</li><li>die Abläufe der Lösung und der KI-Dienst</li><li>Schlüssel und Zugangsdaten, verschlüsselt</li><li>Zwischenergebnisse und Protokolle: wer wann was freigegeben hat</li></ul>
+          <p class="ort__app"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schluessel"></use></svg><span>Die Lösung erhält eine eigene App-Registrierung, der Ihre IT zustimmt. Sie darf nur auf das vereinbarte Postfach oder den vereinbarten Ordner zugreifen.</span></p>
+        </div>
+        <div class="ort__mitte" aria-hidden="true"><span class="ort__linie"></span></div>
+        <div class="ort__box ort__box--ich">
+          <p class="ort__zone"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#person"></use></svg><span>Mein Zugang</span></p>
+          <p class="ort__text">Ein eigenes Konto mit Zwei-Faktor-Anmeldung, das Sie jederzeit entziehen können.</p>
+          <p class="ort__sub">Bei mir liegt</p>
+          <ul class="list list--dot"><li>eine Kopie des Codes, er gehört Ihnen</li><li>die Dokumentation</li><li>erfundene Testdaten</li></ul>
+          <p class="ort__sub ort__sub--nie">Nie auf meinen Geräten</p>
+          <ul class="list list--dot ort__nie"><li>Ihre Kunden- und Mandantendaten</li><li>Passwörter oder Schlüssel in Mails</li><li>Protokolle mit Personendaten</li></ul>
+        </div>
+      </div>
+      <p class="note">Gebaut und getestet wird mit erfundenen Daten. Meine Entwicklungswerkzeuge, auch KI-Assistenten beim Programmieren, sehen keine echten Kundendaten.</p>
+</div>
+</section>
+<section class="sec sec--soft" id="it" aria-labelledby="it-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Für Ihre IT</p>
+<h2 class="t-h2" id="it-t">Technischer Aufbau, zum Aufklappen.</h2>
+<p class="t-lead">So baue ich eine Lösung für Microsoft 365 auf, am Beispiel Antwortentwürfe für ein Postfach. Die Einzelheiten legen wir im Pilot mit Ihrer IT fest und schreiben sie ins Betriebshandbuch.</p>
+</header>
+<details class="it" data-reveal>
+        <summary class="it__sum"><span>Dienste, Berechtigungen, Protokolle</span></summary>
+        <div class="it__body">
+          <ol class="it__fluss" aria-label="Ablauf einer Anfrage">
+            <li><span class="it__ort">Exchange Online</span><b>Postfach</b><span>neue Mail im vereinbarten Postfach</span></li>
+            <li><span class="it__ort">Azure, Switzerland North</span><b>Ablauf</b><span>Azure Functions in Ihrem Abonnement</span></li>
+            <li><span class="it__ort">Azure, Switzerland North</span><b>KI</b><span>Azure OpenAI, regionale Bereitstellung</span></li>
+            <li><span class="it__ort">Exchange Online</span><b>Entwurf</b><span>im Entwurfsordner, Versand durch Ihr Team</span></li>
+          </ol>
+          <dl class="it__liste">
+            <div><dt>App-Registrierung</dt><dd>Eigene App in Ihrem Entra ID, Ihre IT erteilt die Zustimmung. Anmeldung mit Zertifikat, nicht mit Passwort.</dd></div>
+            <div><dt>Berechtigungen</dt><dd>Microsoft Graph, Anwendungsrecht Mail.ReadWrite: Mails lesen und Entwürfe anlegen. Kein Recht zum Senden (Mail.Send). Beschränkt auf das vereinbarte Postfach mit RBAC für Anwendungen in Exchange Online. Eine Freigabe für alle Postfächer in Entra ID gibt es nicht, sie würde die Beschränkung aushebeln.</dd></div>
+            <div><dt>Schlüssel</dt><dd>In Azure Key Vault in Ihrem Abonnement. Der Ablauf greift mit einer verwalteten Identität darauf zu.</dd></div>
+            <div><dt>Code</dt><dd>In einem Repository auf Ihren Namen, zum Beispiel bei GitHub oder Azure DevOps. Änderungen sind nachvollziehbar.</dd></div>
+            <div><dt>Protokolle</dt><dd>Application Insights in Ihrem Abonnement: Zeit, Ablauf, Ergebnis und Fehler, keine Mailinhalte. Aufbewahrung standardmässig 30 Tage, anders nach Vereinbarung.</dd></div>
+            <div><dt>Fehlermeldungen</dt><dd>Warnungen über Azure Monitor per Mail an mich und auf Wunsch an Ihre IT.</dd></div>
+            <div><dt>Abschalten</dt><dd>Ablauf in Azure stoppen oder die App in Entra ID deaktivieren. Beides kann Ihre IT ohne mich.</dd></div>
+          </dl>
+          <p class="note">Mit Google Workspace oder anderen Programmen ist der Grundsatz gleich: eigenes Konto der Lösung mit eng begrenzten Rechten, in Ihrem Konto. Den genauen Aufbau legen wir im KI-Check fest. Quellen von Microsoft stehen <a class="text-link" href="#quellen">unten auf dieser Seite</a>.</p>
+        </div>
+      </details>
+</div>
+</section>
+<section class="sec" id="vertraulichkeit" aria-labelledby="vertraulichkeit-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Vertraulichkeit</p>
+<h2 class="t-h2" id="vertraulichkeit-t">Vertraulich vom ersten Gespräch an.</h2>
+<p class="t-lead">Für den KI-Check brauche ich keine Kunden- oder Mandantendaten. Echte Daten kommen erst im Pilot dazu, wenn alles unterschrieben ist.</p>
+</header>
+<ol class="steps steps--4"><li class="step" data-reveal>
+<span class="step__node" aria-hidden="true">01</span>
+<h3 class="t-h3 step__title">Gespräch</h3>
+<p class="step__text">Wir besprechen Ihre Abläufe. Auf Wunsch unterschreibe ich vorher eine Vertraulichkeitserklärung: Was ich von Ihrem Betrieb erfahre, bleibt bei mir und wird nur für Ihren Auftrag verwendet, auch nach dem Ende der Zusammenarbeit.</p>
+</li>
+<li class="step" data-reveal>
+<span class="step__node" aria-hidden="true">02</span>
+<h3 class="t-h3 step__title">KI-Check</h3>
+<p class="step__text">Ich arbeite mit Musterbelegen, erfundenen Beispielen oder Unterlagen Ihres eigenen Betriebs, die Sie dafür freigeben. Kunden- und Mandantendaten sehe ich nicht.</p>
+</li>
+<li class="step step--decide" data-reveal>
+<span class="step__node" aria-hidden="true">03</span>
+<h3 class="t-h3 step__title">Vertrag</h3>
+<p class="step__text">Vor dem Pilot unterschreiben wir den Vertrag zur Auftragsbearbeitung. Darin steht, welcher Anbieter welche Daten erhält und wo.</p>
+<p class="chip chip--sie step__chip">Sie unterschreiben</p>
+</li>
+<li class="step" data-reveal>
+<span class="step__node" aria-hidden="true">04</span>
+<h3 class="t-h3 step__title">Pilot</h3>
+<p class="step__text">Erst jetzt arbeitet die KI mit echten Daten, in Ihrem Konto und standardmässig in der Schweiz.</p>
+</li></ol><p class="sec__foot vertraulich__links"><a class="more" href="../unterlagen/vertraulichkeit/">Muster der Vertraulichkeitserklärung lesen</a><a class="more" href="../unterlagen/auftragsbearbeitung/">Muster des Vertrags zur Auftragsbearbeitung lesen</a></p>
+</div>
+</section>
+<section class="sec sec--soft" id="anbieter" aria-labelledby="anbieter-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Anbieter</p>
+<h2 class="t-h2" id="anbieter-t">Welche Anbieter ich einsetze.</h2>
+<p class="t-lead">Welcher Anbieter passt, hängt von der Aufgabe und von Ihren Anforderungen ab. Das klären wir im KI-Check. Die wichtigsten im Überblick (Stand 31. Oktober 2026):</p>
+</header>
+<div class="tbl-wrap" data-reveal><table class="tbl tbl--anbieter">
+    <caption class="sr">KI-Anbieter im Überblick, Stand 31. Oktober 2026</caption>
+    <thead><tr><th scope="col">Anbieter</th><th scope="col">Wo die Daten verarbeitet werden</th><th scope="col">Training mit Ihren Daten</th><th scope="col">Aufbewahrung</th></tr></thead>
+    <tbody><tr><th scope="row">Microsoft Azure OpenAI</th><td data-label="Wo die Daten verarbeitet werden">Rechenzentrum «Switzerland North» wählbar, bei regionaler Bereitstellung</td><td data-label="Training mit Ihren Daten">nein, laut Microsoft</td><td data-label="Aufbewahrung">zur Missbrauchskontrolle, Details in den Bedingungen von Microsoft</td></tr>
+<tr><th scope="row">OpenAI (API für Firmen)</th><td data-label="Wo die Daten verarbeitet werden">USA, für neue Projekte ist Europa wählbar, sofern berechtigt</td><td data-label="Training mit Ihren Daten">nein, seit 1. März 2023, ausser Sie stimmen ausdrücklich zu</td><td data-label="Aufbewahrung">Protokolle zur Missbrauchskontrolle bis 30 Tage</td></tr>
+<tr><th scope="row">Anthropic (Claude, API für Firmen)</th><td data-label="Wo die Daten verarbeitet werden">USA, über Cloud-Partner wie Amazon Web Services auch in EU-Regionen</td><td data-label="Training mit Ihren Daten">nein, laut Geschäftsbedingungen</td><td data-label="Aufbewahrung">Ein- und Ausgaben standardmässig innert 30 Tagen gelöscht</td></tr>
+<tr><th scope="row">Google (Gemini in Google Workspace)</th><td data-label="Wo die Daten verarbeitet werden">gemäss Ihrem Workspace-Vertrag</td><td data-label="Training mit Ihren Daten">nein, laut Google, ausser Sie erlauben es</td><td data-label="Aufbewahrung">gemäss Ihrem Workspace-Vertrag</td></tr>
+<tr><th scope="row">Infomaniak (offene KI-Modelle)</th><td data-label="Wo die Daten verarbeitet werden">eigene Rechenzentren in der Schweiz</td><td data-label="Training mit Ihren Daten">laut Anbieter keine Speicherung der Anfragen</td><td data-label="Aufbewahrung">laut Anbieter keine</td></tr></tbody>
+  </table></div>
+      <p class="note">Bedingungen können sich ändern. Vor jedem Projekt prüfe ich sie neu und lege Ihnen die aktuellen Unterlagen vor. Die Quellen stehen <a class="text-link" href="#quellen">unten auf dieser Seite</a>.</p>
+</div>
+</section>
+<section class="sec" id="grundsaetze" aria-labelledby="grundsaetze-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">So schütze ich Ihre Daten</p>
+<h2 class="t-h2" id="grundsaetze-t">Sieben Regeln für jedes Projekt.</h2>
+</header>
+<div class="grundsaetze">
+        <article class="grundsatz" id="training" data-reveal><span class="grundsatz__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schild"></use></svg></span><h3 class="t-h3">Kein Training mit Ihren Daten.</h3><p>Die Geschäftsangebote der grossen Anbieter schliessen das Training mit Kundendaten in ihren Bedingungen aus. Bei Gratis-Apps für Privatpersonen ist das anders: Dort können Eingaben je nach Einstellung zum Training verwendet werden. Darum nutze ich für Ihre Daten nie Gratis-Versionen, sondern nur Geschäftskonten mit Vertrag.</p></article>
+        <article class="grundsatz" id="standort" data-reveal><span class="grundsatz__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#ort"></use></svg></span><h3 class="t-h3">Standard: Schweiz. Ausnahmen nur schriftlich.</h3><p>Kundendaten verarbeite ich standardmässig in der Schweiz, zum Beispiel bei Microsoft Azure in der Region «Switzerland North» oder bei Infomaniak. Braucht eine Aufgabe ein Modell, das es dort nicht gibt, frage ich Sie vorher schriftlich, pro Fall. Ohne Ihre Zustimmung gehen keine Kundendaten in die EU oder die USA. Für die USA gilt seit dem 15. September 2024 das Swiss-U.S. Data Privacy Framework: Daten dürfen grundsätzlich an US-Firmen gehen, die sich danach zertifiziert haben.</p></article>
+        <article class="grundsatz" id="zugriff" data-reveal><span class="grundsatz__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schluessel"></use></svg></span><h3 class="t-h3">Zugriffsrechte.</h3><p>Die KI erhält ein eigenes Konto mit eng begrenzten Rechten, zum Beispiel nur Lesen in einem Postfach und Schreiben in den Entwurfsordner. Alle Zugänge sind mit Zwei-Faktor-Anmeldung geschützt, Schlüssel liegen verschlüsselt und nie in Mails. Sie sehen jederzeit, welche Zugänge es gibt, und können sie entziehen.</p></article>
+        <article class="grundsatz" id="loeschung" data-reveal><span class="grundsatz__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#papierkorb"></use></svg></span><h3 class="t-h3">Löschung.</h3><p>Zwischenergebnisse der KI werden nach einer Frist gelöscht, die wir vereinbaren. Am Ende der Zusammenarbeit entziehen Sie meine Zugänge, und ich lösche, was ich für das Projekt bei mir hatte. Das bestätige ich schriftlich. Ihre Belege, Buchungen und Akten bleiben in Ihren Programmen, auch für die gesetzliche Aufbewahrungspflicht.</p></article>
+        <article class="grundsatz" id="entwicklung" data-reveal><span class="grundsatz__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#werkzeug"></use></svg></span><h3 class="t-h3">Gebaut wird mit erfundenen Daten.</h3><p>Ich baue und teste jede Lösung mit erfundenen Daten. Meine Entwicklungswerkzeuge, auch KI-Assistenten beim Programmieren, sehen keine echten Kundendaten. Auf Ihre Systeme greife ich nur über mein eigenes Konto mit Zwei-Faktor-Anmeldung zu.</p></article>
+        <article class="grundsatz" id="formular" data-reveal><span class="grundsatz__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg></span><h3 class="t-h3">Keine Kundendaten über die Website.</h3><p>Formular und Mail dieser Website laufen heute über Web3Forms (Betreiber in Indien, Server in den USA) und Gmail (Google). Sie sind für erste Anfragen gedacht, darum gilt die Regel «Standard Schweiz» hier noch nicht. Bitte schicken Sie darüber keine Kunden- oder Mandantendaten. Ihre Daten in einer KI-Lösung laufen nie über diese Wege, sondern in Ihrem eigenen Konto.</p></article>
+        <article class="grundsatz grundsatz--breit" id="wenig-daten" data-reveal><div><span class="grundsatz__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#liste"></use></svg></span><h3 class="t-h3">So wenig Daten wie nötig.</h3><p>Für einen Antwortentwurf braucht die KI die Anfrage, nicht Ihre ganze Kundendatenbank. Wo es die Aufgabe erlaubt, ersetze ich Namen und Nummern durch Platzhalter, bevor Text zur KI geht.</p></div><div class="pseudo" data-reveal>
+<p class="badge">Beispiel mit erfundenen Daten</p>
+<div class="pseudo__grid">
+<div class="pseudo__col"><p class="pseudo__label">In Ihrem Postfach</p><p class="pseudo__text">Guten Tag, hier ist <mark>Sara Muster</mark>, Kundennummer <mark>K-4021</mark>. Meine Rechnung vom Oktober stimmt nicht.</p></div>
+<div class="pseudo__arrow" aria-hidden="true"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#pfeil"></use></svg></div>
+<div class="pseudo__col pseudo__col--ki"><p class="pseudo__label">Was zur KI geht</p><p class="pseudo__text">Guten Tag, hier ist <mark>[Name 1]</mark>, Kundennummer <mark>[Nummer 1]</mark>. Meine Rechnung vom Oktober stimmt nicht.</p></div>
+</div>
+<p class="note">Der Entwurf kommt mit den Platzhaltern zurück. Die Lösung setzt Name und Nummer danach wieder ein.</p>
+</div></article>
+      </div>
+</div>
+</section>
+<section class="sec sec--soft" id="dsg" aria-labelledby="dsg-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Gesetz</p>
+<h2 class="t-h2" id="dsg-t">Schweizer Datenschutzgesetz (DSG).</h2>
+</header>
+<div class="grid grid--split dsg">
+        <div data-reveal>
+          <p class="t-lead">Seit dem 1. September 2023 gilt das neue Datenschutzgesetz. Es gilt auch für KI, das hat der Eidgenössische Datenschutz- und Öffentlichkeitsbeauftragte (EDÖB) klargestellt. Wer mit Ihrem Betrieb schreibt, soll erfahren können, dass KI mitarbeitet. Ich schlage Ihnen dafür einen kurzen Text für Ihre Datenschutzerklärung vor. Eine Rechtsberatung ersetzt das nicht.</p>
+          <h3 class="t-h3 dsg__h">Auftragsbearbeitung</h3>
+          <p>Bearbeite ich für Sie Personendaten, bin ich Auftragsbearbeiter. Das regeln wir in einem schriftlichen Vertrag: was ich darf, welche Anbieter beteiligt sind, wie ich die Daten schütze und wann ich lösche. Die KI-Anbieter sind dann Unterauftragsbearbeiter. Sie stimmen ihnen vorher zu.</p>
+        </div>
+        <div class="vertrag" data-reveal role="group" aria-labelledby="vertrag-t">
+          <p class="vertrag__head" id="vertrag-t"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg><span>Vertrag zur Auftragsbearbeitung</span></p>
+          <ul class="list list--check"><li>was ich mit Ihren Daten tun darf</li><li>welche Anbieter beteiligt sind, und wo</li><li>wie ich die Daten schütze</li><li>wann und wie ich lösche</li><li>Ihre Zustimmung zu jedem Unteranbieter</li></ul>
+          <p><a class="more" href="../unterlagen/auftragsbearbeitung/">Muster lesen</a></p>
+          <p class="note">Ich bin kein Jurist. Rechtliche Fragen klären Sie mit Ihrer Fachperson, ich liefere die technischen Angaben.</p>
+        </div>
+      </div>
+</div>
+</section>
+<section class="sec" id="ehrlich" aria-label="Was ich nicht habe und fünf Fragen an jeden KI-Anbieter">
+<div class="wrap">
+<div class="grid grid--2 ehrlich">
+        <div><div class="info info--warm" data-reveal>
+<span class="info__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schild"></use></svg></span>
+<div class="info__body">
+<h2 class="info__title">Was ich nicht habe.</h2>
+<p>Ich habe keine Zertifizierung wie ISO 27001 und gebe keine Garantien, die ich nicht halten kann. Die grossen Anbieter legen ihre Sicherheitsnachweise und Datenschutzverträge offen. Ich zeige sie Ihnen auf Wunsch.</p>
+</div>
+</div></div>
+        <div class="fragen5" data-reveal>
+          <h2 class="t-h3" id="fuenf-fragen">Fünf Fragen, die Sie jedem KI-Anbieter stellen sollten, auch mir.</h2>
+          <ol class="list list--num"><li>Wo werden unsere Daten verarbeitet und gespeichert?</li><li>Wird mit unseren Daten trainiert?</li><li>Wer hat Zugriff, und wie entziehen wir ihn?</li><li>Was passiert mit den Daten am Ende der Zusammenarbeit?</li><li>Wie arbeiten wir weiter, wenn die KI ausfällt?</li></ol>
+          <p><a class="more" href="../support/">Antwort auf Frage 5: Betrieb und Support</a></p>
+        </div>
+      </div>
+</div>
+</section>
+<section class="sec sec--soft" id="quellen" aria-labelledby="quellen-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Quellen</p>
+<h2 class="t-h2" id="quellen-t">Quellen.</h2>
+<p class="t-lead">Geprüft am 31. Oktober 2026. Diese Website selbst setzt keine Cookies und keine Tracking-Dienste ein, mehr dazu in der <a class="text-link" href="../datenschutz/">Datenschutzerklärung</a>.</p>
+</header>
+<ul class="quellen"><li data-reveal><span class="quellen__wer">Microsoft</span><a class="text-link" href="https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy" target="_blank" rel="noopener">Datenschutz bei Azure OpenAI<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">learn.microsoft.com</span></li><li data-reveal><span class="quellen__wer">Microsoft Schweiz</span><a class="text-link" href="https://news.microsoft.com/de-ch/2023/09/18/microsoft-announces-availability-of-azure-openai-service-in-swiss-data-center-accelerating-ai-innovation-in-switzerland/" target="_blank" rel="noopener">Azure OpenAI im Schweizer Rechenzentrum<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">news.microsoft.com</span></li><li data-reveal><span class="quellen__wer">OpenAI</span><a class="text-link" href="https://developers.openai.com/api/docs/guides/your-data" target="_blank" rel="noopener">Ihre Daten in der API<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">developers.openai.com</span></li><li data-reveal><span class="quellen__wer">OpenAI</span><a class="text-link" href="https://openai.com/index/introducing-data-residency-in-europe/" target="_blank" rel="noopener">Datenhaltung in Europa<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">openai.com</span></li><li data-reveal><span class="quellen__wer">Anthropic</span><a class="text-link" href="https://www.anthropic.com/legal/commercial-terms" target="_blank" rel="noopener">Geschäftsbedingungen<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">anthropic.com</span></li><li data-reveal><span class="quellen__wer">Anthropic</span><a class="text-link" href="https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data" target="_blank" rel="noopener">Aufbewahrung der Daten<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">privacy.claude.com</span></li><li data-reveal><span class="quellen__wer">Amazon Web Services</span><a class="text-link" href="https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html" target="_blank" rel="noopener">Verarbeitung in EU-Regionen<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">docs.aws.amazon.com</span></li><li data-reveal><span class="quellen__wer">Google</span><a class="text-link" href="https://support.google.com/a/answer/15706919" target="_blank" rel="noopener">Datenschutz bei generativer KI in Workspace<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">support.google.com</span></li><li data-reveal><span class="quellen__wer">Infomaniak</span><a class="text-link" href="https://www.infomaniak.com/en/hosting/ai-services" target="_blank" rel="noopener">KI-Dienste<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">infomaniak.com</span></li><li data-reveal><span class="quellen__wer">Microsoft</span><a class="text-link" href="https://learn.microsoft.com/graph/auth-limit-mailbox-access" target="_blank" rel="noopener">Zugriff einer App auf einzelne Postfächer beschränken (RBAC für Anwendungen)<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">learn.microsoft.com</span></li><li data-reveal><span class="quellen__wer">Microsoft</span><a class="text-link" href="https://learn.microsoft.com/graph/permissions-reference" target="_blank" rel="noopener">Berechtigungen von Microsoft Graph<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">learn.microsoft.com</span></li><li data-reveal><span class="quellen__wer">EDÖB</span><a class="text-link" href="https://www.edoeb.admin.ch/en/15082024-new-swiss-us-data-privacy-framework" target="_blank" rel="noopener">Swiss-U.S. Data Privacy Framework<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">edoeb.admin.ch</span></li><li data-reveal><span class="quellen__wer">Netzwoche</span><a class="text-link" href="https://www.netzwoche.ch/news/2023-11-10/das-neue-datenschutzgesetz-gilt-auch-fuer-ki-anwendungen" target="_blank" rel="noopener">EDÖB: Das Datenschutzgesetz gilt auch für KI (9. November 2023)<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">netzwoche.ch</span></li><li data-reveal><span class="quellen__wer">Bundesrecht</span><a class="text-link" href="https://www.fedlex.admin.ch/eli/cc/2022/491/de" target="_blank" rel="noopener">Datenschutzgesetz (SR 235.1)<span class="sr"> (öffnet eine externe Seite)</span></a><span class="quellen__host">fedlex.admin.ch</span></li></ul>
+</div>
+</section>
+<section class="cta-band on-dark" id="abschluss" aria-labelledby="abschluss-t">
+<div class="wrap cta-band__inner" data-reveal>
+<span class="mark mark--lg" aria-hidden="true"></span>
+<h2 class="t-h2" id="abschluss-t">Noch eine Frage zum Datenschutz?</h2>
+<p class="t-lead">Fragen Sie mich direkt. Im KI-Check klären wir den Datenschutz für Ihren Fall, bevor etwas läuft.</p>
+<div class="btns"><a class="btn" href="../kontakt/?thema=datenschutz">Frage stellen<span class="btn__arrow" aria-hidden="true"></span></a></div>
+<p class="cta-band__mail">Lieber per Mail? <a href="mailto:jonas.grueter.web@gmail.com">jonas.grueter.web@gmail.com</a></p>
+</div>
+</section>
+</main>
+<footer class="ftr on-dark" id="fuss">
+<div class="wrap ftr__grid">
+<div class="ftr__brand">
+<p class="ftr__name"><span class="mark" aria-hidden="true"></span>Codani</p>
+<p>KI und Websites für KMU in der Zentralschweiz</p>
+<p class="ftr__claim">Code und Dokumentation gehören Ihnen. Jede Lösung lässt sich abschalten.</p>
+<p class="ftr__contact">Region Sempach, Kanton Luzern<br><a href="mailto:jonas.grueter.web@gmail.com">jonas.grueter.web@gmail.com</a><br><a href="tel:0763025043">076 302 50 43</a><br>Schauensee 28a, 6204 Sempach</p>
+</div>
+<nav class="ftr__nav" aria-label="Fusszeile"><div class="ftr__col">
+<p class="ftr__title" id="ft-0">KI</p>
+<ul aria-labelledby="ft-0">
+<li><a href="../ki/">KI-Integration</a></li>
+<li><a href="../ki/e-mail/">E-Mail</a></li>
+<li><a href="../ki/kalender/">Kalender</a></li>
+<li><a href="../ki/dokumente/">Dokumente</a></li>
+<li><a href="../ki/kunden/">Kunden</a></li>
+<li><a href="../ki/#demo">Demo ausprobieren</a></li>
+</ul>
+</div>
+<div class="ftr__col">
+<p class="ftr__title" id="ft-1">Branchen</p>
+<ul aria-labelledby="ft-1">
+<li><a href="../branchen/">Übersicht</a></li>
+<li><a href="../branchen/handwerk/">Handwerk</a></li>
+<li><a href="../branchen/treuhand/">Treuhand und Büro</a></li>
+<li><a href="../branchen/verwaltung/">Verwaltung</a></li>
+</ul>
+</div>
+<div class="ftr__col">
+<p class="ftr__title" id="ft-2">Vertrauen</p>
+<ul aria-labelledby="ft-2">
+<li><a href="../sicherheit/">Datenschutz und Sicherheit</a></li>
+<li><a href="../support/">Betrieb und Support</a></li>
+<li><a href="../unterlagen/">Muster-Verträge</a></li>
+<li><a href="../preise/">Preise</a></li>
+<li><a href="../referenzen/">Referenzen</a></li>
+</ul>
+</div>
+<div class="ftr__col">
+<p class="ftr__title" id="ft-3">Firma</p>
+<ul aria-labelledby="ft-3">
+<li><a href="../websites/">Websites</a></li>
+<li><a href="../ueber-mich/">Über mich</a></li>
+<li><a href="../kontakt/">Kontakt</a></li>
+<li><a href="../impressum/">Impressum</a></li>
+<li><a href="../datenschutz/">Datenschutzerklärung</a></li>
+</ul>
+</div></nav>
+</div>
+<div class="wrap ftr__bottom">
+<p>© 2026 Codani · Keine Cookies, keine Tracking-Dienste.</p>
+<a class="ftr__top" href="#top">Nach oben</a>
+</div>
+</footer>
+</body>
+</html>

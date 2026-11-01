@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fahrschule Muster (Musterbetrieb, erfunden)</title>
+<style>
+  :root { --bg: #ffffff; --ink: #0f1b3d; --text: #3c4766; --blue: #2457e6; --blue-d: #1a3fb0; --soft: #eef3ff; --yellow: #ffd23f; --line: #e3e8f4; --green: #1d9a6c; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 17px/1.6 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { width: min(100% - 96px, 1280px); margin: 0 auto; }
+  .bar { display: flex; align-items: center; gap: 36px; height: 84px; }
+  .logo { display: flex; align-items: center; gap: 12px; margin-right: auto; font: 700 20px/1 'Inter Display', 'Inter', sans-serif; color: var(--ink); letter-spacing: -0.02em; }
+  .logo i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: var(--blue); color: #fff; font: 800 22px/1 'Inter Display', sans-serif; font-style: normal; }
+  nav { display: flex; gap: 30px; font-size: 15.5px; font-weight: 500; color: var(--ink); }
+  .btn { display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px; border-radius: 14px; background: var(--blue); color: #fff; font-weight: 600; font-size: 15.5px; white-space: nowrap; }
+  .btn--line { background: var(--soft); color: var(--blue-d); }
+  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 40px 0 48px; }
+  .chip { display: inline-flex; gap: 8px; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; background: var(--soft); color: var(--blue-d); font-size: 14px; font-weight: 600; }
+  .chip b { display: inline-grid; place-items: center; height: 22px; min-width: 22px; padding: 0 6px; border-radius: 6px; background: #fff; font-size: 12.5px; }
+  h1 { margin: 22px 0 20px; font: 800 70px/1.0 'Inter Display', 'Inter', sans-serif; letter-spacing: -0.035em; color: var(--ink); }
+  h1 span { color: var(--blue); }
+  .lead { font-size: 19px; max-width: 30em; }
+  .btns { display: flex; gap: 12px; margin-top: 30px; }
+  .next { display: flex; gap: 12px; margin-top: 30px; }
+  .next div { flex: 1; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); }
+  .next small { display: block; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: #6a7493; }
+  .next b { display: block; color: var(--ink); font-size: 15.5px; }
+  .stage { position: relative; aspect-ratio: 1 / 0.92; border-radius: 32px; overflow: hidden; background: linear-gradient(160deg, #3f72ff, #1a3fb0); }
+  .stage > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .card { position: absolute; left: 50%; top: 46%; width: 74%; transform: translate(-50%, -50%) rotate(-4deg); padding: 24px 26px; border-radius: 22px; background: #fff; box-shadow: 0 40px 60px -30px rgba(5, 15, 50, 0.6); }
+  .card__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .card__top b { font: 700 20px/1.1 'Inter Display', sans-serif; color: var(--ink); letter-spacing: -0.02em; }
+  .card__top small { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: #6a7493; }
+  .cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .cat { padding: 12px 10px 10px; border-radius: 14px; background: var(--soft); text-align: center; }
+  .cat b { display: block; font: 800 24px/1 'Inter Display', sans-serif; color: var(--ink); }
+  .cat small { display: block; margin-top: 4px; font-size: 12px; color: var(--text); }
+  .cat.on { background: var(--blue); }
+  .cat.on b, .cat.on small { color: #fff; }
+  .prog { margin-top: 18px; }
+  .prog p { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink); font-weight: 600; }
+  .prog p span { color: #6a7493; font-weight: 500; }
+  .prog i { display: block; height: 10px; margin-top: 8px; border-radius: 99px; background: var(--soft); overflow: hidden; }
+  .prog i::after { content: ''; display: block; width: 66%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--blue), #5b8cff); }
+  .badge { position: absolute; right: 7%; bottom: 8%; display: flex; gap: 12px; align-items: center; padding: 12px 16px 12px 12px; border-radius: 16px; background: #fff; box-shadow: 0 20px 40px -20px rgba(5, 15, 50, 0.6); transform: rotate(2deg); }
+  .badge .d { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--yellow); color: var(--ink); font: 800 13px/1.05 'Inter Display', sans-serif; text-align: center; }
+  .badge b { display: block; font-size: 15px; color: var(--ink); }
+  .badge small { font-size: 13px; }
+  .prices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-bottom: 60px; }
+  .price { padding: 22px 24px; border-radius: 20px; background: var(--soft); }
+  .price small { font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; color: var(--blue-d); }
+  .price b { display: block; margin-top: 6px; font: 700 22px/1.2 'Inter Display', sans-serif; color: var(--ink); }
+  .price span { display: block; margin-top: 10px; font: 800 30px/1 'Inter Display', sans-serif; color: var(--ink); }
+  .menu { display: none; }
+  @media (max-width: 700px) {
+    .wrap { width: calc(100% - 40px); }
+    .bar { height: 68px; }
+    nav, .bar > .btn { display: none; }
+    .menu { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--soft); }
+    .menu i { display: block; width: 18px; height: 1.8px; background: var(--ink); box-shadow: 0 6px 0 var(--ink), 0 -6px 0 var(--ink); }
+    .logo { font-size: 18px; }
+    .hero { grid-template-columns: 1fr; gap: 28px; padding: 20px 0 40px; }
+    h1 { font-size: 46px; margin: 18px 0 14px; }
+    .lead { font-size: 17.5px; }
+    .btns { flex-direction: column; margin-top: 24px; }
+    .btns .btn { justify-content: center; }
+    .next { margin-top: 20px; }
+    .next div { padding: 10px 12px; }
+    .stage { border-radius: 24px; }
+    .card { width: 86%; padding: 18px; }
+    .cat b { font-size: 20px; }
+    .cats { gap: 6px; }
+    .cat { padding: 10px 4px 8px; }
+    .cat small { font-size: 10.5px; white-space: nowrap; }
+    .card__top small { display: none; }
+    .next b { font-size: 14px; }
+    .prices { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="wrap bar">
+  <span class="logo"><i>L</i>Fahrschule Muster</span>
+  <nav><span>Kurse</span><span>Preise</span><span>Fahrlehrer</span><span>Fragen</span></nav>
+  <span class="btn">Jetzt anmelden</span>
+  <span class="menu"><i></i></span>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <p class="chip">Kategorien <b>B</b><b>A1</b><b>A</b><b>BE</b></p>
+      <h1>Sicher zum <span>Führerausweis.</span></h1>
+      <p class="lead">Fahrstunden in Ihrem Tempo, Theorie verständlich erklärt und Kurse mit festen Daten. Die Anmeldung dauert zwei Minuten.</p>
+      <div class="btns"><span class="btn">Fahrstunde buchen</span><span class="btn btn--line">Preise ansehen</span></div>
+      <div class="next">
+        <div><small>Nächster Kurs</small><b>Verkehrskunde, Sa 14. Nov.</b></div>
+        <div><small>Nothelfer</small><b>Sa 21. und So 22. Nov.</b></div>
+      </div>
+    </div>
+    <div class="stage">
+      <svg viewBox="0 0 600 552" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d8bff"/><stop offset="1" stop-color="#2f5fe0"/></linearGradient></defs>
+        <circle cx="470" cy="110" r="46" fill="#ffd23f" opacity="0.95"/>
+        <path d="M0 380c90-60 190-80 300-50s210 10 300-40v262H0z" fill="url(#hill)" opacity="0.7"/>
+        <path d="M0 430c120-40 230-40 330-10s190 20 270-10v142H0z" fill="#1d47c8"/>
+        <path d="M150 552c40-90 130-150 260-176 60-12 120-14 190-6v34c-60-6-114-4-164 6-112 22-186 76-216 142z" fill="#0f2a85"/>
+        <path d="M226 552c32-64 100-112 200-140 46-12 98-18 150-18" stroke="#ffd23f" stroke-width="5" stroke-dasharray="26 22" fill="none"/>
+        <g fill="#14328f"><circle cx="70" cy="400" r="22"/><circle cx="96" cy="392" r="16"/><rect x="78" y="408" width="5" height="30"/></g>
+        <g fill="#14328f"><circle cx="540" cy="386" r="20"/><circle cx="516" cy="394" r="14"/><rect x="537" y="400" width="5" height="26"/></g>
+      </svg>
+      <div class="card">
+        <div class="card__top"><b>Ihr Weg zum Ausweis</b><small>Kategorie B</small></div>
+        <div class="cats">
+          <div class="cat on"><b>B</b><small>Auto</small></div>
+          <div class="cat"><b>A1</b><small>125 cm³</small></div>
+          <div class="cat"><b>A</b><small>Motorrad</small></div>
+          <div class="cat"><b>BE</b><small>Anhänger</small></div>
+        </div>
+        <div class="prog"><p>Fahrstunden <span>8 von 12 geplant</span></p><i></i></div>
+      </div>
+      <div class="badge"><span class="d">DO<br>17.30</span><span><b>Nächste Fahrstunde</b><small>45 Minuten, ab Bahnhof</small></span></div>
+    </div>
+  </section>
+  <section class="prices">
+    <div class="price"><small>Fahrstunde</small><b>45 Minuten</b><span>CHF 95</span></div>
+    <div class="price"><small>Kurs</small><b>Verkehrskunde</b><span>CHF 220</span></div>
+    <div class="price"><small>Kurs</small><b>Nothelfer</b><span>CHF 130</span></div>
+  </section>
+</main>
+</body>
+</html>

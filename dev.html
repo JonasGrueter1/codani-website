@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studio Dev · Szenen-Test</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304060a'/%3E%3Ccircle cx='32' cy='32' r='15' fill='none' stroke='%23ffa45c' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/geist-mono-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/story.css">
+  <style>
+    /* Testseite: Seite scrollt durch das Szenen-Fenster (local 0..1), damit studio_capture.js es abtasten kann */
+    html { scroll-behavior: auto !important; }
+    body.dev { min-height: 600vh; }
+    .dev .stage { position: fixed; inset: 0; pointer-events: auto; }
+    .dev .stage__canvas { height: 100vh; touch-action: none; }
+    .dev-ui {
+      position: fixed; top: 12px; left: 12px; z-index: 10; width: 300px;
+      display: grid; gap: 8px; padding: 12px 14px; border-radius: 12px;
+      background: rgba(4, 6, 10, 0.78); border: 1px solid var(--c-line-strong);
+      font: 12px/1.4 var(--f-mono); color: var(--c-soft);
+    }
+    .dev-ui .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .dev-ui strong { color: var(--c-signal); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+    .dev-ui input[type=range] { flex: 1; accent-color: var(--c-signal); }
+    .dev-ui select, .dev-ui button {
+      font: inherit; color: var(--c-text); background: var(--c-ink); border: 1px solid var(--c-line-strong);
+      border-radius: 6px; padding: 4px 8px; cursor: pointer;
+    }
+    .dev-ui output { min-width: 3.5em; text-align: right; color: var(--c-text); }
+    .dev-ui pre { margin: 0; white-space: pre-wrap; color: var(--c-muted); font: inherit; }
+    .dev-ui.is-min > :not(.row:first-child) { display: none; }
+  </style>
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.min.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+  <script type="module" src="js/dev.js"></script>
+</head>
+<body class="dev">
+  <div class="stage">
+    <canvas id="gl" class="stage__canvas"></canvas>
+    <div id="gl-overlay" class="stage__overlay"></div>
+  </div>
+  <div class="dev-ui" id="dev-ui">
+    <div class="row">
+      <strong id="dev-title">Szene</strong>
+      <select id="dev-scene" aria-label="Szene"></select>
+      <button id="dev-min" type="button" aria-label="Einklappen">_</button>
+    </div>
+    <div class="row"><span>local</span><input id="dev-local" type="range" min="0" max="1" step="0.001" value="0" aria-label="local"><output id="dev-local-out">0.000</output></div>
+    <div class="row">
+      <button id="dev-play" type="button">Play</button>
+      <select id="dev-cam" aria-label="Kamera">
+        <option value="path">Kamerapfad</option>
+        <option value="orbit">Orbit (ziehen, Mausrad)</option>
+      </select>
+      <label><input id="dev-post" type="checkbox" checked> Post</label>
+      <label><input id="dev-damp" type="checkbox"> Daempfung</label>
+    </div>
+    <pre id="dev-stats"></pre>
+  </div>
+</body>
+</html>

@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="de-CH" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KI-Integration für KMU | Codani</title>
+<meta name="description" content="KI für Ihren Betrieb: Antwortentwürfe, Terminvorschläge, Daten aus Belegen. In Ihren Programmen, in vier Stufen, mit offenen Preisen und Demo.">
+<meta name="author" content="Jonas Grüter">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<link rel="canonical" href="https://codani.ch/ki/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_CH">
+<meta property="og:site_name" content="Codani">
+<meta property="og:title" content="KI-Integration für KMU | Codani">
+<meta property="og:description" content="KI für Ihren Betrieb: Antwortentwürfe, Terminvorschläge, Daten aus Belegen. In Ihren Programmen, in vier Stufen, mit offenen Preisen und Demo.">
+<meta property="og:url" content="https://codani.ch/ki/">
+<meta property="og:image" content="https://codani.ch/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Büste eines Androiden aus leuchtenden Lichtpunkten vor dunklem Hintergrund">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/geist-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/ki.css">
+<link rel="stylesheet" href="../css/ki-mockups.css">
+<link rel="stylesheet" href="../css/demo.css">
+<script>document.documentElement.classList.replace('no-js', 'js');</script>
+<script src="../js/site.js" defer></script>
+<script src="../js/demo.js" defer></script>
+</head>
+<body id="top" class="page page--ki">
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+<header class="hdr" id="hdr" data-hdr>
+<div class="hdr__bar">
+<a class="hdr__brand" href="../" aria-label="Codani, zur Startseite">
+<span class="mark" aria-hidden="true"></span>
+<span class="hdr__brandtext"><span class="hdr__name">Codani</span><span class="hdr__sub">KI und Websites für KMU</span></span>
+</a>
+<nav class="hdr__nav" aria-label="Hauptnavigation">
+<ul class="hdr__list"><li class="hdr__item"><a class="hdr__link" href="../">Start</a></li>
+<li class="hdr__item hdr__item--split"><a class="hdr__link" href="../ki/" aria-current="page">KI</a><button class="hdr__more" type="button" aria-expanded="false" aria-controls="ki-panel" aria-label="Untermenü KI öffnen" data-label-open="Untermenü KI öffnen" data-label-close="Untermenü KI schliessen"><svg class="hdr__chev" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+<li class="hdr__item"><a class="hdr__link" href="../websites/">Websites</a></li>
+<li class="hdr__item"><a class="hdr__link" href="../preise/">Preise</a></li>
+<li class="hdr__item"><a class="hdr__link" href="../referenzen/">Referenzen</a></li>
+<li class="hdr__item"><a class="hdr__link" href="../ueber-mich/">Über mich</a></li></ul>
+</nav>
+<a class="btn btn--sm hdr__cta" href="../kontakt/">Kontakt</a>
+<button class="hdr__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen" data-label-open="Menü öffnen" data-label-close="Menü schliessen">
+<span class="hdr__toggle-text" aria-hidden="true" data-open="Menü" data-close="Schliessen">Menü</span>
+<span class="hdr__burger" aria-hidden="true"><i></i><i></i></span>
+</button>
+</div>
+<div class="kipanel" id="ki-panel" hidden>
+<div class="kipanel__grid"><div class="kipanel__col">
+<p class="kipanel__title" id="kp-0">Überblick</p>
+<ul aria-labelledby="kp-0">
+<li><a class="kipanel__link" href="../ki/"><span><span class="kipanel__name">KI-Integration</span><span class="kipanel__text">Was KI in Ihrem Betrieb vorbereitet</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/#demo"><span><span class="kipanel__name">Demo ausprobieren</span><span class="kipanel__text">Vorführung mit erfundenen Daten</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/#ablauf"><span><span class="kipanel__name">Ablauf in vier Stufen</span><span class="kipanel__text">Vom KI-Check bis zum Betrieb</span></span></a></li>
+</ul>
+</div>
+<div class="kipanel__col">
+<p class="kipanel__title" id="kp-1">Werkzeuge</p>
+<ul aria-labelledby="kp-1">
+<li><a class="kipanel__link" href="../ki/e-mail/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg><span><span class="kipanel__name">E-Mail</span><span class="kipanel__text">Antwortentwürfe für Ihr Postfach</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/kalender/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kalender"></use></svg><span><span class="kipanel__name">Kalender</span><span class="kipanel__text">Terminvorschläge aus freien Zeiten</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/dokumente/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg><span><span class="kipanel__name">Dokumente</span><span class="kipanel__text">Angaben aus PDFs und Belegen</span></span></a></li>
+<li><a class="kipanel__link" href="../ki/kunden/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kunden"></use></svg><span><span class="kipanel__name">Kunden</span><span class="kipanel__text">Anfragen aus allen Kanälen in einer Liste</span></span></a></li>
+</ul>
+</div>
+<div class="kipanel__col">
+<p class="kipanel__title" id="kp-2">Branchen</p>
+<ul aria-labelledby="kp-2">
+<li><a class="kipanel__link" href="../branchen/handwerk/"><span><span class="kipanel__name">Handwerk</span><span class="kipanel__text">Sprachnachricht wird Offerte</span></span></a></li>
+<li><a class="kipanel__link" href="../branchen/treuhand/"><span><span class="kipanel__name">Treuhand und Büro</span><span class="kipanel__text">Beleg wird Buchungsvorschlag</span></span></a></li>
+<li><a class="kipanel__link" href="../branchen/verwaltung/"><span><span class="kipanel__name">Verwaltung</span><span class="kipanel__text">Mieteranfrage wird Antwort</span></span></a></li>
+</ul>
+</div>
+<div class="kipanel__col">
+<p class="kipanel__title" id="kp-3">Vertrauen</p>
+<ul aria-labelledby="kp-3">
+<li><a class="kipanel__link" href="../sicherheit/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schild"></use></svg><span><span class="kipanel__name">Datenschutz und Sicherheit</span><span class="kipanel__text">Wo Ihre Daten liegen</span></span></a></li>
+<li><a class="kipanel__link" href="../support/"><svg class="ico kipanel__ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schalter"></use></svg><span><span class="kipanel__name">Betrieb und Support</span><span class="kipanel__text">Was passiert, wenn etwas ausfällt</span></span></a></li>
+</ul>
+</div></div>
+<div class="kipanel__strip">
+<p>Einstieg: KI-Check zum Fixpreis CHF 360</p>
+<a class="more" href="../kontakt/?thema=ki-check">KI-Check anfragen</a>
+</div>
+</div>
+<div class="menu" id="menu" hidden>
+<nav class="menu__nav" aria-label="Menü">
+<ul class="menu__list">
+<li><a class="menu__link" href="../">Start</a></li>
+<li>
+<button class="menu__link menu__group" type="button" aria-expanded="false" aria-controls="menu-ki" data-current="1">KI<svg class="hdr__chev" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<ul class="menu__sub" id="menu-ki" hidden>
+<li><a href="../ki/" aria-current="page">Überblick</a></li>
+<li><a href="../ki/e-mail/">E-Mail</a></li>
+<li><a href="../ki/kalender/">Kalender</a></li>
+<li><a href="../ki/dokumente/">Dokumente</a></li>
+<li><a href="../ki/kunden/">Kunden</a></li>
+<li><a href="../branchen/handwerk/">Handwerk</a></li>
+<li><a href="../branchen/treuhand/">Treuhand und Büro</a></li>
+<li><a href="../branchen/verwaltung/">Verwaltung</a></li>
+</ul>
+</li>
+<li><a class="menu__link" href="../websites/">Websites</a></li>
+<li><a class="menu__link" href="../preise/">Preise</a></li>
+<li><a class="menu__link" href="../referenzen/">Referenzen</a></li>
+<li><a class="menu__link" href="../ueber-mich/">Über mich</a></li>
+<li><a class="menu__link" href="../kontakt/">Kontakt</a></li>
+</ul>
+<ul class="menu__small">
+<li><a href="../sicherheit/">Datenschutz und Sicherheit</a></li>
+<li><a href="../support/">Betrieb und Support</a></li>
+</ul>
+</nav>
+<div class="menu__foot">
+<a class="btn" href="../kontakt/?thema=ki-check">KI-Check anfragen<span class="btn__arrow" aria-hidden="true"></span></a>
+<a class="menu__mail" href="mailto:jonas.grueter.web@gmail.com">jonas.grueter.web@gmail.com</a>
+</div>
+</div>
+</header>
+<main id="inhalt" tabindex="-1">
+<section class="hero hero--stage hero--ki">
+<div class="wrap wrap--wide hero__grid">
+<div class="hero__text"><p class="t-eyebrow">KI-Integration</p>
+<h1 class="t-display">KI im Betrieb: weniger Abtippen, mehr Zeit für Kunden.</h1>
+<p class="t-lead hero__lead">Ich richte KI so ein, dass sie in Ihren bestehenden Programmen Entwürfe vorbereitet. Ihr Team prüft und entscheidet. Sie beginnen klein, sehen den Nutzen und entscheiden dann, ob es weitergeht.</p>
+<div class="btns"><a class="btn" href="../kontakt/?thema=ki-check">KI-Check anfragen<span class="btn__arrow" aria-hidden="true"></span></a><a class="btn btn--secondary" href="#demo">Demo ausprobieren</a></div>
+<p class="hero__line">KI-Check CHF 360 fix · Mensch entscheidet · Jederzeit abschaltbar</p></div>
+<div class="hero__media"><div class="kb">
+<svg class="kb__svg" viewBox="0 0 800 520" aria-hidden="true" focusable="false">
+<defs>
+<radialGradient id="kb-core" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#9ff4ff"/><stop offset="0.35" stop-color="#46e6ff"/><stop offset="1" stop-color="#0a6f86" stop-opacity="0.15"/></radialGradient>
+<radialGradient id="kb-haze" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#46e6ff" stop-opacity="0.22"/><stop offset="1" stop-color="#46e6ff" stop-opacity="0"/></radialGradient>
+<filter id="kb-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<g class="kb__dots"><circle cx="70" cy="40" r="1.4"/><circle cx="240" cy="60" r="1"/><circle cx="520" cy="46" r="1.6"/><circle cx="740" cy="64" r="1.1"/><circle cx="44" cy="250" r="1.2"/><circle cx="770" cy="250" r="1.5"/><circle cx="210" cy="470" r="1.1"/><circle cx="600" cy="488" r="1.3"/><circle cx="330" cy="150" r="0.9"/><circle cx="470" cy="380" r="1"/><circle cx="560" cy="200" r="0.8"/><circle cx="250" cy="330" r="0.8"/></g>
+<circle class="kb__haze" cx="400" cy="262" r="190" fill="url(#kb-haze)"/>
+<g class="kb__cable" data-node="e-mail">
+<path class="kb__glow" d="M400 262 C 300 250, 250 120, 150 120"/>
+<path class="kb__line" d="M400 262 C 300 250, 250 120, 150 120"/>
+<path class="kb__pulse" d="M400 262 C 300 250, 250 120, 150 120" pathLength="100" style="--d:0.0s"/>
+</g>
+<g class="kb__cable" data-node="kalender">
+<path class="kb__glow" d="M400 262 C 500 248, 560 112, 650 112"/>
+<path class="kb__line" d="M400 262 C 500 248, 560 112, 650 112"/>
+<path class="kb__pulse" d="M400 262 C 500 248, 560 112, 650 112" pathLength="100" style="--d:0.7s"/>
+</g>
+<g class="kb__cable" data-node="dokumente">
+<path class="kb__glow" d="M400 262 C 290 300, 230 372, 124 372"/>
+<path class="kb__line" d="M400 262 C 290 300, 230 372, 124 372"/>
+<path class="kb__pulse" d="M400 262 C 290 300, 230 372, 124 372" pathLength="100" style="--d:1.4s"/>
+</g>
+<g class="kb__cable" data-node="kunden">
+<path class="kb__glow" d="M400 262 C 510 300, 580 380, 676 380"/>
+<path class="kb__line" d="M400 262 C 510 300, 580 380, 676 380"/>
+<path class="kb__pulse" d="M400 262 C 510 300, 580 380, 676 380" pathLength="100" style="--d:2.1s"/>
+</g>
+<g class="kb__cable" data-node="website">
+<path class="kb__glow" d="M400 262 C 400 360, 400 400, 400 438"/>
+<path class="kb__line" d="M400 262 C 400 360, 400 400, 400 438"/>
+<path class="kb__pulse" d="M400 262 C 400 360, 400 400, 400 438" pathLength="100" style="--d:2.8s"/>
+</g>
+<g class="kb__core" transform="translate(400 262)">
+<circle class="kb__orbit" r="86"/>
+<circle class="kb__orbit kb__orbit--2" r="62"/>
+<circle class="kb__corebg" r="44"/>
+<circle r="44" fill="url(#kb-core)" opacity="0.35"/>
+<circle class="kb__corering" r="30"/>
+<circle class="kb__ember" r="8"/>
+</g>
+<g class="kb__node" data-node="e-mail" transform="translate(150 120)">
+<circle class="kb__halo" r="40"/>
+<circle class="kb__ring" r="28"/>
+<use href="../assets/icons.svg#mail" x="-12" y="-12" width="24" height="24" class="kb__icon"/>
+</g>
+<g class="kb__node" data-node="kalender" transform="translate(650 112)">
+<circle class="kb__halo" r="40"/>
+<circle class="kb__ring" r="28"/>
+<use href="../assets/icons.svg#kalender" x="-12" y="-12" width="24" height="24" class="kb__icon"/>
+</g>
+<g class="kb__node" data-node="dokumente" transform="translate(124 372)">
+<circle class="kb__halo" r="40"/>
+<circle class="kb__ring" r="28"/>
+<use href="../assets/icons.svg#dokument" x="-12" y="-12" width="24" height="24" class="kb__icon"/>
+</g>
+<g class="kb__node" data-node="kunden" transform="translate(676 380)">
+<circle class="kb__halo" r="40"/>
+<circle class="kb__ring" r="28"/>
+<use href="../assets/icons.svg#kunden" x="-12" y="-12" width="24" height="24" class="kb__icon"/>
+</g>
+<g class="kb__node" data-node="website" transform="translate(400 438)">
+<circle class="kb__halo" r="40"/>
+<circle class="kb__ring" r="28"/>
+<use href="../assets/icons.svg#website" x="-12" y="-12" width="24" height="24" class="kb__icon"/>
+</g>
+</svg>
+<p class="kb__caption"><span class="kb__caption-k">KI</span> liest, sortiert und schreibt Entwürfe. Sie entscheiden.</p>
+<nav class="kb__nav" aria-label="KI-Werkzeuge"><ul><li style="--x:18.75%;--y:23.08%"><a class="kb__link" href="../ki/e-mail/" data-node="e-mail"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg><span>E-Mail</span></a></li><li style="--x:81.25%;--y:21.54%"><a class="kb__link" href="../ki/kalender/" data-node="kalender"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kalender"></use></svg><span>Kalender</span></a></li><li style="--x:15.50%;--y:71.54%"><a class="kb__link" href="../ki/dokumente/" data-node="dokumente"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg><span>Dokumente</span></a></li><li style="--x:84.50%;--y:73.08%"><a class="kb__link" href="../ki/kunden/" data-node="kunden"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kunden"></use></svg><span>Kunden</span></a></li><li style="--x:50.00%;--y:84.23%"><a class="kb__link" href="../websites/" data-node="website"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#website"></use></svg><span>Website</span></a></li></ul></nav>
+</div></div>
+</div>
+</section>
+<nav class="sprung" aria-label="Auf dieser Seite"><div class="wrap"><ul class="sprung__liste"><li><a href="#anwendungen">Anwendungen</a></li><li><a href="#demo">Demo</a></li><li><a href="#ablauf">Ablauf</a></li><li><a href="#preise">Preise</a></li><li><a href="#fragen">Fragen</a></li><li><a href="../sicherheit/">Sicherheit</a></li><li><a href="../unterlagen/">Unterlagen</a></li></ul></div></nav>
+<section class="sec" id="anwendungen" aria-labelledby="anwendungen-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Anwendungen</p>
+<h2 class="t-h2" id="anwendungen-t">Was die KI für Sie vorbereitet.</h2>
+<p class="t-lead">Die KI liest, sortiert und schreibt Entwürfe in Ihren Programmen. Ihr Team prüft und entscheidet.</p>
+</header>
+<ul class="cards cards--4 tiles tiles--mini"><li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../ki/e-mail/">E-Mail</a></h3>
+<p class="card__text">Antwortentwürfe für häufige Anfragen, direkt in Ihrem Entwurfsordner.</p>
+<div class="mini mini--mail" aria-hidden="true"><i></i><i class="is-ki"></i><i></i></div>
+<span class="more card__more" aria-hidden="true">Ansehen</span>
+</li>
+<li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kalender"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../ki/kalender/">Kalender</a></h3>
+<p class="card__text">Terminvorschläge aus Ihren freien Zeiten und Erinnerungen an Kunden.</p>
+<div class="mini mini--cal" aria-hidden="true"><span><i style="--t:10%;--h:30%"></i></span><span><i class="is-vor" style="--t:55%"></i><i style="--t:15%;--h:25%"></i></span><span><i style="--t:5%;--h:45%"></i></span><span><i class="is-vor" style="--t:70%"></i><i style="--t:30%;--h:22%"></i></span><span><i style="--t:20%;--h:35%"></i></span></div>
+<span class="more card__more" aria-hidden="true">Ansehen</span>
+</li>
+<li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../ki/dokumente/">Dokumente</a></h3>
+<p class="card__text">Angaben aus PDFs, Lieferscheinen und Belegen auslesen und übertragen.</p>
+<div class="mini mini--dok" aria-hidden="true"><span class="mini__page"><i></i><i class="is-m"></i><i></i><i class="is-m"></i></span><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#pfeil"></use></svg><span class="mini__tbl"><i></i><i></i><i class="is-w"></i></span></div>
+<span class="more card__more" aria-hidden="true">Ansehen</span>
+</li>
+<li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#kunden"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../ki/kunden/">Kunden</a></h3>
+<p class="card__text">Anfragen aus Telefon, Mail und WhatsApp in einer Liste.</p>
+<div class="mini mini--list" aria-hidden="true"><span><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#telefon"></use></svg><i style="--w:70%"></i><b class=""></b></span><span><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#chat"></use></svg><i style="--w:85%"></i><b class="is-hoch"></b></span><span><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg><i style="--w:55%"></i><b class="is-ok"></b></span></div>
+<span class="more card__more" aria-hidden="true">Ansehen</span>
+</li></ul>
+<div class="sec__foot"><ul class="cards cards--2 cards--soft cards--row"><li class="card" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#funke"></use></svg></span>
+<h3 class="t-h3 card__title">Wissen</h3>
+<p class="card__text">Antworten auf Fragen zu Ihren eigenen Vorlagen, Reglementen und Verträgen, mit Verweis auf die Quelle.</p>
+</li>
+<li class="card" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#liste"></use></svg></span>
+<h3 class="t-h3 card__title">Berichte</h3>
+<p class="card__text">Rapporte, Protokolle und Notizen zusammenfassen.</p>
+</li></ul></div>
+<p class="sec__foot ki-branchenzeile">Beispiele nach Branche: <a class="text-link" href="../branchen/handwerk/">Handwerk</a> · <a class="text-link" href="../branchen/treuhand/">Treuhand und Büro</a> · <a class="text-link" href="../branchen/verwaltung/">Verwaltung</a></p>
+</div>
+</section>
+<section class="sec sec--tint" id="liste" aria-label="Angebot: Anfragen in einer Liste">
+<div class="wrap wrap--wide">
+<div class="ki-angebot">
+        <div class="ki-angebot__text" data-reveal>
+          <p class="t-eyebrow">Angebot</p>
+          <h2 class="t-h2" id="liste-t">Anfragen aus Telefon, Mail und WhatsApp in einer Liste.</h2>
+          <p class="t-lead">In vielen Betrieben kommen Anfragen über drei, vier Kanäle und gehen im Alltag unter. Die KI sammelt sie in einer Liste, erkennt das Anliegen und schlägt vor, wer es übernimmt. Ihr Team sieht auf einen Blick, was offen ist.</p>
+          <ul class="list list--check"><li>Jede Anfrage mit Kanal, Anliegen, Dringlichkeit und Zuständigkeit.</li><li>Wo es passt, liegt ein Antwortentwurf bereit.</li><li>Nichts geht verloren, auch wenn jemand in den Ferien ist.</li></ul>
+          <p class="sec__foot"><a class="more" href="../ki/kunden/">So funktioniert die Liste</a></p>
+        </div>
+        <div class="mk-stage" data-reveal><p class="badge">Beispiel mit erfundenen Daten</p><div class="mk-win mk-win--liste" role="img" aria-label="Beispiel mit erfundenen Daten: Liste mit 6 Anfragen aus Telefon, WhatsApp, Mail, Website. Jede Zeile zeigt Anliegen, Dringlichkeit, Zuständigkeit und Status. Aufgeklappt ist die Meldung von Anna Muster über WhatsApp: Fensterscheibe gesprungen, Dringlichkeit hoch, ein Antwortentwurf liegt bereit.">
+<div class="mk-win__bar" aria-hidden="true"><span class="mk-win__dots"><i></i><i></i><i></i></span><span class="mk-win__title">Anfragen, heute</span></div>
+<div class="mk-list">
+<p class="mk-list__filter"><span class="is-on">Alle 6</span><span>Offen 1</span><span>Entwurf bereit 3</span><span>Erledigt 2</span></p>
+<div class="mk-list__head"><span>Kanal</span><span>Eingang</span><span>Von und Anliegen</span><span>Dringlichkeit</span><span>Zuständig</span><span>Status</span></div>
+<ul class="mk-list__rows"><li class="mk-req">
+<div class="mk-req__row">
+<span class="mk-req__kanal"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#telefon"></use></svg><span>Telefon</span></span>
+<span class="mk-req__zeit">Mo 08.12</span>
+<span class="mk-req__main"><span class="mk-req__von">Reto Beispiel</span><span class="mk-req__anliegen">Rückruf wegen Offerte Garagentor</span></span>
+<span class="mk-dr mk-dr--normal">normal</span>
+<span class="mk-req__wer">M. Muster</span>
+<span class="mk-st mk-st--offen">offen</span>
+</div>
+</li><li class="mk-req is-open">
+<div class="mk-req__row">
+<span class="mk-req__kanal"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#chat"></use></svg><span>WhatsApp</span></span>
+<span class="mk-req__zeit">Mo 09.40</span>
+<span class="mk-req__main"><span class="mk-req__von">Anna Muster</span><span class="mk-req__anliegen">Foto: Fensterscheibe gesprungen, Ersatz?</span></span>
+<span class="mk-dr mk-dr--hoch">hoch</span>
+<span class="mk-req__wer">L. Beispiel</span>
+<span class="mk-st mk-st--entwurf">Entwurf bereit</span>
+</div>
+<div class="mk-req__detail">
+<p><b>Zusammenfassung der KI</b>Fensterscheibe im Wohnzimmer gesprungen, Foto liegt bei. Fragt, ob wir die Scheibe ersetzen.</p>
+<p><b>Vorbereitet</b>Antwortentwurf: Termin für die Besichtigung vorschlagen, Mass vor Ort nehmen.</p>
+<p class="mk-actions"><span class="mk-btn">Entwurf ansehen</span><span class="mk-btn mk-btn--ghost">Zuteilung ändern</span></p>
+</div>
+</li><li class="mk-req">
+<div class="mk-req__row">
+<span class="mk-req__kanal"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg><span>Mail</span></span>
+<span class="mk-req__zeit">Mo 10.05</span>
+<span class="mk-req__main"><span class="mk-req__von">Sara Muster</span><span class="mk-req__anliegen">Termin für Besichtigung</span></span>
+<span class="mk-dr mk-dr--normal">normal</span>
+<span class="mk-req__wer">M. Muster</span>
+<span class="mk-st mk-st--entwurf">Termin vorgeschlagen</span>
+</div>
+</li><li class="mk-req">
+<div class="mk-req__row">
+<span class="mk-req__kanal"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#website"></use></svg><span>Website</span></span>
+<span class="mk-req__zeit">Mo 11.30</span>
+<span class="mk-req__main"><span class="mk-req__von">Marco Beispiel</span><span class="mk-req__anliegen">Frage nach Preisliste</span></span>
+<span class="mk-dr mk-dr--tief">tief</span>
+<span class="mk-req__wer">Sekretariat</span>
+<span class="mk-st mk-st--ok">beantwortet</span>
+</div>
+</li><li class="mk-req">
+<div class="mk-req__row">
+<span class="mk-req__kanal"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#telefon"></use></svg><span>Telefon</span></span>
+<span class="mk-req__zeit">Mo 13.15</span>
+<span class="mk-req__main"><span class="mk-req__von">Lea Muster</span><span class="mk-req__anliegen">Combox: Frage zur Rechnung</span></span>
+<span class="mk-dr mk-dr--normal">normal</span>
+<span class="mk-req__wer">Sekretariat</span>
+<span class="mk-st mk-st--entwurf">Entwurf bereit</span>
+</div>
+</li><li class="mk-req">
+<div class="mk-req__row">
+<span class="mk-req__kanal"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg><span>Mail</span></span>
+<span class="mk-req__zeit">Mo 14.02</span>
+<span class="mk-req__main"><span class="mk-req__von">Nico Beispiel</span><span class="mk-req__anliegen">Bestätigt den Termin am Donnerstag</span></span>
+<span class="mk-dr mk-dr--tief">tief</span>
+<span class="mk-req__wer">M. Muster</span>
+<span class="mk-st mk-st--ok">erledigt</span>
+</div>
+</li></ul>
+</div>
+</div></div>
+      </div>
+</div>
+</section>
+<section class="sec sec--soft" id="demo" aria-labelledby="demo-t">
+<div class="wrap wrap--wide">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Demo</p>
+<h2 class="t-h2" id="demo-t">So arbeitet die KI mit. Probieren Sie es aus.</h2>
+<p class="t-lead">Wählen Sie ein Beispiel. Der Assistent zeigt Schritt für Schritt, was die KI vorbereitet und wo Ihr Team entscheidet.</p>
+</header>
+<div class="demo" id="demo-ki" data-demo data-texte="{&quot;schritt&quot;:&quot;Schritt {n} von {gesamt}&quot;,&quot;bereit&quot;:&quot;Bereit: {gesamt} Schritte&quot;,&quot;fertig&quot;:&quot;Alle {gesamt} Schritte gezeigt&quot;,&quot;arbeitet&quot;:&quot;Die KI bereitet vor&quot;}">
+<div class="demo__bar"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><p class="demo__title">Demo-Assistent</p></div>
+<p class="demo__band"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schild"></use></svg><span>Vorführung mit erfundenen Daten, vorbereitete Antworten. Es wird nichts gesendet.</span></p>
+<fieldset class="demo__pick" hidden>
+<legend class="demo__legend">Beispiel wählen</legend>
+<div class="demo__opts">
+<label class="demo__opt"><input type="radio" name="demo-ki-szene" value="email" checked><span>Kundenmail beantworten</span></label><label class="demo__opt"><input type="radio" name="demo-ki-szene" value="baustelle"><span>Sprachnachricht wird Offerte</span></label><label class="demo__opt"><input type="radio" name="demo-ki-szene" value="beleg"><span>Beleg wird Buchungsvorschlag</span></label><label class="demo__opt"><input type="radio" name="demo-ki-szene" value="sonderfall"><span>Beleg mit Sonderfall</span></label><label class="demo__opt"><input type="radio" name="demo-ki-szene" value="mieter"><span>Mieter-Meldung wird Ticket</span></label>
+</div>
+</fieldset>
+<div class="demo__scene" data-scene="email" data-total="5">
+<div class="demo__grid">
+<div class="demo__in">
+<h3 class="demo__h">Eingang<span class="demo__kontext">Malerbetrieb</span></h3>
+<div class="demo-mail">
+<div class="demo-mail__head">
+<span class="demo-ava" aria-hidden="true">RB</span>
+<div class="demo-mail__who"><p class="demo-mail__from">Reto Beispiel</p><p class="demo-mail__addr">reto.beispiel@example.com</p></div>
+<p class="demo-mail__time">Mo 07.48</p>
+</div>
+<p class="demo-mail__subj"><span class="sr">Betreff: </span>Wohnung streichen im Frühling</p>
+<div class="demo-mail__body"><p>Grüezi</p><p>Wir möchten im <mark class="demo__mark">Frühling</mark> unsere <mark class="demo__mark">3.5-Zimmer-Wohnung</mark> neu streichen lassen. <mark class="demo__mark">Was kostet das ungefähr</mark> und <mark class="demo__mark">wann hätten Sie Zeit</mark>?</p><p>Freundliche Grüsse<br>Reto Beispiel</p></div>
+</div>
+</div>
+<div class="demo__out">
+<h3 class="demo__h">Was die KI vorbereitet</h3>
+<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<ol class="demo__steps"><li class="demo__step" data-name="Lesen">
+<span class="demo__node" aria-hidden="true">1</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 1 von 5: </span>Lesen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Anfrage für Malerarbeiten erkannt. Absender ist nicht in Ihrer Kundenliste: neuer Kunde.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Einordnen">
+<span class="demo__node" aria-hidden="true">2</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 2 von 5: </span>Einordnen<span class="chip chip--ki">KI</span></p>
+<ul class="demo__chips"><li>Wohnung, 3.5 Zimmer</li><li>Wände</li><li>Frühling 2027</li></ul>
+<p class="demo__hinweis">Offen: Decken auch? Adresse? Für einen Preis braucht es eine Besichtigung.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Nachschlagen">
+<span class="demo__node" aria-hidden="true">3</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 3 von 5: </span>Nachschlagen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Ihre Regel: Preise erst nach Besichtigung nennen. Kalender: freie Besichtigungstermine am Dienstag, 10. November, 17.00 Uhr und am Donnerstag, 12. November, 7.30 Uhr.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Entwurf">
+<span class="demo__node" aria-hidden="true">4</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 4 von 5: </span>Entwurf<span class="chip chip--ki">KI</span></p>
+<div class="demo-doc demo-doc--mail">
+<p class="demo-doc__badge">Entwurf, nicht gesendet</p>
+<dl class="demo-doc__kopf"><div><dt>An</dt><dd>Reto Beispiel</dd></div><div><dt>Betreff</dt><dd>AW: Wohnung streichen im Frühling</dd></div></dl>
+<div class="demo-doc__text"><p>Guten Tag Herr Beispiel</p><p>Vielen Dank für Ihre Anfrage. Gerne offerieren wir Ihnen die Malerarbeiten. Damit der Preis stimmt, schauen wir die Wohnung kurz an. Passt Ihnen einer dieser Termine?</p><p>Dienstag, 10. November, 17.00 Uhr<br>Donnerstag, 12. November, 7.30 Uhr</p><p>Bitte senden Sie uns noch die Adresse und ob die Decken auch gestrichen werden sollen.</p><p>Freundliche Grüsse</p></div>
+</div>
+</div>
+</li>
+<li class="demo__step demo__step--sie" data-name="Sie entscheiden">
+<span class="demo__node" aria-hidden="true">5</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 5 von 5: </span>Sie entscheiden<span class="chip chip--sie">Sie</span></p>
+<p class="demo__text">Der Entwurf liegt in Ihrem Entwurfsordner. Freigeben oder ändern.</p>
+<div class="demo__decide" hidden>
+<button type="button" class="btn btn--sm" data-act="ja" data-msg="In der Vorführung wird nichts gesendet. Im Alltag ginge der Entwurf jetzt hinaus, mit Ihrem Namen.">Freigeben</button>
+<button type="button" class="btn btn--sm btn--secondary" data-act="nein" data-msg="Im Alltag passen Sie den Entwurf hier an, bevor Sie ihn freigeben.">Ändern</button>
+</div>
+<p class="demo__msg" role="status"></p>
+</div>
+</li></ol>
+<p class="demo__fussnote">Was die KI nicht gemacht hat: Sie hat keinen Preis geschätzt, weil Ihre Regel das so vorgibt.</p>
+</div>
+</div>
+</div>
+<div class="demo__scene" data-scene="baustelle" data-total="6" hidden>
+<div class="demo__grid">
+<div class="demo__in">
+<h3 class="demo__h">Eingang<span class="demo__kontext">Schreinerei</span></h3>
+<div class="demo-voice">
+<div class="demo-voice__player">
+<span class="demo-voice__play"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mikro"></use></svg></span>
+<span class="demo-voice__wave" aria-hidden="true"><i style="--h:30%"></i><i style="--h:55%"></i><i style="--h:80%"></i><i style="--h:45%"></i><i style="--h:65%"></i><i style="--h:95%"></i><i style="--h:70%"></i><i style="--h:40%"></i><i style="--h:60%"></i><i style="--h:85%"></i><i style="--h:50%"></i><i style="--h:35%"></i><i style="--h:75%"></i><i style="--h:100%"></i><i style="--h:60%"></i><i style="--h:45%"></i><i style="--h:70%"></i><i style="--h:90%"></i><i style="--h:55%"></i><i style="--h:30%"></i><i style="--h:50%"></i><i style="--h:80%"></i><i style="--h:65%"></i><i style="--h:40%"></i><i style="--h:55%"></i><i style="--h:75%"></i><i style="--h:45%"></i><i style="--h:30%"></i><i style="--h:50%"></i><i style="--h:35%"></i></span>
+<span class="demo-voice__dur"><span class="sr">Länge </span>0:58</span>
+</div>
+<p class="demo-voice__from">Sprachnachricht von Luca, unterwegs beim Kunden · Di 16.05</p>
+<p class="demo-voice__leer">Noch nicht abgeschrieben.</p>
+<div class="demo-voice__text demo__abschrift"><p class="demo__label">Abschrift</p><p>Hallo, hier ist Luca. Ich bin bei <mark class="demo__mark">Familie Muster am Musterweg 4</mark>. Im Gang wollen sie einen <mark class="demo__mark">Einbauschrank, zwei Meter vierzig breit, raumhoch, zwei Meter sechzig</mark>. <mark class="demo__mark">Zwei Drehtüren, unten zwei Schubladen, Front weiss lackiert</mark>. Der <mark class="demo__mark">alte Schrank muss raus</mark>. Wenn möglich <mark class="demo__mark">vor Weihnachten</mark>.</p></div>
+</div>
+</div>
+<div class="demo__out">
+<h3 class="demo__h">Was die KI vorbereitet</h3>
+<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<ol class="demo__steps"><li class="demo__step" data-name="Abschreiben">
+<span class="demo__node" aria-hidden="true">1</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 1 von 6: </span>Abschreiben<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Sprachnachricht in Text umgewandelt. Die Abschrift bleibt zum Nachlesen beim Entwurf.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Positionen erkennen">
+<span class="demo__node" aria-hidden="true">2</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 2 von 6: </span>Positionen erkennen<span class="chip chip--ki">KI</span></p>
+<ul class="demo__liste"><li>Einbauschrank 240 x 260 x 60 cm, 2 Drehtüren, 2 Schubladen, Front weiss lackiert</li><li>Demontage und Entsorgung Altschrank</li><li>Montage vor Ort</li><li>Wunschtermin vor Weihnachten</li></ul>
+<p class="demo__ok">Familie Muster, Musterweg 4, in Ihrer Kundenliste gefunden. Adresse übernommen.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Preise zuordnen">
+<span class="demo__node" aria-hidden="true">3</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 3 von 6: </span>Preise zuordnen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Preise aus Ihrer Preisliste übernommen. Tiefe 60 cm aus Ihrer Standardausführung, weil sie in der Nachricht fehlt.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Offertentwurf">
+<span class="demo__node" aria-hidden="true">4</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 4 von 6: </span>Offertentwurf<span class="chip chip--ki">KI</span></p>
+<div class="demo-doc demo-doc--offerte">
+<p class="demo-doc__badge">Entwurf</p>
+<dl class="demo-doc__kopf"><div><dt>Offerte für</dt><dd>Familie Muster, Musterweg 4</dd></div></dl>
+<div class="tbl-wrap demo__tbl" tabindex="0" role="region" aria-label="Offertentwurf">
+<table class="tbl tbl--klein">
+<thead><tr><th scope="col">Pos.</th><th scope="col">Leistung</th><th scope="col">Menge</th><th scope="col" class="num">Preis</th><th scope="col" class="num">Betrag</th></tr></thead>
+<tbody><tr><td data-label="Pos.">1</td><td data-label="Leistung">Einbauschrank nach Mass, Front weiss lackiert</td><td data-label="Menge">1 Stk.</td><td class="num" data-label="Preis">CHF 4’850.00</td><td class="num" data-label="Betrag">CHF 4’850.00</td></tr><tr><td data-label="Pos.">2</td><td data-label="Leistung">Demontage und Entsorgung Altschrank</td><td data-label="Menge">pauschal</td><td class="num" data-label="Preis"></td><td class="num" data-label="Betrag">CHF 380.00</td></tr><tr><td data-label="Pos.">3</td><td data-label="Leistung">Montage vor Ort</td><td data-label="Menge">6 Std.</td><td class="num" data-label="Preis">CHF 95.00</td><td class="num" data-label="Betrag">CHF 570.00</td></tr></tbody>
+<tfoot><tr><td data-label="Pos."></td><td data-label="Leistung">Zwischentotal</td><td data-label="Menge"></td><td class="num" data-label="Preis"></td><td class="num" data-label="Betrag">CHF 5’800.00</td></tr><tr><td data-label="Pos."></td><td data-label="Leistung">MWST 8.1 %</td><td data-label="Menge"></td><td class="num" data-label="Preis"></td><td class="num" data-label="Betrag">CHF 469.80</td></tr><tr class="is-total"><td data-label="Pos."></td><td data-label="Leistung">Total</td><td data-label="Menge"></td><td class="num" data-label="Preis"></td><td class="num" data-label="Betrag">CHF 6’269.80</td></tr></tfoot>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li class="demo__step" data-name="Offene Punkte">
+<span class="demo__node" aria-hidden="true">5</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 5 von 6: </span>Offene Punkte<span class="chip chip--ki">KI</span></p>
+<ul class="demo__liste demo__liste--pruefen"><li>Griffe nicht erwähnt: Modell wählen.</li><li>Innenausstattung offen: Tablare oder Kleiderstange?</li><li>Termin vor Weihnachten: Kapazität prüfen.</li></ul>
+</div>
+</li>
+<li class="demo__step demo__step--sie" data-name="Sie entscheiden">
+<span class="demo__node" aria-hidden="true">6</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 6 von 6: </span>Sie entscheiden<span class="chip chip--sie">Sie</span></p>
+<p class="demo__text">Der Entwurf liegt in Ihrem Offertprogramm. Prüfen, ergänzen, senden.</p>
+<div class="demo__decide" hidden>
+<button type="button" class="btn btn--sm" data-act="ja" data-msg="In der Vorführung wird nichts gesendet. Im Alltag ginge der Entwurf jetzt hinaus, mit Ihrem Namen.">Freigeben</button>
+<button type="button" class="btn btn--sm btn--secondary" data-act="nein" data-msg="Im Alltag passen Sie den Entwurf hier an, bevor Sie ihn freigeben.">Ändern</button>
+</div>
+<p class="demo__msg" role="status"></p>
+</div>
+</li></ol>
+<p class="demo__fussnote">Beispielpreise. Im Alltag nimmt die KI die Preise aus Ihrer eigenen Preisliste.</p>
+</div>
+</div>
+</div>
+<div class="demo__scene" data-scene="beleg" data-total="5" hidden>
+<div class="demo__grid">
+<div class="demo__in">
+<h3 class="demo__h">Eingang<span class="demo__kontext">Treuhand und Büro</span></h3>
+<div class="demo-pdf">
+<p class="demo-pdf__file"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg><span>Rechnung 2026-118.pdf</span></p>
+<div class="demo-pdf__page">
+<p class="demo-pdf__sender"><span class="demo-pdf__logo" aria-hidden="true"></span>Bürobedarf Beispiel</p>
+<p class="demo-pdf__title">Rechnung 2026-118</p>
+<dl class="demo__felder demo-pdf__meta"><div><dt>Datum</dt><dd><mark class="demo__mark">14.10.2026</mark></dd></div><div><dt>Zahlbar</dt><dd><mark class="demo__mark">innert 30 Tagen</mark></dd></div></dl>
+<ul class="demo-pdf__lines"><li>Druckerpapier A4, 10 Pakete</li><li>Toner schwarz, 2 Stück</li></ul>
+<dl class="demo__felder demo-pdf__total"><div><dt>Total inklusive <mark class="demo__mark">MWST 8.1 %</mark></dt><dd><mark class="demo__mark">CHF 248.65</mark></dd></div></dl>
+</div>
+</div>
+</div>
+<div class="demo__out">
+<h3 class="demo__h">Was die KI vorbereitet</h3>
+<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<ol class="demo__steps"><li class="demo__step" data-name="Auslesen">
+<span class="demo__node" aria-hidden="true">1</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 1 von 5: </span>Auslesen<span class="chip chip--ki">KI</span></p>
+<dl class="demo__felder"><div><dt>Lieferant</dt><dd>Bürobedarf Beispiel</dd></div><div><dt>Datum</dt><dd>14.10.2026</dd></div><div><dt>Netto</dt><dd>CHF 230.02</dd></div><div><dt>MWST 8.1 %</dt><dd>CHF 18.63</dd></div><div><dt>Total</dt><dd>CHF 248.65</dd></div><div><dt>Fällig am</dt><dd>13.11.2026</dd></div></dl>
+</div>
+</li>
+<li class="demo__step" data-name="Nachschlagen">
+<span class="demo__node" aria-hidden="true">2</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 2 von 5: </span>Nachschlagen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Gleicher Lieferant in den letzten sechs Monaten fünfmal auf 6500 gebucht. Betrag im üblichen Rahmen.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Buchungsvorschlag">
+<span class="demo__node" aria-hidden="true">3</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 3 von 5: </span>Buchungsvorschlag<span class="chip chip--ki">KI</span></p>
+<div class="demo-doc demo-doc--buchung">
+<p class="demo-doc__badge">Vorschlag, nicht gebucht</p>
+<div class="tbl-wrap demo__tbl" tabindex="0" role="region" aria-label="Buchungsvorschlag">
+<table class="tbl tbl--klein">
+<thead><tr><th scope="col">Soll</th><th scope="col">Haben</th><th scope="col" class="num">Betrag</th><th scope="col">Text</th></tr></thead>
+<tbody><tr><td data-label="Soll">6500 Büromaterial</td><td data-label="Haben">2000 Kreditoren</td><td class="num" data-label="Betrag">CHF 230.02</td><td data-label="Text">Druckerpapier, Toner</td></tr><tr><td data-label="Soll">1171 Vorsteuer MWST</td><td data-label="Haben">2000 Kreditoren</td><td class="num" data-label="Betrag">CHF 18.63</td><td data-label="Text">MWST 8.1 %</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li class="demo__step" data-name="Sonderfall prüfen">
+<span class="demo__node" aria-hidden="true">4</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 4 von 5: </span>Sonderfall prüfen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Kein Sonderfall erkannt. Bei neuen Lieferanten oder ungewöhnlichen Beträgen markiert die KI den Beleg zur genauen Prüfung.</p>
+</div>
+</li>
+<li class="demo__step demo__step--sie" data-name="Sie entscheiden">
+<span class="demo__node" aria-hidden="true">5</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 5 von 5: </span>Sie entscheiden<span class="chip chip--sie">Sie</span></p>
+<p class="demo__text">Ihre Fachperson prüft und bucht. Ohne Freigabe wird nichts gebucht.</p>
+<div class="demo__decide" hidden>
+<button type="button" class="btn btn--sm" data-act="ja" data-msg="In der Vorführung wird nichts gebucht. Im Alltag ginge die Buchung jetzt mit Ihrer Freigabe in die Buchhaltung.">Buchen</button>
+<button type="button" class="btn btn--sm btn--secondary" data-act="nein" data-msg="Im Alltag passen Sie Konto oder Betrag hier an, bevor Sie buchen.">Ändern</button>
+</div>
+<p class="demo__msg" role="status"></p>
+</div>
+</li></ol>
+<p class="demo__fussnote">Kontonummern nach KMU-Kontenrahmen als Beispiel. Im Alltag gilt Ihr Kontenplan.</p>
+</div>
+</div>
+</div>
+<div class="demo__scene" data-scene="sonderfall" data-total="6" hidden>
+<div class="demo__grid">
+<div class="demo__in">
+<h3 class="demo__h">Eingang<span class="demo__kontext">Treuhand und Büro</span></h3>
+<div class="demo-pdf">
+<p class="demo-pdf__file"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg><span>Hotelrechnung 5531.pdf</span></p>
+<div class="demo-pdf__page">
+<p class="demo-pdf__sender"><span class="demo-pdf__logo" aria-hidden="true"></span>Hotel Muster, Deutschland</p>
+<p class="demo-pdf__title">Rechnung 5531</p>
+<dl class="demo__felder demo-pdf__meta"><div><dt>Datum</dt><dd><mark class="demo__mark">23.10.2026</mark></dd></div><div><dt>Zimmer</dt><dd><mark class="demo__mark">Doppelzimmer, 2 Personen</mark></dd></div><div><dt>Kunde</dt><dd>Malerei Beispiel</dd></div></dl>
+<ul class="demo-pdf__lines"><li>Übernachtung, 2 Nächte</li><li>Frühstück, 2 Personen</li></ul>
+<dl class="demo__felder demo-pdf__total"><div><dt>Total inklusive <mark class="demo__mark">Mehrwertsteuer Deutschland</mark></dt><dd><mark class="demo__mark">EUR 412.00</mark></dd></div></dl>
+</div>
+</div>
+</div>
+<div class="demo__out">
+<h3 class="demo__h">Was die KI vorbereitet</h3>
+<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<ol class="demo__steps"><li class="demo__step" data-name="Auslesen">
+<span class="demo__node" aria-hidden="true">1</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 1 von 6: </span>Auslesen<span class="chip chip--ki">KI</span></p>
+<dl class="demo__felder"><div><dt>Lieferant</dt><dd>Hotel Muster, Deutschland</dd></div><div><dt>Datum</dt><dd>23.10.2026</dd></div><div><dt>Betrag</dt><dd>EUR 412.00</dd></div><div><dt>Umgerechnet</dt><dd>CHF 383.16 (Beispielkurs 0.93)</dd></div><div><dt>Leistung</dt><dd>2 Nächte, Doppelzimmer, 2 Personen</dd></div></dl>
+</div>
+</li>
+<li class="demo__step" data-name="Nachschlagen">
+<span class="demo__node" aria-hidden="true">2</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 2 von 6: </span>Nachschlagen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Lieferant neu: noch nie gebucht. Mandant ist Einzelfirma, Reisen bisher auf 6640 Reisespesen.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Sonderfall erkannt">
+<span class="demo__node" aria-hidden="true">3</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 3 von 6: </span>Sonderfall erkannt<span class="chip chip--ki">KI</span></p>
+<ul class="demo__liste demo__liste--pruefen"><li>Neuer Lieferant: Konto nur als Vorschlag, nicht automatisch übernehmen.</li><li>Rechnung in EUR mit deutscher Mehrwertsteuer: keine Schweizer Vorsteuer.</li><li>Doppelzimmer für 2 Personen: möglicher Privatanteil.</li></ul>
+</div>
+</li>
+<li class="demo__step" data-name="Vorschlag, zurückgestellt">
+<span class="demo__node" aria-hidden="true">4</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 4 von 6: </span>Vorschlag, zurückgestellt<span class="chip chip--ki">KI</span></p>
+<div class="demo-doc demo-doc--buchung">
+<p class="demo-doc__badge">Vorschlag, wartet auf Antwort</p>
+<div class="tbl-wrap demo__tbl" tabindex="0" role="region" aria-label="Vorschlag, zurückgestellt">
+<table class="tbl tbl--klein">
+<thead><tr><th scope="col">Soll</th><th scope="col">Haben</th><th scope="col" class="num">Betrag</th><th scope="col">Text</th></tr></thead>
+<tbody><tr><td data-label="Soll">6640 Reisespesen</td><td data-label="Haben">2000 Kreditoren</td><td class="num" data-label="Betrag">CHF 383.16</td><td data-label="Text">Hotel Muster, 2 Nächte, Anteil offen</td></tr></tbody>
+</table>
+</div>
+</div>
+<p class="demo__hinweis">Falls die zweite Person privat dabei war: Anteil auf das Privatkonto. Das entscheidet Ihre Fachperson nach der Antwort.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Rückfrage an den Mandanten">
+<span class="demo__node" aria-hidden="true">5</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 5 von 6: </span>Rückfrage an den Mandanten<span class="chip chip--ki">KI</span></p>
+<div class="demo-doc demo-doc--mail">
+<p class="demo-doc__badge">Entwurf, nicht gesendet</p>
+<dl class="demo-doc__kopf"><div><dt>An</dt><dd>Marco Beispiel, Malerei Beispiel</dd></div><div><dt>Betreff</dt><dd>Kurze Frage zu einer Hotelrechnung</dd></div></dl>
+<div class="demo-doc__text"><p>Guten Tag Herr Beispiel</p><p>In Ihren Belegen liegt eine Hotelrechnung vom 23. Oktober über EUR 412.00 für ein Doppelzimmer mit zwei Personen. War die zweite Person geschäftlich dabei? Wenn nicht, buchen wir ihren Anteil als Privatbezug.</p><p>Freundliche Grüsse</p></div>
+</div>
+</div>
+</li>
+<li class="demo__step demo__step--sie" data-name="Sie entscheiden">
+<span class="demo__node" aria-hidden="true">6</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 6 von 6: </span>Sie entscheiden<span class="chip chip--sie">Sie</span></p>
+<p class="demo__text">Ihre Fachperson prüft Konto und Rückfrage und sendet sie. Gebucht wird erst nach der Antwort.</p>
+<div class="demo__decide" hidden>
+<button type="button" class="btn btn--sm" data-act="ja" data-msg="In der Vorführung wird nichts gesendet. Im Alltag ginge die Rückfrage jetzt an den Mandanten, der Beleg bleibt zurückgestellt.">Rückfrage senden</button>
+<button type="button" class="btn btn--sm btn--secondary" data-act="nein" data-msg="Im Alltag passen Sie hier die Rückfrage oder das Konto an.">Ändern</button>
+</div>
+<p class="demo__msg" role="status"></p>
+</div>
+</li></ol>
+<p class="demo__fussnote">Erfundenes Beispiel mit Beispielkurs und Konten nach KMU-Kontenrahmen. Welcher Kurs gilt und wie ein Privatanteil gebucht wird, bestimmt Ihre Fachperson.</p>
+</div>
+</div>
+</div>
+<div class="demo__scene" data-scene="mieter" data-total="7" hidden>
+<div class="demo__grid">
+<div class="demo__in">
+<h3 class="demo__h">Eingang<span class="demo__kontext">Verwaltung</span></h3>
+<div class="demo-chat">
+<p class="demo-chat__head"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#chat"></use></svg><span>WhatsApp · A. Muster</span></p>
+<div class="demo-chat__bubble"><p>Guten Abend. Unter der <mark class="demo__mark">Spüle in der Küche tropft es</mark> seit heute Nachmittag. Ich habe ein Becken hingestellt. <mark class="demo__mark">Musterweg 4, 2. Stock links</mark>. Gruss A. Muster</p><p class="demo-chat__time">19.42 Uhr</p></div>
+</div>
+</div>
+<div class="demo__out">
+<h3 class="demo__h">Was die KI vorbereitet</h3>
+<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<ol class="demo__steps"><li class="demo__step" data-name="Lesen">
+<span class="demo__node" aria-hidden="true">1</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 1 von 7: </span>Lesen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Schadenmeldung erkannt.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Zuordnen">
+<span class="demo__node" aria-hidden="true">2</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 2 von 7: </span>Zuordnen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Mieterin Anna Muster, Liegenschaft Musterweg 4, Wohnung 2.1 (2. OG links), gefunden in Ihrer Mieterliste.</p>
+</div>
+</li>
+<li class="demo__step" data-name="Einstufen">
+<span class="demo__node" aria-hidden="true">3</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 3 von 7: </span>Einstufen<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Kategorie Sanitär. Dringlichkeit hoch: Wasser ist eines Ihrer festen Notfallwörter. Eingang 19.42 Uhr, ausserhalb der Bürozeit. Zuständig laut Ihrer Liste: Bewirtschaftung Team Nord.</p>
+<ul class="demo__chips"><li>Sanitär</li><li>Dringlichkeit hoch</li><li>Team Nord</li></ul>
+</div>
+</li>
+<li class="demo__step" data-name="Pikett informiert">
+<span class="demo__node" aria-hidden="true">4</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 4 von 7: </span>Pikett informiert<span class="chip chip--ki">KI</span></p>
+<p class="demo__text">Nach Ihrer Regel geht hohe Dringlichkeit ausserhalb der Bürozeit sofort an den Pikett. Dafür wartet die KI nicht auf eine Freigabe. Den Mieter beantwortet sie nicht selbst.</p>
+<dl class="demo__felder"><div><dt>SMS an</dt><dd>Pikett heute: P. Beispiel</dd></div><div><dt>Gesendet</dt><dd>19.43 Uhr</dd></div><div><dt>Inhalt</dt><dd>Wasser unter Küchenspüle, Musterweg 4, Wohnung 2.1, Mieterin A. Muster</dd></div></dl>
+</div>
+</li>
+<li class="demo__step" data-name="Ticket">
+<span class="demo__node" aria-hidden="true">5</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 5 von 7: </span>Ticket<span class="chip chip--ki">KI</span></p>
+<div class="demo-doc demo-doc--ticket">
+<p class="demo-doc__badge">Ticket, Entwurf</p>
+<dl class="demo__felder demo-doc__felder"><div><dt>Eingang</dt><dd>WhatsApp, 19.42 Uhr</dd></div><div><dt>Objekt</dt><dd>Musterweg 4, Wohnung 2.1</dd></div><div><dt>Anliegen</dt><dd>Wasser tropft unter der Küchenspüle, seit Nachmittag</dd></div><div><dt>Dringlichkeit</dt><dd>hoch</dd></div><div><dt>Pikett</dt><dd>informiert um 19.43 Uhr</dd></div><div><dt>Zuständig</dt><dd>Team Nord</dd></div><div><dt>Nächster Schritt</dt><dd>Pikett entscheidet: Notfall-Sanitär heute oder Auftrag morgen früh</dd></div></dl>
+</div>
+</div>
+</li>
+<li class="demo__step" data-name="Antwortentwurf">
+<span class="demo__node" aria-hidden="true">6</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 6 von 7: </span>Antwortentwurf<span class="chip chip--ki">KI</span></p>
+<div class="demo-doc demo-doc--mail">
+<p class="demo-doc__badge">Entwurf, nicht gesendet</p>
+<dl class="demo-doc__kopf"><div><dt>An</dt><dd>A. Muster, WhatsApp</dd></div></dl>
+<div class="demo-doc__text"><p>Guten Abend Frau Muster</p><p>Danke für Ihre Meldung. Unser Pikett-Dienst ist informiert und meldet sich heute Abend noch bei Ihnen. Bitte drehen Sie, wenn möglich, das kleine Ventil unter der Spüle zu und lassen Sie das Becken stehen. Wird es stärker, rufen Sie bitte direkt die Pikett-Nummer gemäss Aushang im Treppenhaus an.</p><p>Freundliche Grüsse, Ihre Verwaltung</p></div>
+</div>
+</div>
+</li>
+<li class="demo__step demo__step--sie" data-name="Sie entscheiden">
+<span class="demo__node" aria-hidden="true">7</span>
+<div class="demo__body">
+<p class="demo__name"><span class="sr">Schritt 7 von 7: </span>Sie entscheiden<span class="chip chip--sie">Sie</span></p>
+<p class="demo__text">Die Person im Pikett gibt die Antwort frei und entscheidet, ob der Sanitär noch heute kommt.</p>
+<div class="demo__decide" hidden>
+<button type="button" class="btn btn--sm" data-act="ja" data-msg="In der Vorführung wird nichts gesendet. Im Alltag ginge der Entwurf jetzt hinaus, mit Ihrem Namen.">Freigeben</button>
+<button type="button" class="btn btn--sm btn--secondary" data-act="nein" data-msg="Im Alltag passen Sie den Entwurf hier an, bevor Sie ihn freigeben.">Ändern</button>
+</div>
+<p class="demo__msg" role="status"></p>
+</div>
+</li></ol>
+<p class="demo__fussnote">Erfundenes Beispiel. Welche Wörter als Notfall gelten und wer Pikett hat, bestimmen Sie.</p>
+</div>
+</div>
+</div>
+<div class="demo__ctrl" hidden>
+<p class="demo__progress" role="status">Bereit: 5 Schritte</p>
+<div class="demo__btns">
+<button type="button" class="btn btn--sm" data-act="next">Nächster Schritt<span class="btn__arrow" aria-hidden="true"></span></button>
+<button type="button" class="btn btn--sm btn--secondary" data-act="all"><span>Alle <span class="demo__lg">Schritte </span>zeigen</span></button>
+<button type="button" class="btn btn--sm btn--ghost" data-act="reset" aria-disabled="true">Neu starten</button>
+</div>
+</div>
+<p class="demo__foot">Eine echte Lösung arbeitet in Ihren Programmen. Was bei Ihnen passt, klären wir im KI-Check. <a class="more" href="../kontakt/?thema=ki-check">KI-Check anfragen</a></p>
+</div>
+<p class="note ki-demo-note">Hier arbeitet keine echte KI. Die Antworten sind vorbereitet. Es wird nichts gesendet und nichts gespeichert.</p>
+<p class="sec__foot ki-demo-foot">So ähnlich läuft es im Pilot, nur mit Ihren echten Abläufen, Vorlagen und Preisen. <a class="more" href="../kontakt/?thema=ki-check">KI-Check anfragen</a></p>
+</div>
+</section>
+<section class="sec" id="ablauf" aria-labelledby="ablauf-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Ablauf</p>
+<h2 class="t-h2" id="ablauf-t">In vier Stufen, mit Ausstieg nach jeder Stufe.</h2>
+<p class="t-lead">Sie wissen jederzeit, was Sie tun, was ich tue und was es kostet.</p>
+</header>
+<ol class="steps steps--4 steps--ki"><li class="step" data-reveal>
+<span class="step__node" aria-hidden="true">01</span>
+<h3 class="t-h3 step__title">KI-Check</h3>
+<dl class="step__dl"><div><dt>Sie</dt><dd>Zeigen mir in einem Gespräch, bei Ihnen oder per Video, wie die Arbeit heute läuft. Rund anderthalb Stunden.</dd></div><div><dt>Ich</dt><dd>Schaue mir zwei bis drei Abläufe genau an, schätze Nutzen, Aufwand und Risiken und prüfe den Datenschutz.</dd></div><div><dt>Ergebnis</dt><dd>Ein kurzer Bericht mit Empfehlung und einem Fixpreis für den Pilot. Er gehört Ihnen, auch wenn Sie nicht weitermachen.</dd></div><div><dt>Ihr Aufwand</dt><dd>Rund anderthalb Stunden für das Gespräch.</dd></div><div><dt>Dauer</dt><dd>Bericht innert zwei Wochen nach dem Gespräch.</dd></div><div><dt>Preis</dt><dd>Fixpreis CHF 360 (8 Stunden)</dd></div></dl>
+</li>
+<li class="step" data-reveal>
+<span class="step__node" aria-hidden="true">02</span>
+<h3 class="t-h3 step__title">Pilot</h3>
+<dl class="step__dl"><div><dt>Sie</dt><dd>Bestimmen ein bis drei Personen, die die KI im Alltag testen und ehrlich Rückmeldung geben.</dd></div><div><dt>Ich</dt><dd>Baue einen Ablauf, verbinde ihn mit einem Programm und messe mit Ihnen, wie oft die Entwürfe passen und wie viel Zeit Sie sparen.</dd></div><div><dt>Ergebnis</dt><dd>Zahlen aus Ihrem eigenen Alltag statt Versprechen. Reicht der Nutzen nicht, hören wir auf.</dd></div><div><dt>Ihr Aufwand</dt><dd>Start 1 Stunde, dann rund 15 Minuten pro Person und Woche für Rückmeldungen, Auswertung 1 Stunde.</dd></div><div><dt>Dauer</dt><dd>Rund vier Wochen Testbetrieb.</dd></div><div><dt>Preis</dt><dd>ab CHF 1’350</dd></div></dl>
+</li>
+<li class="step" data-reveal>
+<span class="step__node" aria-hidden="true">03</span>
+<h3 class="t-h3 step__title">Einführung</h3>
+<dl class="step__dl"><div><dt>Sie</dt><dd>Entscheiden, welche Abläufe und welche Personen dazukommen.</dd></div><div><dt>Ich</dt><dd>Baue die Lösung aus, mache die Verbindungen stabil, schule Ihr Team und schreibe die Dokumentation.</dd></div><div><dt>Ergebnis</dt><dd>Eine Lösung im Alltag, die Ihr Team versteht und selbst abschalten kann.</dd></div><div><dt>Ihr Aufwand</dt><dd>Schulung und Abnahme, je rund 1 Stunde pro Team.</dd></div><div><dt>Dauer</dt><dd>Den Zielmonat sehen Sie in der Offerte.</dd></div><div><dt>Preis</dt><dd>CHF 1’800 bis 5’400, als Fixpreis in der Offerte</dd></div></dl>
+</li>
+<li class="step" data-reveal>
+<span class="step__node" aria-hidden="true">04</span>
+<h3 class="t-h3 step__title">Betrieb</h3>
+<dl class="step__dl"><div><dt>Sie</dt><dd>Melden Wünsche und Fehler per Mail.</dd></div><div><dt>Ich</dt><dd>Überwache die Abläufe, passe sie an, wenn sich ein Programm ändert, und bin Ihre Ansprechperson.</dd></div><div><dt>Ergebnis</dt><dd>Die Lösung bleibt aktuell. Code und Dokumentation gehören Ihnen.</dd></div><div><dt>Ihr Aufwand</dt><dd>Wünsche und Fehler melden, sonst keiner.</dd></div><div><dt>Dauer</dt><dd>Auf Ende jedes Monats kündbar.</dd></div><div><dt>Preis</dt><dd>ab CHF 49 pro Monat plus KI-Nutzung nach Verbrauch, typisch CHF 10 bis 80 pro Monat</dd></div></dl>
+</li></ol>
+<p class="ki-ausstieg"><span class="chip chip--sie">Sie entscheiden</span> Nach jeder Stufe entscheiden Sie, ob es weitergeht.</p>
+<p class="sec__foot"><a class="more" href="../preise/">Alle Preise im Detail</a></p>
+</div>
+</section>
+<section class="sec sec--soft" id="programme" aria-labelledby="programme-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Programme</p>
+<h2 class="t-h2" id="programme-t">Mit diesen Programmen arbeitet die KI zusammen.</h2>
+<p class="t-lead">Immer unter einer Bedingung: Das Programm muss eine Schnittstelle bieten. Ob und wie gut das bei Ihnen klappt, prüfe ich im KI-Check, bevor Sie etwas bestellen.</p>
+</header>
+<dl class="prog" data-reveal><div class="prog__item"><dt>Outlook und Microsoft 365</dt><dd>Mails, Kalender und Dateien in OneDrive oder SharePoint, über die offizielle Schnittstelle von Microsoft.</dd></div><div class="prog__item"><dt>Google Workspace</dt><dd>Gmail, Google Kalender und Google Drive.</dd></div><div class="prog__item"><dt>bexio</dt><dd>Kontakte, Offerten und Rechnungen über die Schnittstelle von bexio.</dd></div><div class="prog__item"><dt>Abacus</dt><dd>Über die Schnittstelle von Abacus, wenn sie bei Ihnen eingerichtet ist. Das klären wir mit Ihrem Abacus-Partner.</dd></div><div class="prog__item"><dt>Excel</dt><dd>Tabellen lesen und füllen, als Datei oder in Microsoft 365.</dd></div><div class="prog__item"><dt>WhatsApp Business</dt><dd>Über die WhatsApp Business Platform von Meta. Die normale WhatsApp-Business-App auf dem Handy hat keine offene Schnittstelle.</dd></div><div class="prog__item"><dt>Branchensoftware</dt><dd>Wenn sie eine Schnittstelle hat. Sonst oft über Export und Import, zum Beispiel als Excel- oder CSV-Datei.</dd></div></dl>
+<div class="sec__foot ki-datenweg">
+<h3 class="t-h3 ki-datenweg__t" data-reveal>So läuft eine Aufgabe durch die Lösung.</h3>
+<ol class="dw" aria-label="So läuft ein Auftrag durch die Lösung">
+<li class="dw__step" data-reveal>
+<span class="dw__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#stecker"></use></svg></span>
+<span class="dw__nr" aria-hidden="true">01</span>
+<p class="dw__t">Ihr Programm</p>
+<p class="dw__s">Outlook, bexio, Excel und Co. Ihre Daten bleiben dort.</p>
+</li>
+<li class="dw__step" data-reveal>
+<span class="dw__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schluessel"></use></svg></span>
+<span class="dw__nr" aria-hidden="true">02</span>
+<p class="dw__t">Schnittstelle</p>
+<p class="dw__s">Offizieller Zugang des Programms. Es geht nur, was die Aufgabe braucht.</p>
+</li>
+<li class="dw__step" data-reveal>
+<span class="dw__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#funke"></use></svg></span>
+<span class="dw__nr" aria-hidden="true">03</span>
+<p class="dw__t">KI-Dienst</p>
+<p class="dw__s">Geschäftsangebot, dessen Bedingungen das Training mit Ihren Daten ausschliessen.</p>
+</li>
+<li class="dw__step" data-reveal>
+<span class="dw__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg></span>
+<span class="dw__nr" aria-hidden="true">04</span>
+<p class="dw__t">Entwurf</p>
+<p class="dw__s">Die KI legt einen Entwurf zurück in Ihr Programm.</p>
+</li>
+<li class="dw__step dw__step--sie" data-reveal>
+<span class="dw__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#person"></use></svg></span>
+<span class="dw__nr" aria-hidden="true">05</span>
+<p class="dw__t">Sie prüfen</p>
+<p class="dw__s">Sie geben frei, ändern oder verwerfen.</p>
+</li>
+<li class="dw__step" data-reveal>
+<span class="dw__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#haken"></use></svg></span>
+<span class="dw__nr" aria-hidden="true">06</span>
+<p class="dw__t">Erledigt</p>
+<p class="dw__s">Erst nach Ihrer Freigabe geht etwas hinaus.</p>
+</li>
+</ol>
+<p class="sec__foot"><a class="more" href="../sicherheit/#loesung">Wo die Lösung läuft und was bei mir liegt</a></p>
+</div>
+</div>
+</section>
+<section class="sec" id="branchen" aria-labelledby="branchen-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Branchen</p>
+<h2 class="t-h2" id="branchen-t">So sieht das in Ihrer Branche aus.</h2>
+<p class="t-lead">Alle Beispiele mit erfundenen Daten. Ein Mensch prüft und entscheidet immer.</p>
+</header>
+<ul class="cards cards--3 cards--fluss"><li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#werkzeug"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../branchen/handwerk/">Handwerk</a></h3>
+<p class="card__text">Aus der Sprachnachricht von der Baustelle wird ein Offertentwurf.</p>
+<div class="fluss" aria-hidden="true"><span><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mikro"></use></svg></span><i></i><span class="is-ki"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#funke"></use></svg></span><i></i><span class="is-sie"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg></span></div>
+<span class="more card__more" aria-hidden="true">Beispiel ansehen</span>
+</li>
+<li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#rechner"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../branchen/treuhand/">Treuhand und Büro</a></h3>
+<p class="card__text">Aus dem Beleg wird ein Buchungsvorschlag.</p>
+<div class="fluss" aria-hidden="true"><span><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#dokument"></use></svg></span><i></i><span class="is-ki"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#funke"></use></svg></span><i></i><span class="is-sie"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#rechner"></use></svg></span></div>
+<span class="more card__more" aria-hidden="true">Beispiel ansehen</span>
+</li>
+<li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#haus"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../branchen/verwaltung/">Verwaltung</a></h3>
+<p class="card__text">Aus der Mieteranfrage wird ein Antwortentwurf.</p>
+<div class="fluss" aria-hidden="true"><span><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#chat"></use></svg></span><i></i><span class="is-ki"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#funke"></use></svg></span><i></i><span class="is-sie"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#mail"></use></svg></span></div>
+<span class="more card__more" aria-hidden="true">Beispiel ansehen</span>
+</li></ul>
+</div>
+</section>
+<section class="sec sec--warm" id="grundsaetze" aria-labelledby="grundsaetze-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Grundsätze</p>
+<h2 class="t-h2" id="grundsaetze-t">Fünf Regeln für jede Lösung.</h2>
+</header>
+<ol class="list list--num ki-regeln"><li><strong>Mensch entscheidet.</strong> Die KI schreibt Entwürfe. Was Ihren Betrieb verlässt, gibt ein Mensch frei.</li><li><strong>So wenig Daten wie nötig.</strong> Die KI erhält nur, was eine Aufgabe braucht.</li><li><strong>Jederzeit abschaltbar.</strong> Ein Schalter genügt, dann arbeiten Sie wie heute weiter.</li><li><strong>Offen gelegt.</strong> Sie wissen schriftlich, welcher Anbieter welche Daten erhält und wo.</li><li><strong>Ihnen gehört die Lösung.</strong> Code und Dokumentation gehören nach der Bezahlung Ihnen.</li></ol>
+<div class="sec__foot"><ul class="cards cards--2 cards--white"><li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schild"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../sicherheit/">Datenschutz und Sicherheit</a></h3>
+<p class="card__text">Wo Ihre Daten liegen, welche Anbieter ich einsetze und warum nicht mit Ihren Daten trainiert wird.</p>
+<span class="more card__more" aria-hidden="true">Zur Seite Sicherheit</span>
+</li>
+<li class="card card--link" data-reveal>
+<span class="card__icon"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../assets/icons.svg#schalter"></use></svg></span>
+<h3 class="t-h3 card__title"><a class="card__link" href="../support/">Betrieb und Support</a></h3>
+<p class="card__text">Reaktionszeit, was bei einem Ausfall passiert und wer übernehmen kann.</p>
+<span class="more card__more" aria-hidden="true">Zur Seite Support</span>
+</li></ul></div>
+</div>
+</section>
+<section class="sec" id="preise" aria-labelledby="preise-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Preise</p>
+<h2 class="t-h2" id="preise-t">Was es kostet.</h2>
+</header>
+<dl class="pstrip" data-reveal><div class="pstrip__row"><dt>KI-Check</dt><dd>Fixpreis CHF 360</dd></div><div class="pstrip__row"><dt>Pilot</dt><dd>ab CHF 1’350</dd></div><div class="pstrip__row"><dt>Einführung</dt><dd>CHF 1’800 bis 5’400</dd></div><div class="pstrip__row"><dt>Betrieb</dt><dd>ab CHF 49 pro Monat</dd></div><div class="pstrip__row"><dt>KI-Nutzung, nach Verbrauch, typisch</dt><dd>CHF 10 bis 80 pro Monat</dd></div></dl>
+<p class="note">Richtwerte, verbindlich ist die Offerte. Es kommt keine Mehrwertsteuer dazu.</p>
+<p class="pstrip__more"><a class="more" href="../preise/">Alle Preise im Detail</a></p>
+</div>
+</section>
+<section class="sec sec--soft" id="fragen" aria-labelledby="fragen-t">
+<div class="wrap">
+<header class="sec__head" data-reveal>
+<p class="t-eyebrow">Häufige Fragen</p>
+<h2 class="t-h2" id="fragen-t">Fragen zu KI, ehrlich beantwortet.</h2>
+</header>
+<div class="faq" data-reveal><details class="faq__item" name="faq-ki" id="faq-ersetzt" open><summary class="faq__q"><span>Ersetzt KI bei uns Mitarbeitende?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Nein, das ist nicht das Ziel. KI entlastet Ihr Team, sie ersetzt niemanden. Sie übernimmt Abtippen, Sortieren und erste Entwürfe. Die gewonnene Zeit fliesst in Gespräche mit Kunden, in Facharbeit oder in weniger Überstunden. Wie Sie sie nutzen, entscheiden Sie.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-kosten"><summary class="faq__q"><span>Was kostet eine KI-Lösung?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Der KI-Check kostet fix CHF 360. Ein Pilot beginnt bei CHF 1’350, eine Einführung liegt meist bei CHF 1’800 bis 5’400. Im Betrieb zahlen Sie ab CHF 49 pro Monat plus die KI-Nutzung nach Verbrauch, typisch CHF 10 bis 80 pro Monat. Das sind Richtwerte, verbindlich ist die Offerte. Mehrwertsteuer kommt keine dazu.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-daten"><summary class="faq__q"><span>Wo liegen unsere Daten?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Ihre Daten bleiben in Ihren Programmen, zum Beispiel in Outlook oder bexio. Auch die Lösung selbst läuft in Ihrem Konto, nicht bei mir. Zur KI geht nur der Text, der für eine Aufgabe nötig ist, und zwar standardmässig in der Schweiz. Etwas anderes nur mit Ihrer schriftlichen Zustimmung, pro Fall. Details stehen auf der Seite Datenschutz und Sicherheit.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-vertraulich"><summary class="faq__q"><span>Sehen Sie im KI-Check unsere Kunden- oder Mandantendaten?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Nein. Im KI-Check besprechen wir Abläufe und arbeiten mit Musterbelegen oder erfundenen Beispielen. Auf Wunsch unterschreibe ich vor dem ersten Gespräch eine Vertraulichkeitserklärung. Echte Kundendaten kommen erst im Pilot dazu, nach dem unterschriebenen Vertrag zur Auftragsbearbeitung.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-training"><summary class="faq__q"><span>Trainiert die KI mit unseren Daten?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Nein. Ich setze nur Geschäftsangebote ein, deren Bedingungen das Training mit Ihren Daten ausschliessen, zum Beispiel von OpenAI, Anthropic, Microsoft und Google, solange Sie nicht ausdrücklich zustimmen. Bei Gratis-Versionen für Privatpersonen kann das anders sein. Darum nutze ich sie für Ihre Daten nicht. Die Quellen stehen auf der Seite Sicherheit.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-fehler"><summary class="faq__q"><span>Was passiert, wenn die KI einen Fehler macht?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Das kommt vor. KI kann etwas falsch verstehen oder eine Angabe erfinden. Darum schreibt sie nur Entwürfe, und ein Mensch prüft vor dem Versand. Ich richte sie so ein, dass sie fehlende Angaben als Frage markiert, statt zu raten. Ganz verhindern lassen sich Fehler nicht. Im Pilot messen wir, wie oft die Entwürfe passen.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-ausfall"><summary class="faq__q"><span>Was passiert, wenn die KI oder ein Anbieter ausfällt?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Dann arbeiten Sie wie heute weiter. Ihre Mails, Termine und Dokumente bleiben in Ihren Programmen, die KI liefert nur Entwürfe dazu. Jede Lösung lässt sich mit einem Schalter abschalten. Bei Fehlern erhalte ich automatisch eine Meldung.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-lehre"><summary class="faq__q"><span>Wer hilft, wenn Sie in der Lehre sind?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Tagsüber bin ich in der Lehre und meist erst am Abend erreichbar. Ich antworte innert eines Arbeitstags. Eine Stellvertretung habe ich nicht, das sage ich offen. Darum baue ich jede Lösung so, dass Ihr Betrieb auch ohne sie läuft, dokumentiere alles und übergebe Ihnen den Code. Ihr IT-Partner kann jederzeit übernehmen.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-copilot"><summary class="faq__q"><span>Warum nicht einfach Microsoft 365 Copilot?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Copilot ist eine Lizenz pro Person. Er hilft Einzelnen beim Schreiben, Zusammenfassen und Suchen, wenn sie ihn selbst aufrufen. Eine Lösung von mir ist ein fester Ablauf für das Team: Sie arbeitet jede neue Anfrage von selbst ab, nach Ihren Regeln und mit Ihren Quellen, und legt den Entwurf zur Freigabe dort ab, wo Ihr Team arbeitet. Beides lässt sich kombinieren. Haben Sie Copilot schon, prüfe ich im KI-Check ehrlich, ob er für Ihren Fall reicht.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-programme"><summary class="faq__q"><span>Funktioniert das mit unseren Programmen?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Oft ja. Outlook, Microsoft 365, Google Workspace, bexio und Abacus bieten Schnittstellen. Bei Branchensoftware hängt es davon ab, ob sie eine hat. Wenn nicht, gibt es oft einen Weg über Export und Import. Das kläre ich im KI-Check, bevor Sie etwas bestellen.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-geraete"><summary class="faq__q"><span>Brauchen wir neue Geräte oder Software?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Meistens nicht. Die Lösung arbeitet mit Ihren bestehenden Programmen. Für die KI braucht es ein Konto bei einem Anbieter, am besten auf Ihren Namen. Dann sehen Sie jede Rechnung selbst und behalten die Kontrolle.</p></div></details>
+<details class="faq__item" name="faq-ki" id="faq-alter"><summary class="faq__q"><span>Sie sind erst 16. Warum sollten wir Ihnen Firmendaten anvertrauen?</span><span class="faq__icon" aria-hidden="true"></span></summary><div class="faq__a"><p>Eine berechtigte Frage. Darum ist bei mir alles schriftlich: Offerte, Vertrag zur Auftragsbearbeitung nach Schweizer Datenschutzgesetz und Dokumentation. Weil ich minderjährig bin, unterschreiben meine Eltern als gesetzliche Vertretung mit. Ich erhalte nur die Zugriffe, die eine Aufgabe braucht, und Sie können sie jederzeit entziehen. Und Sie beginnen mit einem kleinen Check zum Fixpreis, nicht mit einem grossen Projekt.</p></div></details></div>
+</div>
+</section>
+<section class="cta-band on-dark" id="abschluss" aria-labelledby="abschluss-t">
+<div class="wrap cta-band__inner" data-reveal>
+<span class="mark mark--lg" aria-hidden="true"></span>
+<h2 class="t-h2" id="abschluss-t">Wo verlieren Sie heute am meisten Zeit?</h2>
+<p class="t-lead">Schreiben Sie mir zwei, drei Sätze dazu. Ich sage Ihnen ehrlich, ob KI dort hilft.</p>
+<div class="btns"><a class="btn" href="../kontakt/?thema=ki-check">KI-Check anfragen<span class="btn__arrow" aria-hidden="true"></span></a></div>
+<p class="cta-band__mail">Lieber per Mail? <a href="mailto:jonas.grueter.web@gmail.com">jonas.grueter.web@gmail.com</a></p>
+</div>
+</section>
+</main>
+<footer class="ftr on-dark" id="fuss">
+<div class="wrap ftr__grid">
+<div class="ftr__brand">
+<p class="ftr__name"><span class="mark" aria-hidden="true"></span>Codani</p>
+<p>KI und Websites für KMU in der Zentralschweiz</p>
+<p class="ftr__claim">Code und Dokumentation gehören Ihnen. Jede Lösung lässt sich abschalten.</p>
+<p class="ftr__contact">Region Sempach, Kanton Luzern<br><a href="mailto:jonas.grueter.web@gmail.com">jonas.grueter.web@gmail.com</a><br><a href="tel:0763025043">076 302 50 43</a><br>Schauensee 28a, 6204 Sempach</p>
+</div>
+<nav class="ftr__nav" aria-label="Fusszeile"><div class="ftr__col">
+<p class="ftr__title" id="ft-0">KI</p>
+<ul aria-labelledby="ft-0">
+<li><a href="../ki/">KI-Integration</a></li>
+<li><a href="../ki/e-mail/">E-Mail</a></li>
+<li><a href="../ki/kalender/">Kalender</a></li>
+<li><a href="../ki/dokumente/">Dokumente</a></li>
+<li><a href="../ki/kunden/">Kunden</a></li>
+<li><a href="../ki/#demo">Demo ausprobieren</a></li>
+</ul>
+</div>
+<div class="ftr__col">
+<p class="ftr__title" id="ft-1">Branchen</p>
+<ul aria-labelledby="ft-1">
+<li><a href="../branchen/">Übersicht</a></li>
+<li><a href="../branchen/handwerk/">Handwerk</a></li>
+<li><a href="../branchen/treuhand/">Treuhand und Büro</a></li>
+<li><a href="../branchen/verwaltung/">Verwaltung</a></li>
+</ul>
+</div>
+<div class="ftr__col">
+<p class="ftr__title" id="ft-2">Vertrauen</p>
+<ul aria-labelledby="ft-2">
+<li><a href="../sicherheit/">Datenschutz und Sicherheit</a></li>
+<li><a href="../support/">Betrieb und Support</a></li>
+<li><a href="../unterlagen/">Muster-Verträge</a></li>
+<li><a href="../preise/">Preise</a></li>
+<li><a href="../referenzen/">Referenzen</a></li>
+</ul>
+</div>
+<div class="ftr__col">
+<p class="ftr__title" id="ft-3">Firma</p>
+<ul aria-labelledby="ft-3">
+<li><a href="../websites/">Websites</a></li>
+<li><a href="../ueber-mich/">Über mich</a></li>
+<li><a href="../kontakt/">Kontakt</a></li>
+<li><a href="../impressum/">Impressum</a></li>
+<li><a href="../datenschutz/">Datenschutzerklärung</a></li>
+</ul>
+</div></nav>
+</div>
+<div class="wrap ftr__bottom">
+<p>© 2026 Codani · Keine Cookies, keine Tracking-Dienste.</p>
+<a class="ftr__top" href="#top">Nach oben</a>
+</div>
+</footer>
+</body>
+</html>

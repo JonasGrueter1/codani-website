@@ -1,0 +1,177 @@
+{
+  "_hinweis": "Alle Einstellungen der Website. Nach jeder Aenderung: node _src/build.js. Leere Werte blenden den ganzen Satz oder Knopf aus. Felder mit bestaetigt false listet der Build als offen auf. kontakt.naechsterKiCheck z. B. \"ab KW 47\", kontakt.umstellung z. B. \"Mit der eigenen Domain ziehen Mail und Formular zu einem Anbieter in der Schweiz um.\", support.stellvertretung z. B. Name und Ort des IT-Betriebs, der bei einem Ausfall einspringt.",
+  "marke": {
+    "name": "Codani",
+    "zusatz": "KI und Websites für KMU",
+    "region": "Region Sempach, Kanton Luzern",
+    "regionKurz": "Region Sempach",
+    "gebiet": "Zentralschweiz"
+  },
+  "person": {
+    "name": "Jonas Grüter",
+    "alter": 16,
+    "lehrjahr": "2. Lehrjahr",
+    "lehre": "KV-Lehre bei einer grossen Versicherung"
+  },
+  "seite": {
+    "basisUrl": "https://codani.ch/",
+    "noindex": false,
+    "jahr": 2026,
+    "sprache": "de-CH"
+  },
+  "kontakt": {
+    "mail": "jonas.grueter.web@gmail.com",
+    "mailDienst": "Gmail (Google)",
+    "telefon": "076 302 50 43",
+    "telefonZeiten": "Unter der Woche am Abend, am Wochenende meist den ganzen Tag. Tagsüber nur in Notfällen.",
+    "terminLink": "",
+    "terminAnbieter": "",
+    "adresse": "Schauensee 28a, 6204 Sempach",
+    "uid": "",
+    "erstgespraech": "Das erste Gespräch dauert rund 20 Minuten und ist kostenlos und unverbindlich, am Abend oder nach Absprache.",
+    "naechsterKiCheck": "",
+    "umstellung": ""
+  },
+  "formular": {
+    "aktiv": "web3forms",
+    "anbieter": {
+      "web3forms": {
+        "name": "Web3Forms",
+        "ort": "Betreiber in Indien, Server in den USA",
+        "detail": "Web3Forms gehört zu Web3Creative mit Sitz in Indien und betreibt seine Server in den USA. Laut Anbieter werden die Anfragen weitergeleitet und nicht gespeichert, Server-Protokolle werden alle zwei Monate gelöscht.",
+        "endpoint": "https://api.web3forms.com/submit",
+        "schluesselFeld": "access_key",
+        "schluessel": "d2e340ec-3d1e-4baf-9f1a-cdb4e59d18e9",
+        "ausland": "GitHub und Google können Daten in den USA bearbeiten, Web3Forms in den USA und in Indien."
+      },
+      "alternative": {
+        "name": "",
+        "ort": "",
+        "detail": "",
+        "endpoint": "",
+        "schluesselFeld": "",
+        "schluessel": "",
+        "ausland": ""
+      }
+    },
+    "betreff": "Anfrage über die Website",
+    "absenderName": "Website Codani",
+    "zeitlimitSekunden": 15
+  },
+  "hosting": {
+    "name": "GitHub Pages",
+    "firma": "GitHub Inc.",
+    "sitz": "USA"
+  },
+  "firma": {
+    "_hinweis": "Leer lassen, solange nicht geklaert. Beispiele: form \"Einzelfirma, nicht im Handelsregister eingetragen\", haftpflicht \"Keine Berufshaftpflicht. Die Haftung regelt die Offerte.\" oder Versicherer und Summe.",
+    "form": "",
+    "haftpflicht": "",
+    "haftung": "In jeder Offerte ist meine Haftung auf die Auftragssumme begrenzt, ausser bei Absicht oder grober Fahrlässigkeit.",
+    "gewaehrleistungTage": 30,
+    "bestaetigt": true
+  },
+  "support": {
+    "reaktionszeit": "innert eines Arbeitstags",
+    "erreichbarkeit": "Tagsüber bin ich in der Lehre. Ich antworte meistens am Abend.",
+    "dringend": "Schreiben Sie «DRINGEND» in den Betreff. Solche Meldungen sehe ich spätestens in der Mittagspause und melde mich am selben Tag bis 19 Uhr.",
+    "stellvertretung": "",
+    "bestaetigt": true
+  },
+  "preise": {
+    "bestaetigt": true,
+    "stundenansatz": 45,
+    "hinweis": "Richtwerte, verbindlich ist die Offerte.",
+    "mwst": "Es kommt keine Mehrwertsteuer dazu.",
+    "ki": [
+      {
+        "id": "ki-check",
+        "name": "KI-Check",
+        "art": "fix",
+        "betrag": 360,
+        "stunden": 8
+      },
+      {
+        "id": "pilot",
+        "name": "Pilot",
+        "art": "ab",
+        "betrag": 1350
+      },
+      {
+        "id": "einfuehrung",
+        "name": "Einführung",
+        "art": "spanne",
+        "von": 1800,
+        "bis": 5400
+      },
+      {
+        "id": "betrieb",
+        "name": "Betrieb",
+        "art": "monat-ab",
+        "betrag": 49
+      },
+      {
+        "id": "nutzung",
+        "name": "KI-Nutzung",
+        "art": "monat-spanne",
+        "von": 10,
+        "bis": 80,
+        "text": "nach Verbrauch, typisch"
+      }
+    ],
+    "web": [
+      {
+        "id": "entwurf",
+        "name": "Erster Entwurf",
+        "art": "kostenlos"
+      },
+      {
+        "id": "website",
+        "name": "Website",
+        "art": "ab",
+        "betrag": 1800,
+        "text": "Fixpreis nach Wunschliste"
+      },
+      {
+        "id": "pflege",
+        "name": "Pflegepaket",
+        "art": "monat-ab",
+        "betrag": 49,
+        "text": "inklusive 1 Stunde"
+      }
+    ],
+    "dauerWebsite": "rund 10 bis 16 Wochen ab Erhalt aller Inhalte"
+  },
+  "stand": {
+    "datenschutz": "November 2026",
+    "sicherheit": "31. Oktober 2026"
+  },
+  "referenzen": {
+    "stand": "2026-10-31",
+    "zeitraum": "24. bis 30. Oktober 2026",
+    "zahlen": {
+      "websitesGesichtet": 40,
+      "betriebeAnalysiert": 40,
+      "befunde": 316,
+      "befundeMin": 3,
+      "befundeMax": 12,
+      "demosGebaut": 28,
+      "mailsGesendet": 28,
+      "nichtAngeschrieben": 7,
+      "antworten": 2
+    }
+  },
+  "daten": {
+    "_hinweis": "Feste Regel fuer Kundendaten in KI-Loesungen (Seiten Sicherheit, KI, Treuhand).",
+    "standard": "in der Schweiz",
+    "beispiele": "zum Beispiel bei Microsoft Azure in der Region «Switzerland North» oder bei Infomaniak",
+    "bestaetigt": false
+  },
+  "pilotangebot": {
+    "_hinweis": "Angebot fuer die ersten Pilotbetriebe. plaetze 0 blendet das Angebot aus. frei = noch freie Plaetze (nachfuehren, 0 = ausgebucht). rabattKiCheck in Prozent.",
+    "plaetze": 2,
+    "frei": 2,
+    "rabattKiCheck": 50,
+    "bestaetigt": true
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "haupt": [
+    { "id": "start", "label": "Start", "href": "" },
+    { "id": "ki", "label": "KI", "href": "ki/", "panel": true },
+    { "id": "websites", "label": "Websites", "href": "websites/" },
+    { "id": "preise", "label": "Preise", "href": "preise/" },
+    { "id": "referenzen", "label": "Referenzen", "href": "referenzen/" },
+    { "id": "ueber-mich", "label": "Über mich", "href": "ueber-mich/" }
+  ],
+  "kontakt": { "id": "kontakt", "label": "Kontakt", "href": "kontakt/" },
+  "kiPanel": [
+    {
+      "titel": "Überblick",
+      "links": [
+        { "label": "KI-Integration", "text": "Was KI in Ihrem Betrieb vorbereitet", "href": "ki/" },
+        { "label": "Demo ausprobieren", "text": "Vorführung mit erfundenen Daten", "href": "ki/#demo" },
+        { "label": "Ablauf in vier Stufen", "text": "Vom KI-Check bis zum Betrieb", "href": "ki/#ablauf" }
+      ]
+    },
+    {
+      "titel": "Werkzeuge",
+      "links": [
+        { "label": "E-Mail", "text": "Antwortentwürfe für Ihr Postfach", "href": "ki/e-mail/", "icon": "mail" },
+        { "label": "Kalender", "text": "Terminvorschläge aus freien Zeiten", "href": "ki/kalender/", "icon": "kalender" },
+        { "label": "Dokumente", "text": "Angaben aus PDFs und Belegen", "href": "ki/dokumente/", "icon": "dokument" },
+        { "label": "Kunden", "text": "Anfragen aus allen Kanälen in einer Liste", "href": "ki/kunden/", "icon": "kunden" }
+      ]
+    },
+    {
+      "titel": "Branchen",
+      "links": [
+        { "label": "Handwerk", "text": "Sprachnachricht wird Offerte", "href": "branchen/handwerk/" },
+        { "label": "Treuhand und Büro", "text": "Beleg wird Buchungsvorschlag", "href": "branchen/treuhand/" },
+        { "label": "Verwaltung", "text": "Mieteranfrage wird Antwort", "href": "branchen/verwaltung/" }
+      ]
+    },
+    {
+      "titel": "Vertrauen",
+      "links": [
+        { "label": "Datenschutz und Sicherheit", "text": "Wo Ihre Daten liegen", "href": "sicherheit/", "icon": "schild" },
+        { "label": "Betrieb und Support", "text": "Was passiert, wenn etwas ausfällt", "href": "support/", "icon": "schalter" }
+      ]
+    }
+  ],
+  "menuKlein": [
+    { "label": "Datenschutz und Sicherheit", "href": "sicherheit/" },
+    { "label": "Betrieb und Support", "href": "support/" }
+  ],
+  "fuss": [
+    {
+      "titel": "KI",
+      "links": [
+        { "label": "KI-Integration", "href": "ki/" },
+        { "label": "E-Mail", "href": "ki/e-mail/" },
+        { "label": "Kalender", "href": "ki/kalender/" },
+        { "label": "Dokumente", "href": "ki/dokumente/" },
+        { "label": "Kunden", "href": "ki/kunden/" },
+        { "label": "Demo ausprobieren", "href": "ki/#demo" }
+      ]
+    },
+    {
+      "titel": "Branchen",
+      "links": [
+        { "label": "Übersicht", "href": "branchen/" },
+        { "label": "Handwerk", "href": "branchen/handwerk/" },
+        { "label": "Treuhand und Büro", "href": "branchen/treuhand/" },
+        { "label": "Verwaltung", "href": "branchen/verwaltung/" }
+      ]
+    },
+    {
+      "titel": "Vertrauen",
+      "links": [
+        { "label": "Datenschutz und Sicherheit", "href": "sicherheit/" },
+        { "label": "Betrieb und Support", "href": "support/" },
+        { "label": "Muster-Verträge", "href": "unterlagen/" },
+        { "label": "Preise", "href": "preise/" },
+        { "label": "Referenzen", "href": "referenzen/" }
+      ]
+    },
+    {
+      "titel": "Firma",
+      "links": [
+        { "label": "Websites", "href": "websites/" },
+        { "label": "Über mich", "href": "ueber-mich/" },
+        { "label": "Kontakt", "href": "kontakt/" },
+        { "label": "Impressum", "href": "impressum/" },
+        { "label": "Datenschutzerklärung", "href": "datenschutz/" }
+      ]
+    }
+  ]
+}

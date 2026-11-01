@@ -1,0 +1,867 @@
+/* =====================================================================
+   Studio V4 · Startseite: 3D-Geschichte (dunkel, filmisch)
+   Nur index.html (Startseite) und dev.html laden diese Datei. Die Startseite laedt vorher css/site.css
+   (Kopfzeile, Fusszeile, helle Teaser). Darum sind hier alle allgemeinen Klassen auf die Geschichte
+   begrenzt (.story, .chapter, .preloader), damit nichts in die hellen Teile durchschlaegt.
+   Farben hier = HEX in js/config.js (gleiche Werte halten). Gehoert zur Gruppe Startseite 3D.
+   ===================================================================== */
+
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('../assets/fonts/geist-latin-var.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('../assets/fonts/geist-mono-latin-var.woff2') format('woff2');
+}
+
+:root {
+  /* Farben */
+  --c-void: #04060a;
+  --c-deep: #070b12;
+  --c-ink: #0d141d;
+  --c-steel: #2a3644;
+  --c-text: #eef4f8;       /* 16.5:1 auf #0d1520 */
+  --c-soft: #c4d0da;       /* Fliesstext, 11.7:1 auf #0d1520 */
+  --c-muted: #9aa9b6;      /* Nebentext, Labels, Footer, 7.6:1 auf #0d1520 */
+  --c-story: #d3dee6;      /* Fliesstext ueber der 3D-Szene */
+  --c-page: #05080d;       /* Seitengrund im Inhaltsbereich */
+  --c-page-alt: #070b12;   /* jeder zweite Abschnitt */
+  --c-surface: linear-gradient(180deg, #0d1520, #0b121b); /* Karten, Formular, Panels: fest, ohne Blur */
+  --c-surface-line: rgba(189, 246, 255, 0.12);
+  --c-signal: #46e6ff;
+  --c-ice: #bdf6ff;
+  --c-ember: #ffa45c;
+  --c-line: rgba(160, 214, 240, 0.12);
+  --c-line-strong: rgba(160, 214, 240, 0.26);
+  --c-panel: rgba(11, 17, 25, 0.66);
+  --c-signal-a: rgba(70, 230, 255, 0.14);
+  --c-ember-a: rgba(255, 164, 92, 0.14);
+
+  /* Schrift */
+  --f-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --f-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --fs-display: clamp(2.6rem, 1.1rem + 5.6vw, 7rem);
+  --fs-h2: clamp(2.1rem, 1.35rem + 3.1vw, 4.5rem);
+  --fs-story: clamp(2rem, 1.2rem + 2.5vw, 3.6rem);
+  --fs-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  --fs-lead: clamp(1.0625rem, 0.98rem + 0.42vw, 1.3125rem);
+  --fs-body: clamp(1.03125rem, 0.98rem + 0.25vw, 1.0625rem); /* 16.5 px Handy, 17 px Desktop */
+  --fs-small: 0.875rem; /* kleinster Text: 14 px */
+  --fs-mono: 0.75rem;
+
+  /* Raster und Abstaende (4er-Schritte) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
+  --sp-7: 48px; --sp-8: 64px; --sp-9: 96px; --sp-10: 128px;
+  --gutter: clamp(16px, 4.2vw, 64px);
+  --maxw: 1320px;
+  --header-h: var(--hdr-h, 64px);
+  --radius: 20px;
+  --radius-sm: 12px;
+
+  /* Bewegung */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--c-void); }
+body {
+  margin: 0;
+  background: var(--c-void);
+  color: var(--c-text);
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+.story strong { font-weight: 550; color: var(--c-text); }
+.story ::selection { background: var(--c-signal); color: var(--c-void); }
+:is(.story, .preloader) :focus-visible { outline: 2px solid var(--c-signal); outline-offset: 3px; border-radius: 6px; }
+.story :is(h1, h2, h3) { font-weight: 500; color: var(--c-text); }
+
+/* ------------------------------------------------------------- Typo */
+.story .display {
+  font-size: var(--fs-display);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.048em;
+  text-wrap: balance;
+  margin-bottom: var(--sp-6);
+}
+.story .headline {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  margin-bottom: var(--sp-5);
+}
+.story .lead { font-size: var(--fs-lead); line-height: 1.5; color: var(--c-soft); max-width: 40rem; }
+.story :is(.eyebrow, .kicker) {
+  font-family: var(--f-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-signal);
+  margin-bottom: var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.story .kicker span { color: var(--c-muted); }
+.story :is(.kicker, .eyebrow)::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+  transform-origin: left;
+}
+.story .link {
+  color: var(--c-text);
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  transition: background-size 0.4s var(--ease-out), color 0.2s;
+}
+.story .link:hover { color: var(--c-ice); background-size: 0 1px; background-position: 100% 100%; }
+
+/* Woerter fuer Einblendungen (js/ui.js teilt [data-split] auf) */
+.story .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.04em 0.02em 0.12em; margin: -0.04em -0.02em -0.12em; }
+.story .w > i { display: inline-block; font-style: normal; }
+
+.story .mono { font-family: var(--f-mono); }
+.story .actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-6); }
+
+/* ------------------------------------------------------------ Buehne (3D) */
+.stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.stage__canvas { width: 100%; height: 100vh; height: 100lvh; }
+.stage__overlay { position: absolute; inset: 0; overflow: hidden; transition: opacity 0.5s; }
+.is-content .stage__overlay { opacity: 0; }
+:is(.no-gl, .no-js) .stage__overlay { display: none; }
+.stage__poster { display: none; position: absolute; inset: 0; }
+:is(.no-gl, .no-js) .stage__canvas { display: none; }
+:is(.no-gl, .no-js) .stage__poster {
+  display: block;
+  background:
+    radial-gradient(38vmax 30vmax at 72% 34%, rgba(70, 230, 255, 0.12), transparent 70%),
+    radial-gradient(22vmax 18vmax at 64% 40%, rgba(255, 164, 92, 0.06), transparent 70%),
+    radial-gradient(60vmax 50vmax at 50% 120%, rgba(13, 20, 29, 0.9), transparent 70%),
+    var(--c-void);
+}
+:is(.no-gl, .no-js) .stage__poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--c-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--c-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(60% 60% at 70% 35%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(60% 60% at 70% 35%, #000 0%, transparent 75%);
+  opacity: 0.35;
+}
+/* Inhaltsbereich: Schleier ueber der 3D-Szene (zusaetzlich zu look.dim aus main.js), die Szene tritt ganz zurueck */
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 70% 40%, rgba(5, 8, 13, 0.55), rgba(5, 8, 13, 0.82));
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-out);
+  pointer-events: none;
+}
+.gl.is-content .stage::after { opacity: 1; }
+
+/* ------------------------------------------------------------ Preloader */
+.preloader { display: none; }
+.gl .preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: calc(var(--gutter) * 0.8) var(--gutter) calc(var(--gutter) * 0.8 + env(safe-area-inset-bottom));
+  background: var(--c-void);
+}
+.gl .preloader[hidden] { display: none; }
+.is-leaving .preloader { pointer-events: none; }
+.preloader__meta {
+  display: flex;
+  justify-content: space-between;
+  font: 500 var(--fs-mono)/1 var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.preloader__count {
+  align-self: end;
+  font-size: clamp(5.5rem, 19vw, 17rem);
+  font-weight: 300;
+  line-height: 0.8;
+  letter-spacing: -0.065em;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text);
+}
+.preloader__count small {
+  font-size: 0.16em;
+  letter-spacing: 0;
+  color: var(--c-signal);
+  vertical-align: top;
+  margin-left: 0.3em;
+  font-family: var(--f-mono);
+}
+.preloader__foot { margin-top: var(--sp-6); }
+.preloader__line { position: relative; height: 1px; background: var(--c-line); transform-origin: left; }
+.preloader__line i {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--c-signal), var(--c-ice));
+  box-shadow: 0 0 14px var(--c-signal);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.preloader__status {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  margin-top: var(--sp-4);
+  font: 500 var(--fs-mono)/1.4 var(--f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.preloader__status b { font-weight: 500; color: var(--c-text); font-variant-numeric: tabular-nums; }
+#preload-text { transition: opacity 0.4s; }
+.preloader__pct { white-space: nowrap; }
+
+
+/* ------------------------------------------------------------ Kopfzeile auf der Startseite
+   Gemeinsame Kopfzeile aus site.css (.hdr--dark). Hier nur das Verhalten ueber der Szene: erst nach dem
+   Preloader sichtbar, beim Scrollen ein weicher Verlauf, im Ausklang und ohne 3D eine feste Leiste.
+   Sobald der helle Inhalt oben ankommt, schaltet site.js auf hell (.is-light). */
+.gl:not(.is-ready) .hdr, .gl:not(.is-ready) .hud { opacity: 0; }
+.page--start .hdr, .hud { transition: opacity 0.8s var(--ease-out); }
+.hdr--dark:not(.is-light)::before {
+  background: linear-gradient(to bottom, rgba(4, 6, 10, 0.82), rgba(4, 6, 10, 0));
+  border-bottom-color: transparent;
+  opacity: 0;
+  transition: opacity 0.5s, background 0.5s;
+}
+.hdr--dark.is-scrolled:not(.is-light)::before { opacity: 1; }
+.gl[data-beat="outro"] .hdr--dark:not(.is-light)::before,
+:is(.no-gl, .no-js) .hdr--dark.is-scrolled:not(.is-light)::before {
+  background: rgba(4, 6, 10, 0.74);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  backdrop-filter: blur(14px) saturate(1.15);
+  border-bottom-color: var(--c-line);
+  opacity: 1;
+}
+.hdr--dark.is-light::before { opacity: 1; }
+
+/* ------------------------------------------------------------ Fortschritt der Geschichte */
+.hud {
+  position: fixed;
+  right: var(--gutter);
+  bottom: calc(var(--gutter) * 0.6);
+  z-index: 40;
+  display: none;
+  align-items: center;
+  gap: 14px;
+  font: 500 11px/1 var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.gl .hud { display: flex; }
+.gl.is-content .hud { opacity: 0; pointer-events: none; }
+.hud__index { color: var(--c-signal); font-variant-numeric: tabular-nums; }
+.hud__index small { font-size: 1em; color: var(--c-muted); margin-left: 2px; }
+.hud__track { position: relative; width: 132px; height: 1px; background: var(--c-line-strong); }
+.hud__track > i {
+  position: absolute;
+  inset: 0;
+  background: var(--c-signal);
+  box-shadow: 0 0 8px rgba(70, 230, 255, 0.6);
+  transform-origin: left;
+  transform: scaleX(var(--story, 0));
+}
+.hud__ticks {
+  position: absolute;
+  inset: -3px 0;
+  background: repeating-linear-gradient(90deg, var(--c-muted) 0 1px, transparent 1px calc(100% / 6));
+  opacity: 0.55;
+  width: calc(100% + 1px);
+}
+.hud__label { display: inline-block; min-width: 9.5em; color: var(--c-text); }
+.story-bar { display: none; }
+
+/* ------------------------------------------------------------ Story */
+main { position: relative; z-index: 1; }
+.story { position: relative; overflow-x: clip; }
+.chapter { position: relative; }
+.chapter__poster { display: none; }
+.chapter__panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: calc(var(--header-h) + 24px) var(--gutter) var(--sp-8);
+}
+.chapter__text { position: relative; max-width: 33rem; }
+/* Dezenter Verlauf hinter jedem Story-Text (dazu dunkelt der FxPass das Bild dort ab, director.scrim) */
+.chapter__text::before {
+  content: '';
+  position: absolute;
+  inset: -22% -26%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(4, 6, 10, 0.85), rgba(4, 6, 10, 0.5) 55%, rgba(4, 6, 10, 0));
+  pointer-events: none;
+}
+/* Hero (Runde 2): Verlauf reicht rechts kaum ueber den Titel hinaus, sonst lag er grau ueber der Partikel-Bueste.
+   Der Titel steht auf dunklem Grund, die Partikel dahinter daempft der Shader selbst. */
+.chapter--intro .chapter__text::before { inset: -20% -3% -20% -24%; background: radial-gradient(closest-side, rgba(4, 6, 10, 0.78), rgba(4, 6, 10, 0.4) 55%, rgba(4, 6, 10, 0)); }
+/* Schatten als Filter auf dem ganzen Titel: text-shadow wuerde an den Wort-Masken (.w, overflow hidden) abgeschnitten */
+.chapter .headline { font-size: var(--fs-story); line-height: 1.04; letter-spacing: -0.038em; margin-bottom: var(--sp-5); color: var(--c-text); filter: drop-shadow(0 2px 18px rgba(0, 0, 0, 0.55)); }
+.chapter .headline--xl { font-size: clamp(2.3rem, 1.1rem + 2.9vw, 4.1rem); line-height: 1.02; }
+.chapter__text p:not(.kicker):not(.eyebrow):not(.hero-facts):not(.story-tags):not(.outro-mail):not(.tool-hint) { color: var(--c-story); font-size: var(--fs-lead); line-height: 1.55; max-width: 30rem; text-wrap: pretty; }
+.chapter .kicker span { color: var(--c-soft); }
+/* Feine Stichwort-Zeile unter dem Story-Text */
+.story-tags {
+  margin: var(--sp-5) 0 0;
+  padding-top: var(--sp-4);
+  max-width: 30rem;
+  border-top: 1px solid var(--c-line-strong);
+  font: 500 var(--fs-mono)/1.6 var(--f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-ice);
+}
+/* Ausklang: Mail-Zeile unter den Knoepfen */
+.outro-mail { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: var(--sp-5) 0 0; font-size: 1rem; }
+.outro-mail .mono { font-size: var(--fs-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-soft); }
+.outro-mail .link { overflow-wrap: anywhere; }
+/* Ausklang: Glas-Karte hinter dem Text (Desktop). Im Hochformat feste Flaeche, siehe unten. */
+.chapter--outro .chapter__text {
+  padding: clamp(28px, 2.8vw, 42px);
+  border: 1px solid rgba(189, 246, 255, 0.1);
+  border-radius: 22px;
+  background: rgba(6, 10, 16, 0.62);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  backdrop-filter: blur(18px) saturate(1.15);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(189, 246, 255, 0.06);
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .chapter--outro .chapter__text { background: rgba(6, 10, 16, 0.86); }
+}
+.chapter--outro .chapter__text::before { display: none; }
+.chapter--outro .actions { margin-top: var(--sp-5); }
+.chapter--right .chapter__panel { justify-content: flex-end; }
+.chapter:not(.chapter--intro) .chapter__text { max-width: min(33rem, 46vw); }
+.chapter--right .chapter__text { text-align: left; }
+.chapter--intro .chapter__panel { align-items: flex-end; padding-bottom: clamp(64px, 12vh, 132px); }
+.chapter--intro .chapter__text { max-width: 60rem; }
+.chapter--intro .display { max-width: 11.5em; }
+.chapter--intro .lead { max-width: 33rem; margin-bottom: 0; }
+.hero-actions { margin-top: var(--sp-6); }
+.hero-facts {
+  margin: var(--sp-5) 0 0;
+  font: 500 var(--fs-mono)/1.5 var(--f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* Die fuenf Symbole der Kabel-Szene als echte Links. Ohne 3D und im Hochformat: Pillen im Text-Panel.
+   Mit 3D am Desktop setzt js/nodes.js dieselben Links ueber die Knoten (.is-nodes, siehe unten). */
+.tool-links ul { display: flex; flex-wrap: wrap; gap: 8px; margin: var(--sp-5) 0 0; padding: 0; list-style: none; }
+.tool-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 999px;
+  font: 500 11px/1 var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-ice);
+  background: rgba(4, 6, 10, 0.4);
+  text-decoration: none;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
+}
+.tool-links a:hover { border-color: var(--c-signal); color: #fff; background: rgba(70, 230, 255, 0.1); }
+.tool-links__sub { display: none; }
+.tl-ring, .tl-go { display: none; }
+.tool-hint { display: none; }
+.tool-hint__d, .tool-hint__m { display: none; }
+.chapter .tool-hint { margin: var(--sp-4) 0 0; font: 500 var(--fs-mono)/1.5 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-ice); }
+.gl.nodes-on .tool-hint, .gl.nodes-on .tool-hint__d { display: block; }
+/* Hochformat: kein eigener Hinweis, der Satz im Text endet schon mit "Wählen Sie ein Werkzeug:" (die Pillen folgen) */
+
+/* Knoten-Links (Desktop mit 3D): die nav steht fix ueber der Buehne, jeder Link ist ein Punkt auf seinem Knoten
+   (Position per transform aus js/nodes.js). Die Trefferflaeche ist ein Kreis um den Knoten (--R, mindestens 24 px
+   Radius, also 48 px), daneben die Beschriftung als Pille. Unsichtbare Links: Deckkraft 0, keine Zeiger-Ereignisse. */
+.tool-links.is-nodes { position: fixed; inset: 0; z-index: 3; margin: 0; pointer-events: none; }
+.tool-links.is-nodes ul { display: block; margin: 0; }
+.tool-links.is-nodes a, .node-hits a {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.tool-links.is-nodes a.is-on, .node-hits a.is-on { pointer-events: auto; }
+.tool-links.is-nodes a:focus-visible { outline: none; }
+.is-nodes .tl-ring, .node-hits .tl-ring {
+  display: block;
+  position: absolute;
+  left: calc(-1 * var(--R, 24px));
+  top: calc(-1 * var(--R, 24px));
+  width: calc(2 * var(--R, 24px));
+  height: calc(2 * var(--R, 24px));
+  border: 1.5px solid rgba(70, 230, 255, 0);
+  border-radius: 50%;
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+.is-nodes a:hover .tl-ring, .is-nodes a:focus-visible .tl-ring {
+  border-color: var(--c-signal);
+  background-color: rgba(70, 230, 255, 0.06);
+  box-shadow: 0 0 0 5px rgba(70, 230, 255, 0.1), 0 0 28px rgba(70, 230, 255, 0.35);
+}
+.is-nodes a:focus-visible .tl-ring { box-shadow: 0 0 0 3px var(--c-void), 0 0 0 5px var(--c-ice), 0 0 28px rgba(70, 230, 255, 0.35); }
+.is-nodes .tl-label, .node-hits .tl-label {
+  position: absolute;
+  left: calc(var(--R, 24px) + 6px);
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px 0 13px;
+  border: 1px solid rgba(189, 246, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(4, 6, 10, 0.68);
+  font: 500 11px/1 var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #e9f2f7;
+  transform: translateY(-50%);
+  transition: border-color 0.25s, background-color 0.25s, color 0.25s;
+}
+.is-left .tl-label { left: auto; right: calc(var(--R, 24px) + 6px); }
+.is-nodes a:hover .tl-label, .is-nodes a:focus-visible .tl-label { border-color: var(--c-signal); background-color: rgba(6, 22, 30, 0.86); color: #fff; }
+.is-nodes .tool-links__sub { display: none; color: var(--c-soft); letter-spacing: 0.08em; }
+.is-nodes a:hover .tool-links__sub, .is-nodes a:focus-visible .tool-links__sub { display: inline; }
+.is-nodes.is-measure .tool-links__sub { display: inline; } /* nur zum Messen (js/nodes.js), nie sichtbar gerendert */
+/* Pfeil nach rechts (Linkziel) */
+.is-nodes .tl-go { display: block; width: 6px; height: 6px; margin-left: 2px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transform: rotate(45deg); opacity: 0.8; }
+/* Tippflaechen im Hochformat (aria-hidden, gleiche Ziele wie die Pillen): nur der Name neben dem Knoten */
+.node-hits { display: none; }
+.gl .node-hits { display: block; position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.gl.nodes-on .node-hits { display: none; }
+.node-hits .tl-label { min-height: 26px; padding: 0 9px; font-size: 10px; letter-spacing: 0.12em; background: rgba(4, 6, 10, 0.6); }
+
+/* 3D aktiv: Abschnitte --len vh hoch (Scrollweg), die Panels blenden ueber --o (vom Director).
+   Version 4: die Abschnitte sind kurz (60 bis 160 vh). Darum stehen die Panels von Entlastung, Was KI kann und
+   Verbindung fix im Bild (wie im Hochformat) und blenden nur ueber ihre Text-Fenster (BEATS[].text). Der Hero scrollt
+   normal weg, der Ausklang klebt und scrollt mit dem Inhalt weg.
+   --oo macht die Blende steil: Text ist entweder voll sichtbar oder weg (o 0.2 bis 0.8 -> 0 bis 1),
+   nie lange halb transparent ueber dem Bild. */
+.gl .chapter { height: calc(var(--len, 180) * 1vh); --oo: clamp(0, calc((var(--o, 0) - 0.2) / 0.6), 1); }
+.gl .chapter:not(.chapter--intro):not(.chapter--outro) .chapter__panel { position: fixed; left: 0; right: 0; top: 0; }
+/* Link an der 3D-Strecke vorbei: Pille unten rechts, links neben dem HUD (dort liegt nie das Motiv), von Entlastung
+   bis Verbindung. Im Hochformat unter dem Text-Panel (siehe unten). */
+.story-skip { display: none; }
+.gl .story-skip {
+  display: inline-flex;
+  align-items: center;
+  position: fixed;
+  right: calc(var(--gutter) + 352px);
+  bottom: calc(var(--gutter) * 0.6 - 11px);
+  z-index: 55;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 999px;
+  background: rgba(5, 8, 13, 0.62);
+  font: 500 10.5px/1 var(--f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-soft);
+  text-decoration: none;
+  transition: opacity 0.5s, visibility 0.5s, border-color 0.25s, color 0.25s;
+}
+.gl .story-skip:hover { border-color: var(--c-signal); color: #fff; }
+.gl.is-content .story-skip, .gl:not(.is-ready) .story-skip, .gl.offer-on .story-skip, .gl.offer-end .story-skip,
+.gl[data-beat="intro"] .story-skip, .gl[data-beat="outro"] .story-skip { opacity: 0; visibility: hidden; }
+.gl .chapter__panel {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  opacity: var(--oo, 0);
+  transform: translate3d(0, calc((1 - var(--o, 0)) * 22px + (0.5 - var(--p, 0.5)) * 36px), 0);
+  pointer-events: none;
+}
+.gl .chapter.is-on .chapter__panel { will-change: opacity, transform; }
+.gl .chapter--intro .chapter__panel { transform: none; }
+/* Ausklang: Deckkraft auf der Glas-Karte statt auf dem Panel. Ein Vorfahre mit opacity unter 1 (oder will-change:
+   opacity) wird zur "Backdrop Root", der Blur der Karte saehe dann das 3D-Bild nicht mehr. */
+.gl .chapter--outro .chapter__panel { opacity: 1; }
+.gl .chapter--outro.is-on .chapter__panel { will-change: transform; }
+.gl .chapter--outro .chapter__text { opacity: var(--oo, 0); }
+/* Die Abschnitte sind nur Scrollstrecke. Treffer gehen an die Links des aktiven Panels, nie an einen spaeteren Abschnitt,
+   der im Hochformat schon ins Bild ragt (sonst landet ein Tipp auf einer Pille der Kabel-Szene im Ausklang). */
+.gl .chapter, .gl .chapter__panel { pointer-events: none; }
+.gl .chapter.is-on:not(.chapter--outro) .chapter__panel { z-index: 2; }
+.gl .chapter__text { pointer-events: none; }
+.gl .chapter.is-on .chapter__text a, .gl .chapter.is-on .chapter__text .actions { pointer-events: auto; }
+.gl:not(.is-ready) [data-intro] { opacity: 0; }
+
+/* Angebotsmoment: Zeile mit Knopf unter dem fertigen Website-Geruest (Ende Kapitel Code). Nur mit 3D, eingeblendet von
+   js/ui.js setOffer (Knopf sonst tabindex -1). Im Fallback steht der Satz nicht (die Station hat ihren eigenen Text). */
+.chapter__offer { display: none; }
+.gl .chapter__offer {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(56px, 10vh, 104px);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--gutter));
+  padding: 10px 10px 10px 24px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 999px;
+  background: rgba(4, 6, 10, 0.72);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate3d(-50%, 14px, 0);
+  transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out), visibility 0s 0.6s;
+}
+.gl .chapter__offer.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: translate3d(-50%, 0, 0);
+  transition: opacity 0.7s var(--ease-out), transform 0.9s var(--ease-out), visibility 0s;
+}
+/* Die Zeile liegt im Abschnitt .chapter (pointer-events: none, siehe oben): eingeblendet nimmt die ganze Pille Klicks an */
+.gl .chapter__offer.is-on { pointer-events: auto; }
+.gl.is-content .chapter__offer, .gl[data-beat="outro"] .chapter__offer { opacity: 0; visibility: hidden; }
+.chapter__offer p { margin: 0; color: var(--c-text); font-size: 0.98rem; line-height: 1.4; }
+.chapter__offer .btn { --h: 44px; flex: none; }
+
+.gl [data-split]:not(.is-split) { opacity: 0; }
+
+.scroll-cue {
+  position: absolute;
+  right: var(--gutter);
+  bottom: clamp(64px, 12vh, 132px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font: 500 10px/1 var(--f-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-soft);
+  margin: 0;
+}
+.scroll-cue span { writing-mode: vertical-rl; }
+.gl .scroll-cue { display: flex; opacity: calc(1 - var(--p, 0) * 6); }
+.scroll-cue i { position: relative; width: 1px; height: 56px; background: var(--c-line-strong); overflow: hidden; }
+.scroll-cue i::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, var(--c-signal)); animation: cue 2.2s var(--ease-io) infinite; }
+@keyframes cue { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+
+/* ------------------------------------------------------------ Fallback ohne 3D: Posterbilder der Szenen */
+:is(.no-gl, .no-js) .chapter { min-height: 100vh; min-height: 100svh; display: grid; }
+:is(.no-gl, .no-js) .chapter > * { grid-area: 1 / 1; }
+:is(.no-gl, .no-js) .chapter__panel { padding-top: 18vh; padding-bottom: 12vh; }
+:is(.no-gl, .no-js) .chapter__poster {
+  display: block;
+  position: relative;
+  min-height: 100%;
+  background-color: var(--c-void);
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  margin-left: 20%; /* Motiv rechts der Mitte, links Platz fuer den Text */
+}
+:is(.no-gl, .no-js) .chapter__poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(4, 6, 10, 0.86) 0%, rgba(4, 6, 10, 0.55) 34%, rgba(4, 6, 10, 0) 62%),
+    linear-gradient(to bottom, var(--c-void) 0, rgba(4, 6, 10, 0) 14%, rgba(4, 6, 10, 0) 82%, var(--c-void) 100%);
+}
+:is(.no-gl, .no-js) .chapter--right .chapter__panel { justify-content: flex-start; }
+/* Station ohne Text (Flug ins Gehirn): im Fallback ein reines Bild, etwas niedriger */
+:is(.no-gl, .no-js) .chapter--image { min-height: 70vh; min-height: 70svh; }
+:is(.no-gl, .no-js) .chapter--image .chapter__poster { margin-left: 8%; }
+:is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-image: url('../assets/img/poster-intro.webp'); }
+:is(.no-gl, .no-js) [data-scene="robot"] .chapter__poster { background-image: url('../assets/img/poster-robot.webp'); }
+:is(.no-gl, .no-js) [data-scene="zoom"] .chapter__poster { background-image: url('../assets/img/poster-zoom.webp'); }
+:is(.no-gl, .no-js) [data-scene="brain"] .chapter__poster { background-image: url('../assets/img/poster-brain.webp'); }
+:is(.no-gl, .no-js) [data-scene="cables"] .chapter__poster { background-image: url('../assets/img/poster-cables.webp'); }
+:is(.no-gl, .no-js) [data-scene="dna"] .chapter__poster { background-image: url('../assets/img/poster-dna.webp'); }
+:is(.no-gl, .no-js) [data-scene="outro"] .chapter__poster { background-image: url('../assets/img/poster-outro.webp'); }
+@media (max-aspect-ratio: 4/5) {
+  :is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-image: url('../assets/img/poster-intro-m.webp'); }
+  :is(.no-gl, .no-js) [data-scene="robot"] .chapter__poster { background-image: url('../assets/img/poster-robot-m.webp'); }
+  :is(.no-gl, .no-js) [data-scene="zoom"] .chapter__poster { background-image: url('../assets/img/poster-zoom-m.webp'); }
+  :is(.no-gl, .no-js) [data-scene="brain"] .chapter__poster { background-image: url('../assets/img/poster-brain-m.webp'); }
+  :is(.no-gl, .no-js) [data-scene="cables"] .chapter__poster { background-image: url('../assets/img/poster-cables-m.webp'); }
+  :is(.no-gl, .no-js) [data-scene="dna"] .chapter__poster { background-image: url('../assets/img/poster-dna-m.webp'); }
+  :is(.no-gl, .no-js) [data-scene="outro"] .chapter__poster { background-image: url('../assets/img/poster-outro-m.webp'); }
+  /* Motiv etwas nach oben, unten steht der Text */
+  :is(.no-gl, .no-js) .chapter__poster { background-size: 100% auto; background-position: 50% -7vh; margin-left: 0; }
+  /* Hero: Partikel-Bueste hoeher, damit die Kapitelmarke nicht auf den hellen Schultern steht */
+  :is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-position: 50% -22vh; }
+  /* Hero: Verlauf frueher deckend, die Kapitelmarke steht nie auf den hellen Partikel-Schultern */
+  :is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster::after {
+    background: linear-gradient(to bottom, var(--c-void) 0, rgba(4, 6, 10, 0) 14%, rgba(4, 6, 10, 0) 26%, rgba(4, 6, 10, 0.9) 44%, var(--c-void) 62%);
+  }
+  :is(.no-gl, .no-js) .chapter__poster::after {
+    background: linear-gradient(to bottom, var(--c-void) 0, rgba(4, 6, 10, 0) 16%, rgba(4, 6, 10, 0) 42%, rgba(4, 6, 10, 0.88) 72%, var(--c-void) 100%);
+  }
+  :is(.no-gl, .no-js) .chapter__panel { align-items: flex-end; padding-top: 50vh; padding-bottom: 9vh; }
+}
+
+
+/* ------------------------------------------------------------ Heller Inhalt unter der Geschichte
+   Eine helle Flaeche mit runden oberen Ecken schiebt sich ueber die Buehne (V4-KONZEPT 3.9 und 5.7).
+   main.js misst #content (Szene dunkelt ab und haelt an). */
+.content {
+  position: relative;
+  z-index: 1;
+  background: var(--bg, #fff);
+  color: var(--text, #2a3442);
+  border-radius: 28px 28px 0 0;
+  overflow-x: clip;
+}
+.gl .content { box-shadow: 0 -24px 80px rgba(0, 0, 0, 0.35); }
+.content:focus { outline: none; }
+/* Teaser kompakter als die Unterseiten (Ziel: rund drei bis vier Bildschirme am Desktop, V4-KONZEPT 5.7) */
+.content { --sec-y: clamp(56px, 6vw, 96px); --head-gap: clamp(28px, 3.4vw, 48px); }
+.content > .sec:first-child { padding-top: clamp(64px, 7vw, 104px); }
+.content .cta-band { border-radius: 0; }
+.card__line { margin: 0; font: 500 0.8125rem/1.5 var(--f-mono); letter-spacing: 0.04em; color: var(--muted, #5a6575); }
+.wege-start__karten .card:first-child .card__title { font-size: var(--fs-h2, 2rem); }
+@media (min-width: 1024px) {
+  .wege-start__karten { grid-template-columns: 7fr 5fr; }
+}
+.prices--start { grid-template-columns: minmax(0, 1fr) !important; }
+
+/* Teaser-Grafiken (dekorativ): Kabel-Schema in der KI-Karte, Handy-Schema in der Website-Karte */
+.st-media { margin: var(--sp-3) 0 var(--sp-2); }
+.st-kabel { display: block; width: 100%; max-width: 420px; height: auto; color: var(--accent, #0a6f86); }
+.st-kabel__line { fill: none; stroke: rgba(10, 111, 134, 0.38); stroke-width: 1.5; }
+.st-kabel__line--out { stroke: var(--ember, #ffa45c); stroke-width: 2; }
+.st-kabel__node { fill: #fff; stroke: rgba(10, 111, 134, 0.35); stroke-width: 1.5; }
+.st-kabel__hub { fill: var(--d-bg, #0b1017); }
+.st-kabel__ki { fill: #46e6ff; font: 600 13px/1 var(--f-mono); letter-spacing: 0.06em; text-anchor: middle; }
+.st-kabel__sie { fill: var(--ember-soft, #fdebdc); stroke: var(--ember, #ffa45c); stroke-width: 1.5; }
+.st-kabel svg use { color: var(--accent, #0a6f86); }
+.st-kabel__pulse { fill: #46e6ff; }
+.st-kabel__cap { display: flex; justify-content: space-between; max-width: 420px; margin: var(--sp-2) 0 0; font: 500 0.6875rem/1.3 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted, #5a6575); }
+.st-kabel__cap span:last-child { color: var(--ember-ink, #a14b0c); }
+.st-media--phone { display: flex; justify-content: center; padding: var(--sp-3) 0 0; }
+.st-phone { width: 132px; padding: 7px; border-radius: 26px; background: var(--ink, #0b1220); box-shadow: var(--shadow-device, 0 40px 80px -30px rgba(11, 18, 32, 0.28)); }
+.st-phone__screen { display: grid; gap: 7px; padding: 10px 9px 12px; border-radius: 20px; background: #fff; }
+.st-phone__screen > span { display: block; border-radius: 4px; background: var(--bg-soft, #f5f7f9); }
+.st-phone__bar { height: 7px; width: 46%; background: var(--line, #e3e7ec) !important; }
+.st-phone__hero { height: 74px; border-radius: 10px !important; background: linear-gradient(140deg, #d7eff4, #edf7f9 55%, #fbf6f0) !important; }
+.st-phone__line { height: 7px; background: var(--line, #e3e7ec) !important; }
+.st-phone__line--s { width: 64%; }
+.st-phone__btn { height: 16px; width: 58%; border-radius: 999px !important; background: var(--accent, #0a6f86) !important; }
+.st-phone__tiles { display: grid !important; grid-template-columns: 1fr 1fr; gap: 6px; background: none !important; }
+.st-phone__tiles i { height: 34px; border-radius: 8px; background: var(--bg-soft, #f5f7f9); }
+/* Demo-Ausschnitt (statisch): Fenster mit Eingang, Schritten und Entwurf */
+.st-demo { margin: var(--sp-4) 0 0; border-radius: var(--r-stage, 28px); background: linear-gradient(160deg, #edf7f9, #f5f7f9 60%, #fbf6f0); padding: clamp(16px, 2.4vw, 28px); }
+.st-demo__in { border-radius: 16px; background: #fff; box-shadow: var(--shadow-1); overflow: hidden; font-size: 0.875rem; line-height: 1.45; color: var(--text, #2a3442); }
+.st-demo__bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line, #e3e7ec); font: 500 0.6875rem/1 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted, #5a6575); }
+.st-demo__dots { display: flex; gap: 5px; }
+.st-demo__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line, #e3e7ec); }
+.st-demo__mail, .st-demo__draft { padding: 12px 14px; }
+.st-demo__mail { border-bottom: 1px solid var(--line, #e3e7ec); }
+.st-demo p { margin: 0; }
+.st-demo__k { margin-bottom: 4px !important; font: 500 0.6875rem/1.2 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent, #0a6f86); }
+.st-demo__from b { font-weight: 600; color: var(--ink, #0b1220); }
+.st-demo__t { color: var(--muted, #5a6575); }
+.st-demo__steps { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 10px 14px; list-style: none; background: var(--bg-soft, #f5f7f9); }
+.st-demo__steps li { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; background: #fff; font: 500 0.6875rem/1.2 var(--f-mono); letter-spacing: 0.06em; color: var(--muted, #5a6575); }
+.st-demo__steps li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent, #0a6f86); }
+.st-demo__steps li.is-now { color: var(--ink, #0b1220); box-shadow: inset 0 0 0 1.5px var(--accent, #0a6f86); }
+.st-demo__steps li.is-now::before { background: #46e6ff; box-shadow: 0 0 0 3px rgba(70, 230, 255, 0.25); }
+.st-demo__draft p:not(.st-demo__k) { padding-left: 10px; border-left: 2px solid var(--accent-soft, #d7eff4); }
+.st-demo__act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.st-demo__b { display: inline-flex; align-items: center; min-height: 30px; padding: 0 14px; border-radius: 999px; background: var(--accent, #0a6f86); color: #fff; font-weight: 550; font-size: 0.8125rem; }
+.st-demo__b--2 { background: #fff; color: var(--ink, #0b1220); box-shadow: inset 0 0 0 1px var(--line-strong, #7d8a98); }
+.st-demo__who { margin-left: auto; font: 500 0.6875rem/1.2 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ember-ink, #a14b0c); }
+@media (prefers-reduced-motion: reduce) { .st-kabel__pulse { display: none; } }
+
+/* ------------------------------------------------------------ Cursor */
+.cursor { position: fixed; left: 0; top: 0; z-index: 400; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+.cursor.is-visible { opacity: 1; }
+.cursor.is-text { opacity: 0; }
+.cursor__ring { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform; }
+.cursor__ring {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1px solid rgba(189, 246, 255, 0.45);
+  transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out), margin 0.35s var(--ease-out), border-color 0.3s, background-color 0.3s;
+}
+.cursor.is-link .cursor__ring { width: 60px; height: 60px; margin: -30px 0 0 -30px; border-color: var(--c-signal); background-color: rgba(70, 230, 255, 0.08); }
+.cursor.is-down .cursor__ring { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+
+/* ------------------------------------------------------------ Debug */
+.debug-stats { position: fixed; left: 8px; bottom: 8px; z-index: 500; margin: 0; padding: 8px 10px; background: rgba(0, 0, 0, 0.7); color: #9ff; font: 11px/1.4 var(--f-mono); border-radius: 6px; pointer-events: none; }
+
+
+/* ------------------------------------------------------------ Responsive (Geschichte) */
+/* Hochformat (Handy, Tablet hochkant): Text unten, Motiv oben. Gleiche Grenze wie die Kamera (PORTRAIT.below 0.85) */
+@media (max-width: 760px), (max-aspect-ratio: 17/20) {
+  .gl .hud { display: none; }
+  .gl .story-bar {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 60;
+    height: 2px;
+    background: rgba(160, 214, 240, 0.08);
+    transition: opacity 0.5s;
+  }
+  .gl.is-content .story-bar, .gl:not(.is-ready) .story-bar { opacity: 0; }
+  /* Hochformat: Strecke rund 28 % kuerzer (der Director misst die echten Hoehen), Leistungen kommen frueher.
+     Die Panels (ausser Ausklang) stehen fix unten statt zu kleben: der Text bleibt stehen, bis das naechste Panel
+     kommt, und scrollt nie ueber das Motiv in der oberen Bildhaelfte. */
+  .gl .chapter { height: calc(var(--len, 180) * 0.72vh); }
+  /* Ausklang: nur der Teil ueber 100 vh ist Scrollweg (der letzte Beat endet am unteren Rand), er wird gekuerzt */
+  .gl .chapter--outro { height: calc(100vh + (var(--len, 150) - 100) * 0.72vh); }
+  .gl .chapter:not(.chapter--outro) .chapter__panel { position: fixed; left: 0; right: 0; top: 0; }
+  /* Runde 2: unten rechts unter dem Text-Panel statt oben rechts (dort lag die Pill auf dem Kopf des Androiden) */
+  .gl .story-skip {
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    right: var(--gutter);
+    min-height: 32px;
+    padding: 0 12px;
+    border-color: var(--c-line);
+  }
+  .story-bar i { position: absolute; inset: 0; background: var(--c-signal); box-shadow: 0 0 8px var(--c-signal); transform-origin: left; transform: scaleX(var(--story, 0)); }
+  .chapter--right .chapter__panel { justify-content: flex-start; }
+  .chapter:not(.chapter--intro) .chapter__text { max-width: 36rem; }
+  .gl .chapter__panel { align-items: flex-end; padding-bottom: max(8vh, 48px); }
+  .chapter__text::before { inset: -26% -20% -16%; background: radial-gradient(closest-side, rgba(4, 6, 10, 0.78), rgba(4, 6, 10, 0)); }
+  /* Text unten: zusaetzlich ein linearer Verlauf vom unteren Rand bis etwa zur Bildmitte */
+  .gl .chapter__panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to top, rgba(4, 6, 10, 0.86) 0%, rgba(4, 6, 10, 0.62) 28%, rgba(4, 6, 10, 0) 52%);
+    pointer-events: none;
+  }
+  .gl .chapter--intro .chapter__panel::before { background: linear-gradient(to top, rgba(4, 6, 10, 0.78) 0%, rgba(4, 6, 10, 0.4) 30%, rgba(4, 6, 10, 0) 50%); }
+  /* Kapitel 01 bis 06: Text unten auf einer festen Flaeche (ab 32 px ueber dem Text dicht, bis zum unteren Rand,
+     ganze Breite). Kein backdrop-filter (Leistung). Darueber nur ein weicher Uebergang ins Bild. */
+  .gl .chapter:not(.chapter--intro) .chapter__panel::before { background: linear-gradient(to top, rgba(5, 8, 13, 0.6) 0%, rgba(5, 8, 13, 0) 46%); }
+  .gl .chapter:not(.chapter--intro) .chapter__text::before {
+    inset: auto;
+    top: -80px;
+    left: calc(-1 * var(--gutter));
+    width: 100vw;
+    bottom: calc(-1 * max(8vh, 48px));
+    background: linear-gradient(to bottom, rgba(5, 8, 13, 0) 0, rgba(5, 8, 13, 0.88) 48px, rgba(5, 8, 13, 0.94) 100%);
+  }
+  .gl .chapter--outro .chapter__text {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .gl .chapter--outro .chapter__text::before { display: block; }
+  .chapter--outro .actions .btn { flex: 1 1 100%; --h: 52px; }
+  .chapter .headline { font-size: clamp(1.875rem, 1.2rem + 3.4vw, 2.25rem); margin-bottom: var(--sp-4); }
+  .chapter .headline--xl { font-size: clamp(2.125rem, 1.4rem + 4vw, 2.75rem); }
+  .chapter:not(.chapter--intro) .chapter__text p:not(.kicker):not(.story-tags):not(.outro-mail):not(.tool-hint) { font-size: 1.0625rem; line-height: 1.55; }
+  .story-tags { margin-top: var(--sp-4); padding-top: var(--sp-3); font-size: 11px; letter-spacing: 0.1em; }
+  .chapter .kicker, .chapter .eyebrow { margin-bottom: var(--sp-4); }
+  .chapter--intro .chapter__panel { padding-bottom: max(13vh, 92px); }
+  .scroll-cue { left: var(--gutter); right: auto; bottom: max(4vh, 24px); flex-direction: row; }
+  .scroll-cue span { writing-mode: horizontal-tb; }
+  .scroll-cue i { width: 40px; height: 1px; }
+  .scroll-cue i::after { background: linear-gradient(90deg, transparent, var(--c-signal)); animation-name: cue-x; }
+  /* Angebotszeile: Karte ueber die ganze Breite unten (das Geruest steht im Hochformat oben im Bild) */
+  .gl .chapter__offer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    width: calc(100vw - 2 * var(--gutter));
+    bottom: max(6vh, 32px);
+    padding: 18px;
+    border-radius: 22px;
+    text-align: center;
+  }
+  .chapter__offer p { font-size: 0.95rem; }
+}
+@media (max-width: 760px) {
+  .tool-links ul { gap: 6px; }
+  .tool-links a { padding: 0 12px; font-size: 10.5px; }
+  .story .actions .btn { flex: 1 1 auto; }
+}
+/* Handy-Hero: kompakter, damit oben Platz fuer das Motiv (Kopf mit Kern) bleibt */
+@media (max-width: 760px) {
+  .chapter--intro .display { font-size: clamp(2.25rem, 9.4vw, 2.9rem); margin-bottom: var(--sp-4); }
+  .chapter--intro .chapter__text p.lead { font-size: 1rem; line-height: 1.5; }
+  .hero-actions { margin-top: var(--sp-5); gap: 10px; }
+  /* Version 4: zwei Wege nebeneinander (spart eine Zeile, das Gesicht der Partikel-Bueste bleibt frei) */
+  .hero-actions .btn { flex: 1 1 auto; --h: 48px; padding-inline: 18px; }
+  .chapter--intro .eyebrow__brand { display: none; }
+  .hero-facts { margin-top: var(--sp-4); font-size: 11px; letter-spacing: 0.1em; }
+  .gl .chapter--intro .chapter__panel { padding-bottom: max(5vh, 28px); }
+  .chapter--intro .scroll-cue { display: none; }
+  /* Ausklang auf dem Handy: kompakter Textblock, damit oben der Kopf sichtbar bleibt (Mail steht gleich danach im Kontakt) */
+  .gl .chapter--outro .outro-mail { display: none; }
+  /* Version 4: auch der Absatz (Preis und Entwurf stehen auf den Knoepfen und gleich darunter in den Teasern), sonst
+     lag der Textblock ueber dem Gesicht */
+  .gl .chapter--outro .chapter__text > p[data-anim]:not(.kicker) { display: none; }
+  .gl .chapter--outro .chapter__text::before {
+    /* Runde 2: Verlauf beginnt knapp ueber dem Text (vorher 56 px darueber: dunkler Balken ueber Mund und Kinn) */
+    top: -22px;
+    /* Unterkante laeuft ueber rund 140 px weich aus (keine harte Kante beim Wegscrollen ueber dem Gesicht) */
+    bottom: calc(-1 * max(8vh, 48px) - 140px);
+    background: linear-gradient(to bottom, rgba(5, 8, 13, 0) 0, rgba(5, 8, 13, 0.88) 30px, rgba(5, 8, 13, 0.94) calc(100% - 180px), rgba(5, 8, 13, 0) 100%);
+  }
+}
+@keyframes cue-x { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+/* Reduzierte Bewegung: keine Einblend-Animationen */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .js [data-reveal] { opacity: 1; transform: none; }
+}

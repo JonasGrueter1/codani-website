@@ -1,0 +1,7 @@
+# GitHub Pages (Jekyll): interne Dateien nicht veroeffentlichen.
+# Ordner mit _ am Anfang (_src) veroeffentlicht Jekyll ohnehin nicht.
+exclude:
+  - ARCHITEKTUR.md
+  - README.md
+  - dev.html
+  - js/dev.js

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treuhandbüro Beispiel (Musterbetrieb, erfunden)</title>
+<style>
+  :root { --bg: #f4f3ee; --ink: #16302a; --text: #44564f; --green: #24594a; --green-s: #e1ebe5; --brass: #b08a52; --line: #dcdcd2; --card: #ffffff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 17px/1.6 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { width: min(100% - 96px, 1280px); margin: 0 auto; }
+  .bar { display: flex; align-items: center; gap: 36px; height: 88px; border-bottom: 1px solid var(--line); }
+  .logo { display: flex; align-items: center; gap: 14px; margin-right: auto; color: var(--ink); }
+  .logo i { display: grid; place-items: center; width: 40px; height: 40px; border: 1.5px solid var(--ink); font: 700 16px/1 'Bitstream Charter', Georgia, serif; font-style: normal; letter-spacing: 0.02em; }
+  .logo b { display: block; font: 600 18px/1.15 'Inter', sans-serif; letter-spacing: -0.01em; }
+  .logo small { display: block; font-size: 12.5px; color: var(--text); }
+  nav { display: flex; gap: 30px; font-size: 15px; font-weight: 500; color: var(--ink); }
+  .btn { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 22px; border-radius: 6px; background: var(--green); color: #fff; font-weight: 600; font-size: 15px; white-space: nowrap; }
+  .btn--line { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 72px; align-items: center; padding: 72px 0 64px; }
+  .kicker { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; color: var(--brass); }
+  h1 { margin: 20px 0 22px; font: 400 60px/1.06 'Bitstream Charter', Georgia, serif; letter-spacing: -0.02em; color: var(--ink); }
+  .lead { font-size: 19px; max-width: 30em; }
+  .btns { display: flex; gap: 12px; margin-top: 32px; }
+  .facts { display: flex; gap: 32px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .facts b { display: block; font: 400 24px/1.1 'Bitstream Charter', Georgia, serif; color: var(--ink); }
+  .facts small { font-size: 14px; }
+  .board { position: relative; height: 520px; }
+  .panel { position: absolute; background: var(--card); border-radius: 14px; box-shadow: 0 1px 2px rgba(22, 48, 42, 0.06), 0 24px 48px -24px rgba(22, 48, 42, 0.3); padding: 22px 24px; }
+  .p1 { left: 0; top: 10px; width: 64%; }
+  .p2 { right: 0; top: 150px; width: 52%; }
+  .p3 { left: 8%; bottom: 0; width: 58%; }
+  .ptitle { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+  .ptitle b { color: var(--ink); font-size: 16px; }
+  .ptitle small { font-size: 12.5px; color: var(--text); }
+  .check { display: grid; gap: 10px; }
+  .check li { list-style: none; display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--ink); }
+  .check li::before { content: ''; flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.6 2.5L14 7.5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") center/20px no-repeat; }
+  .check li.open::before { background: var(--green-s); box-shadow: inset 0 0 0 1.5px var(--green); }
+  .check li.open { color: var(--text); }
+  .bars { display: flex; align-items: flex-end; gap: 14px; height: 120px; padding: 0 4px; border-bottom: 1px solid var(--line); }
+  .bars i { flex: 1; border-radius: 6px 6px 0 0; background: var(--green-s); }
+  .bars i.on { background: var(--green); }
+  .q { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12.5px; color: var(--text); padding: 0 6px; }
+  .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .slots span { padding: 10px 8px; border-radius: 8px; border: 1px solid var(--line); text-align: center; font-size: 14px; color: var(--ink); line-height: 1.3; }
+  .slots span small { display: block; font-size: 12px; color: var(--text); }
+  .slots span.on { background: var(--green); border-color: var(--green); color: #fff; }
+  .slots span.on small { color: #d8e6df; }
+  .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); }
+  .services div { padding: 28px 28px 40px 0; }
+  .services div + div { padding-left: 28px; border-left: 1px solid var(--line); }
+  .services small { font: 600 13px/1 'Inter', sans-serif; letter-spacing: 0.14em; color: var(--brass); }
+  .services b { display: block; margin: 10px 0 6px; font: 400 26px/1.15 'Bitstream Charter', Georgia, serif; color: var(--ink); }
+  .menu { display: none; }
+  @media (max-width: 700px) {
+    .wrap { width: calc(100% - 40px); }
+    .bar { height: 68px; }
+    nav, .bar > .btn { display: none; }
+    .menu { display: grid; place-items: center; width: 44px; height: 44px; border: 1.5px solid var(--ink); border-radius: 6px; }
+    .menu i { display: block; width: 18px; height: 1.6px; background: var(--ink); box-shadow: 0 6px 0 var(--ink), 0 -6px 0 var(--ink); }
+    .hero { grid-template-columns: 1fr; gap: 36px; padding: 36px 0 40px; }
+    h1 { font-size: 40px; margin: 14px 0 16px; }
+    .lead { font-size: 17.5px; }
+    .btns { flex-direction: column; }
+    .btns .btn { justify-content: center; }
+    .facts { gap: 20px; margin-top: 28px; }
+    .facts b { font-size: 20px; }
+    .board { height: 420px; }
+    .p1 { width: 86%; }
+    .p2 { width: 70%; top: 140px; }
+    .p3 { left: 0; width: 80%; }
+    .services { grid-template-columns: 1fr; }
+    .services div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+<header class="wrap bar">
+  <span class="logo"><i>TB</i><span><b>Treuhandbüro Beispiel</b><small>Buchhaltung, Steuern, Lohn</small></span></span>
+  <nav><span>Leistungen</span><span>Für Firmen</span><span>Für Private</span><span>Team</span><span>Kontakt</span></nav>
+  <span class="btn">Termin anfragen</span>
+  <span class="menu"><i></i></span>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <p class="kicker">Treuhand für KMU und Private</p>
+      <h1>Buchhaltung und Steuern, ruhig und klar erledigt.</h1>
+      <p class="lead">Eine feste Ansprechperson, klare Fristen und Belege, die Sie digital einreichen. Damit Sie sich auf Ihren Betrieb konzentrieren können.</p>
+      <div class="btns"><span class="btn">Termin anfragen</span><span class="btn btn--line">Leistungen ansehen</span></div>
+      <div class="facts">
+        <div><b>Feste Ansprechperson</b><small>vom ersten Gespräch an</small></div>
+        <div><b>Digitale Belege</b><small>per Upload oder Mail</small></div>
+      </div>
+    </div>
+    <div class="board" aria-hidden="true">
+      <div class="panel p1">
+        <div class="ptitle"><b>Jahresabschluss</b><small>Musterfirma AG</small></div>
+        <ul class="check"><li>Belege erhalten</li><li>Buchungen abgestimmt</li><li class="open">Abschluss in Arbeit</li><li class="open">Besprechung mit Ihnen</li></ul>
+      </div>
+      <div class="panel p2">
+        <div class="ptitle"><b>Umsatz</b><small>pro Quartal</small></div>
+        <div class="bars"><i style="height:52%"></i><i style="height:64%"></i><i style="height:58%"></i><i class="on" style="height:82%"></i></div>
+        <p class="q"><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span></p>
+      </div>
+      <div class="panel p3">
+        <div class="ptitle"><b>Termin anfragen</b><small>diese Woche</small></div>
+        <div class="slots"><span>Di<small>10.00</small></span><span class="on">Mi<small>14.00</small></span><span>Do<small>09.30</small></span></div>
+      </div>
+    </div>
+  </section>
+  <section class="services">
+    <div><small>01</small><b>Buchhaltung</b>Laufende Buchführung, Abschluss und Mehrwertsteuer.</div>
+    <div><small>02</small><b>Steuern</b>Steuererklärungen für Firmen und Private.</div>
+    <div><small>03</small><b>Lohnwesen</b>Lohnabrechnung, Sozialversicherungen, Lohnausweise.</div>
+  </section>
+</main>
+</body>
+</html>

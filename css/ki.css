@@ -1,0 +1,107 @@
+/* =====================================================================
+   Studio V4 · KI-Seiten: ki/, ki/e-mail/, ki/kalender/, ki/dokumente/, ki/kunden/,
+   branchen/, branchen/handwerk/, branchen/treuhand/, branchen/verwaltung/
+   Gehoert zur Gruppe KI-Seiten. Tokens und Bausteine aus css/site.css verwenden.
+   ===================================================================== */
+
+/* Buehne auf ki/: Kabel-Schema mit den fuenf Werkzeugen als Links (Stile in css/ki-mockups.css, .kb) */
+.hero--stage .hero__media { display: grid; }
+.hero--stage .ph { border-radius: 0; }
+
+.ki-branchenzeile { color: var(--muted); }
+.ki-regeln { max-width: 48rem; gap: var(--sp-4); font-size: 1.0625rem; }
+.ki-regeln li { padding-left: 44px; }
+.ki-heute { max-width: 46rem; }
+
+/* ki/: Kacheln mit kleinen Bildern, Karten in einer Zeile */
+.tiles--mini .card__icon { display: none; }
+.cards--row .card { flex-direction: row; flex-wrap: wrap; align-items: center; align-content: flex-start; column-gap: var(--sp-4); }
+.cards--row .card__title { flex: 1; }
+.cards--row .card__text { flex: 1 1 100%; padding-left: 64px; margin-top: -8px; }
+@media (max-width: 479px) { .cards--row .card__text { padding-left: 0; margin-top: 0; } }
+.cards--fluss .card__icon { display: none; }
+
+/* ki/: Angebot "Anfragen in einer Liste" (Text links, Liste rechts) */
+.ki-angebot { display: grid; gap: var(--sp-7); align-items: center; }
+.ki-angebot .t-h2 { margin-bottom: var(--sp-4); -webkit-hyphens: manual; hyphens: manual; }
+.hero--ki .t-display, .hero--werkzeug .t-display { -webkit-hyphens: manual; hyphens: manual; }
+.ki-angebot .t-lead { margin-bottom: var(--sp-5); }
+@media (min-width: 1100px) { .ki-angebot { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--sp-8); } }
+
+/* ki/: Demo, Ablauf, Programme */
+.ki-demo-note { max-width: 52rem; }
+.ki-demo-foot { margin-top: var(--sp-5); }
+.ki-ausstieg { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: var(--sp-7) 0 0; padding: 14px 18px; border-radius: 14px; background: var(--bg-warm); color: var(--ink); font-weight: 550; max-width: 44rem; }
+.prog { display: grid; gap: 0 var(--sp-6); margin: 0; border-top: 1px solid var(--line); }
+@media (min-width: 760px) { .prog { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.prog__item { display: grid; gap: 2px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.prog__item dt { color: var(--ink); font-weight: 600; font-size: 1.0625rem; }
+.prog__item dd { margin: 0; color: var(--text); }
+.prog__item dt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.prog__status { display: inline-block; padding: 3px 9px; border-radius: 999px; font: 600 0.75rem/1.3 var(--f-sans); letter-spacing: 0; background: var(--bg-soft); color: var(--muted); }
+.prog__status--ja { background: #e7f5ee; color: var(--ok); }
+.prog__status--partner, .prog__status--export { background: var(--accent-soft); color: var(--accent-hover); }
+.prog__status--offen, .prog__status--ungeprueft { background: var(--warn-soft); color: var(--ink); }
+.prog__quellen { margin-top: var(--sp-4); }
+.prog + .prog__quellen + .info, .prog + .info { margin-top: var(--sp-5); }
+.ki-datenweg { margin-top: var(--sp-9); }
+.ki-datenweg__t { margin: 0 0 var(--sp-6); }
+
+/* Werkzeug-Seiten */
+.hero--werkzeug .hero__media { padding: clamp(16px, 2.6vw, 36px); }
+.chips--prog .chip { min-height: 40px; padding: 6px 16px; font-size: 1rem; }
+.ki-weiter { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+
+/* Dokumente: Fragen an eigene Dokumente */
+.frage { max-width: 46rem; }
+.frage__win { display: grid; gap: 12px; padding: clamp(16px, 2.4vw, 28px); border-radius: var(--r-stage); background: var(--bg-soft); }
+.frage__who { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font: 500 0.6875rem/1.4 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.frage__q { justify-self: end; max-width: 30rem; margin: 0; padding: 12px 16px; border-radius: 18px 18px 4px 18px; background: var(--ink); color: #fff; }
+.frage__q .frage__who { color: rgba(255, 255, 255, 0.7); }
+.frage__a { max-width: 34rem; padding: 14px 16px; border-radius: 18px 18px 18px 4px; background: var(--bg); box-shadow: var(--shadow-1); color: var(--ink); }
+.frage__a p { margin: 0; }
+.frage__src { display: flex; align-items: center; gap: 8px; margin-top: 10px !important; padding: 6px 10px; border-radius: 10px; background: var(--bg-tint); color: var(--accent); font-size: 0.875rem; font-weight: 550; width: fit-content; }
+.frage__src .ico { width: 18px; height: 18px; }
+.ki-aufwand { align-items: start; }
+.ki-aufwand__links { display: flex; flex-wrap: wrap; gap: 0.75rem 1.75rem; }
+
+/* Beispiel (Werkzeug-Seiten): Eingang, was die KI findet, Entwurf */
+.beispiel { display: grid; gap: var(--sp-4); }
+@media (min-width: 1024px) { .beispiel { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.beispiel__teil { min-width: 0; padding: var(--sp-5); border-radius: var(--r-card); background: var(--bg-soft); }
+.beispiel__teil--entwurf { background: var(--bg-tint); }
+.beispiel__teil--breit { grid-column: 1 / -1; background: var(--bg); border: 1px solid var(--line); }
+.beispiel__teil p:last-child { margin-bottom: 0; }
+.beispiel__label { margin: 0 0 var(--sp-2); font: 500 0.75rem/1.4 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.beispiel__teil--entwurf .beispiel__label { color: var(--accent); }
+.beispiel__meta { font-size: var(--fs-small); color: var(--muted); }
+.beispiel__hinweis { margin-top: var(--sp-3); padding: 8px 12px; border-radius: 10px; background: var(--warn-soft); font-size: var(--fs-small); color: var(--ink); }
+.tbl tr.is-pruefen td { background: var(--warn-soft); }
+.tbl--klein { font-size: 0.875rem; }
+.tbl--klein th, .tbl--klein td { padding: 8px 10px; }
+
+/* Bildergeschichte (Branchen): 5 Schritte, Desktop 3 plus 2, Handy waagrecht wischen */
+.bilder { display: grid; gap: var(--sp-5); counter-reset: b; }
+@media (min-width: 1024px) { .bilder { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1023px) {
+  .bilder { grid-auto-flow: column; grid-auto-columns: min(82%, 340px); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--sp-3); -webkit-overflow-scrolling: touch; }
+  .bilder__step { scroll-snap-align: start; }
+}
+.bilder__step { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); border-radius: var(--r-card); background: var(--bg); }
+.bilder__step--sie { box-shadow: inset 0 3px 0 var(--ember); }
+.bilder__bild { margin-bottom: var(--sp-2); }
+.bilder__bild .ph { border-radius: 14px; }
+.bilder__nr { margin: 0; font: 500 0.75rem/1.4 var(--f-mono); letter-spacing: 0.08em; color: var(--muted); }
+.bilder__title { margin: 0; font-size: 1.125rem; }
+.bilder__text { margin: 0; font-size: 0.9375rem; }
+.rollen th:first-child, .rollen td:first-child { color: var(--accent); }
+
+/* Sprungleiste oben auf ki/ (Testkunden: Seite am Handy sehr lang) */
+.sprung { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg); }
+.sprung__liste { display: flex; gap: 6px; margin: 0; padding: 10px 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.sprung__liste::-webkit-scrollbar { display: none; }
+.sprung__liste a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; color: var(--ink); font-weight: 550; font-size: 0.9375rem; text-decoration: none; white-space: nowrap; }
+.sprung__liste a:hover { background: var(--accent-soft); color: var(--accent-hover); }
+.sprung__liste a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sprung__liste li:nth-last-child(2) { margin-left: auto; }
+@media (max-width: 759px) { .sprung__liste li:nth-last-child(2) { margin-left: 0; } }

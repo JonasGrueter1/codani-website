@@ -65,6 +65,8 @@ function toFallback(reason) {
   if (dead) return;
   dead = true;
   clearTimeout(safety);
+  // Grund fuer den Hinweis bei den Standbildern (siehe gl-hint im Layout)
+  if (!root.hasAttribute('data-fb')) root.setAttribute('data-fb', 'slow');
   if (reason) console.warn(`3D beendet (${reason}), statischer Hintergrund aktiv.`);
   // Im Fallback sind die Kapitel kuerzer: danach an dieselbe Stelle springen (gleiches Kapitel oder gleicher
   // Inhaltsabschnitt), statt irgendwo zu landen

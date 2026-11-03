@@ -44,6 +44,35 @@ const MODULES = [
   'js/scenes/robot-env.js', 'js/scenes/robot-geometry.js', 'js/scenes/robot.js',
 ];
 
+// Hinweis, wenn die Startseite Standbilder statt der 3D-Animation zeigt (html[data-fb]). Laeuft ohne Module, damit
+// er auch in alten Browsern erscheint. Schliessen gilt fuer die Sitzung.
+const GL_HINT_SCRIPT = `<script>
+  (function () {
+    var d = document.documentElement, h = document.getElementById('gl-hint');
+    if (!h) return;
+    var T = {
+      rm: 'Auf Ihrem Gerät ist «Bewegung reduzieren» eingeschaltet. Darum zeigt die Seite Standbilder statt der 3D-Animation.',
+      alt: 'Ihr Browser ist für die 3D-Animation zu alt. Darum zeigt die Seite Standbilder. Tipp: Browser aktualisieren.',
+      gpu: 'Die 3D-Animation ist auf diesem Gerät ausgeschaltet, weil sie ruckeln würde. Tipp: In den Einstellungen des Browsers die Grafikbeschleunigung einschalten.',
+      slow: 'Die 3D-Animation lief auf diesem Gerät zu langsam. Darum zeigt die Seite jetzt Standbilder.'
+    };
+    function closed() { try { return sessionStorage.getItem('glHintClosed') === '1'; } catch (e) { return false; } }
+    function show() {
+      var w = d.getAttribute('data-fb');
+      if (!T[w] || closed()) return;
+      document.getElementById('gl-hint-text').textContent = T[w];
+      document.getElementById('gl-hint-try').hidden = !(w === 'gpu' || w === 'slow');
+      h.hidden = false;
+    }
+    document.getElementById('gl-hint-close').addEventListener('click', function () {
+      h.hidden = true;
+      try { sessionStorage.setItem('glHintClosed', '1'); } catch (e) {}
+    });
+    show();
+    if (window.MutationObserver) new MutationObserver(show).observe(d, { attributes: true, attributeFilter: ['data-fb'] });
+  })();
+</script>`;
+
 function redirectScript() {
   return `<script>
     // Alte Anker der einseitigen Version auf die neuen Seiten umleiten (vor allem anderen, laedt kein 3D)
@@ -85,12 +114,15 @@ function glScript() {
         if (ok && force) d.setAttribute('data-gl-force', '1');
       } catch (e) { ok = false; }
       d.classList.add(ok ? 'gl' : 'no-gl');
+      // Grund fuer die Standbilder merken (Hinweis gl-hint): rm = Bewegung reduzieren, alt = Browser ohne Importmaps,
+      // gpu = keine schnelle Grafik, test = ?nogl (kein Hinweis). main.js setzt slow, wenn 3D unterwegs aussteigt.
+      if (!ok) d.setAttribute('data-fb', /[?&]nogl\\b/.test(s) ? 'test' : rm ? 'rm' : !im ? 'alt' : 'gpu');
       // Notausgang: startet main.js nie (Netzabbruch, Parse-Fehler in einem alten Browser), bliebe die Seite beim
       // Preloader stehen. Nach 20 s (Tests: 75 s) ohne laufendes main.js auf den statischen Fallback wechseln.
       if (ok) {
         setTimeout(function () {
           if (window.__studioMain || d.classList.contains('is-ready')) return;
-          d.classList.remove('gl'); d.classList.add('no-gl', 'is-ready');
+          d.classList.remove('gl'); d.classList.add('no-gl', 'is-ready'); d.setAttribute('data-fb', 'slow');
           var p = document.getElementById('preloader'); if (p) p.hidden = true;
         }, force ? 75000 : 20000);
       }
@@ -158,6 +190,12 @@ function story(ctx, body) {
     header(ctx, { dark: true }),
     '<div class="story-bar" aria-hidden="true"><i></i></div>',
     '<a class="story-skip" href="#weiter" aria-label="Animation überspringen, weiter zum Inhalt">Animation überspringen</a>',
+    // Hinweis bei Standbildern statt 3D (Text je nach Grund, siehe GL_HINT_SCRIPT)
+    '<div class="gl-hint" id="gl-hint" role="note" hidden>',
+    '<p class="gl-hint__text" id="gl-hint-text"></p>',
+    '<a class="gl-hint__try" id="gl-hint-try" href="?gl" hidden>Trotzdem versuchen</a>',
+    '<button class="gl-hint__close" id="gl-hint-close" type="button" aria-label="Hinweis schliessen">×</button>',
+    '</div>',
     '<aside class="hud" aria-hidden="true">',
     `<span class="hud__index"><span id="hud-index">00</span><small>/${String(HUD_LAST).padStart(2, '0')}</small></span>`,
     '<span class="hud__track"><i></i><span class="hud__ticks"></span></span>',
@@ -167,6 +205,7 @@ function story(ctx, body) {
     body,
     '</main>',
     footer(ctx),
+    GL_HINT_SCRIPT,
     '</body>',
     '</html>',
     '',

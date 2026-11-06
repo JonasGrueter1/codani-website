@@ -178,9 +178,14 @@ Neue Seiten: Datei in `pages/` anlegen, Pfad in `data/nav.json` (Menü, Fusszeil
   `html[data-theme]` (`dunkel` Standard, `hell`; gespeichert in `localStorage` `codani-theme`, Test-Schalter `?hell`
   und `?dunkel`), legt den runden Knopf `#theme-toggle` (Sonne/Mond) neben Kontakt und schaltet live um (Ereignis
   `codani-theme` für die 3D-Szene, weiche Blende; bricht der Browser die View Transition ab, bleibt das Thema gesetzt
-  und die Ablehnung wird abgefangen). Farben der hellen Geschichte: `css/story.css`, Abschnitt "Hellmodus" (Kopfzeile
+  und die Ablehnung wird abgefangen). Mit 3D erst die Szene, dann die Seite (Prüfung 2, 06.11.2026): der Knopf ruft
+  `window.__codaniTheme.prepare(t)` aus `js/main.js` und zeigt solange `aria-busy`; die Szene kompiliert die
+  Programme des neuen Themas und rendert ein erstes Bild unsichtbar, erst dann setzt der Knopf `data-theme`. Ohne
+  JavaScript ist der Knopf ausgeblendet. Farben der hellen Geschichte: `css/story.css`, Abschnitt "Hellmodus" (Kopfzeile
   mit kräftigem Off-White-Verlauf über der Szene, HUD fast deckend). Helle Poster: `assets/img/poster-<beat>-hell.webp`
-  und `-hell-m.webp` (nach Prüfung 1 am 03.11.2026 neu aufgenommen). Die Unterseiten sind schon hell und haben keinen
+  und `-hell-m.webp` (nach Prüfung 1 am 03.11.2026 neu aufgenommen, nach Prüfung 2 am 06.11.2026 brain sowie im
+  Hochformat robot, zoom, brain, cables und outro). Im Fallback hell steht der Text im Hochformat auf einer fast
+  deckenden Off-White-Fläche (Kicker mindestens 6.6:1). Die Unterseiten sind schon hell und haben keinen
   Schalter.
 - `js/ui.js` macht nur noch Geschichte, Preloader, HUD, Anker und Cursor. Navigation, Menü, FAQ, Formular und
   Einblenden liegen in `js/site.js`. `css/style.css` ist aufgeteilt: Geschichte in `css/story.css`, der Rest in `site.css`.

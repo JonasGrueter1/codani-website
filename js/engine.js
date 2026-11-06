@@ -295,6 +295,13 @@ export class Engine {
     return true;
   }
 
+  /** Blende sofort beenden (die View Transition des Browsers blendet die ganze Seite, Pruefung 2) */
+  dropSnap() {
+    if (!this._snap) return;
+    this._snapT = THEME_FADE;
+    this.stepSnap(0);
+  }
+
   /** Abdunkeln hinter dem Text (director.scrim) */
   setScrim(sc) {
     const u = this.fx.uniforms;

@@ -209,6 +209,15 @@ export const BACKDROPS_HELL = Object.freeze({
     horizonGlow: 0.2, glow: 0.3, detail: 0.1,
   },
 });
+// Hell am Handy (ctx.isMobile, Pruefung 2): einzelne Werte, die BACKDROPS_HELL ueberschreiben. Hinter der Bueste
+// (robot, outro) einen Hauch grauer und weniger weisses Gegenlicht, sonst stand die weisse Schale (ohne Klarlack,
+// Stufe medium) gleich hell wie das Studio. Kabel-Kapitel: Lichtflaeche leiser (oben lag ein grau-lila Dunstband).
+export const BACKDROPS_HELL_M = Object.freeze({
+  robot: { base: 0xcfd6dc, mid: 0xdfe4e8, glow: 0.38 },
+  zoom: { base: 0xd6dde3, mid: 0xe6ebee },
+  outro: { base: 0xdcd8d3, mid: 0xebe7e2, glow: 0.32 },
+  cables: { wash: 0.4 },
+});
 // Helligkeit des Papiers im hellen Thema (linear vor der neutralen Tonwertkurve): 1.0 waere #f0f0f0 auf dem Schirm,
 // mit diesem Faktor landet das Off-White bei rund #f2f4f6. Gilt auch fuer die Nebelfarbe (Objekte laufen ins Papier).
 export const PAPER_GAIN = 1.16;

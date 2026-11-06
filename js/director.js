@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {
   BEATS, BEAT_FADE, MODULES, MODULE_FADE, CAMERA_KEYS, CUT_FADE, PORTRAIT, TEMPO, nominalBeatWindows,
 } from './config.js';
+import { THEME } from './theme.js';
 
 /* ------------------------------------------------------------ Helfer */
 export const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -496,6 +497,8 @@ export class Director {
     sc.a = o * (def.scrim ?? 0.45);
     // Hochformat: der Text steht dort auf einer eigenen, fast deckenden Flaeche. Ein voller Scrim reichte bis ueber
     // den Kopf oben im Bild (Ausklang: graues, flaues Gesicht), darum halb, im Ausklang gar nicht (Runde 2)
-    if (this.portrait) sc.a *= name === 'outro' ? 0 : 0.5;
+    // Hell (Pruefung 2): im Hochformat gar nicht. Der helle Scrim lag als Schleier ueber Brust und Schultern der
+    // Bueste; der Text steht dort auf seiner eigenen hellen Flaeche (css/story.css)
+    if (this.portrait) sc.a *= name === 'outro' || THEME.light ? 0 : 0.5;
   }
 }

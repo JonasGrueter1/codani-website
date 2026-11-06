@@ -290,7 +290,9 @@ export async function create(ctx) {
         // medium/low ohne Klarlack: im Ausklang glatter und mehr Spiegelung (schmale Glanzlinien der Studio-Streifen)
         const ow = bw.o / bw.s;
         mats.shell.roughness = 0.2 - 0.09 * ow;
-        mats.shell.envMapIntensity = 1.45 + 0.2 * ow;
+        // Hell (Pruefung 2): das helle Studio spiegelt fast weiss, mit 1.45 bis 1.65 lief die Schale am Handy aus
+        // (69 % der Bildpunkte von Kopf und Hals ab Grauwert 240). Dunkel unveraendert.
+        mats.shell.envMapIntensity = ctx.theme && ctx.theme.light ? 1.0 + 0.1 * ow : 1.45 + 0.2 * ow;
         mats.shellIn.envMapIntensity = mats.shell.envMapIntensity;
       }
       const xr = smoothstep(0.45, 0.75, zm.p);
@@ -303,7 +305,9 @@ export async function create(ctx) {
       look.drift = 0.025 * (1 - smoothstep(0.4, 0.9, zm.p)) + 0.004;
       look.flash = inOutro ? 0 : 0.06 * Math.exp(-Math.pow((br.p - 0.4) / 0.086, 2));
       if (ctx.theme && ctx.theme.light) {
-        lookHell.exposure = mix4(1.15, 1.12, 1.05, ctx.isMobile ? 1.18 : 1.15);
+        // Stufe medium/low (Handy, Pruefung 2): ohne Klarlack glaenzt die Schale breiter, darum weniger Belichtung
+        // (vorher 1.15 bis 1.18: die Bueste loeste sich im Off-White auf)
+        lookHell.exposure = hi ? mix4(1.15, 1.12, 1.05, ctx.isMobile ? 1.18 : 1.15) : mix4(1.07, 1.04, 1.05, 1.08);
         lookHell.key = mix4(0.55, 0.5, 0.6, ctx.isMobile ? 0.6 : 0.5);
         lookHell.rim = mix4(1.1, 1.0, 1.0, 1.1);
         lookHell.amb = mix4(0.28, 0.26, 0.3, 0.28);

@@ -22,7 +22,7 @@
 // 0 (low: Verlauf, 1 Nebelschicht, Strahlen einfach, ohne Staub und Datenbahnen).
 import { makeNoiseVolume } from './backdrop-noise.js';
 import { BACKDROP_VERT, BACKDROP_FRAG } from './backdrop-glsl.js';
-import { BACKDROPS, BACKDROPS_HELL, PAPER_GAIN, BACKDROP_FADE, BEATS } from '../config.js';
+import { BACKDROPS, BACKDROPS_HELL, BACKDROPS_HELL_M, PAPER_GAIN, BACKDROP_FADE, BEATS } from '../config.js';
 
 const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const smoothstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -68,7 +68,8 @@ export function create(ctx) {
   const presetsDark = names.map((name) => makePreset(name, { ...BASE, ...(BACKDROPS[name] || {}) }, new Float32Array(NUMS.length).fill(1)));
   // Helles Thema (Kapitel 14): eigene Farben und Mengen, Formen und Punkte aus der dunklen Farbwelt
   const presetsHell = names.map((name, i) => {
-    const p = makePreset(name, { ...BASE, ...(BACKDROPS[name] || {}), ...(BACKDROPS_HELL[name] || {}) }, presetsDark[i].mul);
+    const m = ctx.isMobile ? BACKDROPS_HELL_M[name] : null; // Handy: einzelne Werte anders (config.js)
+    const p = makePreset(name, { ...BASE, ...(BACKDROPS[name] || {}), ...(BACKDROPS_HELL[name] || {}), ...(m || {}) }, presetsDark[i].mul);
     p.col[COLORS.indexOf('fogColor')].multiplyScalar(PAPER_GAIN);
     return p;
   });

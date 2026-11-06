@@ -177,7 +177,12 @@ outgoingLight *= 0.35 + 0.65 * abFall;
 #ifdef CODANI_LIGHT
 // Helles Thema (Pruefung 1): zur Silhouette hin grauer, wie Abschatter im Produktstudio. Sonst stand die weisse
 // Schulter gleich hell wie das Off-White dahinter und die Kante loeste sich auf.
+#ifdef AB_CHEAP
+// Stufe medium/low (Pruefung 2): kraeftiger und breiter, am Handy fehlte am Scheitel jede Kontur (Schale 246 auf 239)
+if (gl_FrontFacing) outgoingLight *= 1.0 - 0.62 * pow(1.0 - clamp(abs(dot(normal, normalize(vViewPosition))), 0.0, 1.0), 1.6);
+#else
 if (gl_FrontFacing) outgoingLight *= 1.0 - 0.48 * pow(1.0 - clamp(abs(dot(normal, normalize(vViewPosition))), 0.0, 1.0), 2.2);
+#endif
 #endif
 diffuseColor.a = abFall * abOpenA * abInA;
 // Obergrenze knapp ueber der Bloom-Schwelle der Bueste: Glanzlinien bleiben scharf, kein Lichthof um die Silhouette

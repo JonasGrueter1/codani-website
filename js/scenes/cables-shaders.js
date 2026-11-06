@@ -405,7 +405,13 @@ const NODE_FS = /* glsl */ `
       float app = smoothstep(0.0, 0.6, appear) * (1.0 - 0.45 * dimO);
       vec3 glass = mix(vec3(1.2), vec3(0.98, 1.08, 1.12), clamp(fres * 0.8 + entry * (0.3 * on + flash), 0.0, 1.0));
       vec4 c = vec4(glass * bodyA, bodyA);
-      float la = clamp(rim * (0.6 + 0.4 * on + 0.6 * flash) * (1.0 - 0.5 * portal), 0.0, 1.0) * app;
+      // Pruefung 2: am Handy sind die Knoten klein (5 bis 10 px Radius), Ring und Icon-Striche waren schmaler als ein
+      // Bildpunkt und wirkten blass. Darum mindestens rund 1.5 px breit, der Ring etwas deckender.
+      float minW = aaD * 0.75;
+      float rimL = cover(abs(d - 1.0), max(rimW, minW));
+      ic = cover(id.x, max(hw, minW / 0.9)) * inside;
+      acc = cover(id.y, max(hw, minW / 0.9)) * inside;
+      float la = clamp(rimL * (0.75 + 0.25 * on + 0.6 * flash) * (1.0 - 0.5 * portal), 0.0, 1.0) * app;
       c = vec4(uThemeTeal * la + c.rgb * (1.0 - la), la + c.a * (1.0 - la));
       la = clamp((inner * (0.3 + 0.4 * on) + sw * 0.8) * solid, 0.0, 1.0) * app;
       c = vec4(uThemeTeal * la + c.rgb * (1.0 - la), la + c.a * (1.0 - la));

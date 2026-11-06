@@ -108,7 +108,7 @@ void main() {
   if (px < 1.5) { cover = px * px / 2.25; px = 1.5; }
   cover *= min(1.0, 9.0 / px);
 #ifdef CODANI_LIGHT
-  cover *= 1.0 - 0.85 * smoothstep(8.0, 32.0, px); // hell: unscharfe, nahe Punkte nicht als graue Flecken
+  cover *= 1.0 - 0.85 * smoothstep(5.0, 22.0, px); // hell: unscharfe, nahe Punkte nicht als graue Flecken (Pruefung 2: frueher)
 #endif
   gl_PointSize = min(px, 64.0);
   vA = uAlpha * rev * cover * smoothstep(0.035, 0.16, depth) * fogF(depth);
@@ -169,6 +169,9 @@ void main() {
   if (px < 2.0) { cover = px * px / 4.0; px = 2.0; }
   cover *= min(1.0, 14.0 / px);
   vBig = smoothstep(14.0, 56.0, px); // nahe Zellen: weiche Scheibe ohne grossen Hof
+#ifdef CODANI_LIGHT
+  vBig = smoothstep(6.0, 30.0, px); // hell (Pruefung 2): schon mittlere, unscharfe Zellen leiser (sonst Tintentropfen)
+#endif
   gl_PointSize = min(px, 64.0);
   vA = uAlpha * rev * cover * smoothstep(0.03, 0.12, depth) * fogF(depth) * depthAtt(depth);
   if (vA < 0.003) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
@@ -190,7 +193,7 @@ void main() {
 #ifdef CODANI_LIGHT
   // hell (Pruefung 1): nahe, unscharfe Zellen und ihr Hof wurden zu dunklen Klecksen bis 40 px. Grosse Scheiben fast
   // weg, der Hof nur halb, der scharfe Kern bleibt.
-  a *= (1.0 - 0.88 * vBig) * mix(0.5, 1.0, core);
+  a *= (1.0 - 0.88 * vBig) * mix(0.5, 1.0, core) * (1.0 - 0.4 * vHot);
 #endif
   if (a < 0.002) discard;
   gl_FragColor = vec4(vCol, a);
@@ -338,6 +341,11 @@ void main() {
   float sp = exp(-pow((ph - vT) * 14.0, 2.0)) * step(0.8, fract(s * 7.31)) * uAct;
   vec3 hot = mix(uHot, uWarmHot, vMeta.y);
   vec3 col = uLine * (0.6 + 0.4 * sin(uTime * 0.6 + s * 21.0)) * uNetBase + hot * (fire + 0.4 * sp + 0.12 * vBirth);
+#ifdef CODANI_LIGHT
+  // hell (Pruefung 2): Impulse und Funken wurden in der Umrechnung zu dunklen Strichen (wie Kratzer auf der Linse).
+  // Auf Hell nur eine leise Verdichtung der Linie in Tuerkis, gedeckelt.
+  col = uLine * (0.6 + 0.4 * sin(uTime * 0.6 + s * 21.0)) * uNetBase + uLine * min(fire + 0.4 * sp + 0.12 * vBirth, 1.0) * 0.35;
+#endif
 #else
   // Faserbahnen: Lichtpakete wandern Richtung Hirnstamm (t = 1)
   float type = vMeta.y;
@@ -346,6 +354,9 @@ void main() {
   float dash = exp(-pow((ph - 0.5) * 13.0, 2.0));
   float conv = 1.0 + 0.3 * proj * smoothstep(0.55, 1.0, vT);
   vec3 col = uLine * conv + uHot * dash * uFlow * conv;
+#ifdef CODANI_LIGHT
+  col = uLine * conv * (1.0 + 0.3 * dash * uFlow); // hell: Lichtpakete nur leise (Pruefung 2)
+#endif
 #endif
   gl_FragColor = vec4(col, a);
 }

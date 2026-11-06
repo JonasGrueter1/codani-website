@@ -47,6 +47,14 @@ export class NodeLinks {
     this.hitState = this.links.map(() => ({ x: -1, y: -1, o: -1, R: -1, on: null, left: null }));
     this.hiName = null;
     this.content = false;
+    // Thema (Pruefung 2): im hellen Thema sind die Beschriftungen der Tippflaechen (Handy) kraeftiger, sonst wirkten sie
+    // bei kleinen Knoten (Sichtbarkeit 0.4 bis 0.6) blass auf dem Off-White. Nur bei Wechsel gelesen, nicht pro Bild.
+    this.light = this.root.getAttribute('data-theme') === 'hell';
+    this._theme = () => {
+      this.light = this.root.getAttribute('data-theme') === 'hell';
+      for (const st of this.hitState) st.o = -1;
+    };
+    window.addEventListener('codani-theme', this._theme);
 
     // Tippflaechen fuer den Modus "pills" (nur Zeiger, kein Fokus, fuer Screenreader versteckt)
     this.hitLayer = document.createElement('div');
@@ -174,7 +182,7 @@ export class NodeLinks {
       const sc = this.cables.screen[this.idx[i]];
       const v = sc ? show * sc.vis : 0;
       if (v < 0.02) { this._hide(els[i], sts[i]); continue; }
-      this._place(els[i], sts[i], sc, v, nodes);
+      this._place(els[i], sts[i], sc, !nodes && this.light ? Math.min(1, v * 1.7) : v, nodes);
     }
   }
 
@@ -227,6 +235,7 @@ export class NodeLinks {
 
   dispose() {
     if (!this.ok) return;
+    window.removeEventListener('codani-theme', this._theme);
     if (this.mq.removeEventListener) this.mq.removeEventListener('change', this._mode);
     else this.mq.removeListener(this._mode);
     for (const a of this.links) {

@@ -159,15 +159,56 @@ async function boot() {
 
   // Thema (Kapitel 14): vor dem Vorkompilieren setzen, die Programme sind fuer beide Themen dieselben
   const { readTheme } = themeMod;
-  let themeOn = readTheme();
-  let themeWant = themeOn;
+  let themeOn = readTheme(); // Thema, in dem die Szene rendert
+  let themeWant = themeOn; // Ziel: data-theme (Ereignis codani-theme) oder Vorbereitung durch den Schalter
   let themeHold = 0; // Sekunden: so lange wird auch im Inhaltsbereich weiter gerendert (Blende laeuft)
   let themeBusy = false; // Programme des neuen Themas werden kompiliert: nicht rendern, das letzte Bild bleibt stehen
+  let themePrep = null; // Rueckruf des Schalters: aufrufen, sobald die Szene im neuen Thema bereit ist
+  let themeWait = null; // Szene ist bereit und haelt das alte Bild, bis die Seite data-theme setzt (Zeitgeber)
+  let themePre = false; // ein Bild im neuen Thema rendern, unsichtbar unter dem festen alten Bild (uSnap bleibt 1)
+  let themeRestart = () => {}; // setzt die Bildzeit nach einer Pause neu (Loop unten)
   runner.setTheme(themeOn);
   engine.setTheme(themeOn);
-  const onTheme = () => { themeWant = readTheme(); themeHold = 1.2; };
+  // Ablauf beim Klick (Pruefung 2): erst die Szene, dann die Seite. Der Schalter ruft prepare(t) (window.__codaniTheme,
+  // Skript im Layout): die Szene haelt ihr letztes Bild, stellt um und kompiliert die Programme des neuen Themas. Erst
+  // dann setzt der Schalter data-theme (mit View Transition) und die Szene rendert weiter. Vorher wurde die Seite sofort
+  // hell, das 3D-Bild stand beim ersten Wechsel aber bis zum Ende der Kompilierung dunkel still (dunkle Schrift auf
+  // dunklem Bild). Mit View Transition blendet der Browser die ganze Seite, die eigene Blende der Szene entfaellt dann.
+  const release = (vt) => {
+    if (!themeWait) return;
+    clearTimeout(themeWait);
+    themeWait = null;
+    themeBusy = false;
+    themeHold = 1.2;
+    if (vt) engine.dropSnap();
+    themeRestart();
+  };
+  const onTheme = (e) => {
+    themeWant = readTheme();
+    themeHold = 1.2;
+    const vt = !!(e && e.detail && typeof e.detail === 'object' && e.detail.vt);
+    release(vt && themeWant === themeOn);
+  };
   window.addEventListener('codani-theme', onTheme);
   cleanups.push(() => window.removeEventListener('codani-theme', onTheme));
+  const prepare = (t) => new Promise((resolve) => {
+    if (dead) { resolve(); return; }
+    if (themePrep) themePrep(); // aeltere Anfrage: Seite darf umschalten
+    themePrep = resolve;
+    themeWant = t === 'hell';
+    themeHold = 1.2;
+  });
+  const prepDone = () => {
+    if (!themePrep) return;
+    const fn = themePrep;
+    themePrep = null;
+    fn();
+  };
+  cleanups.push(() => {
+    prepDone();
+    clearTimeout(themeWait);
+    if (window.__codaniTheme && window.__codaniTheme.prepare === prepare) delete window.__codaniTheme;
+  });
 
   // Alle Shader vorab kompilieren, damit Uebergaenge nicht ruckeln
   director.update(0);
@@ -204,6 +245,7 @@ async function boot() {
 
   let time = 0;
   let last = performance.now();
+  themeRestart = () => { last = performance.now(); };
   let raf = 0;
   let running = false;
   let frameNo = 0;
@@ -252,17 +294,39 @@ async function boot() {
     look.dim = Math.max(look.dim, contentDim * 0.62);
     engine.setScrim(director.scrim);
     engine.applyLook(look, time);
-    engine.stepSnap(dtRaw);
+    engine.stepSnap(themePre ? 0 : dtRaw);
     frameNo += 1;
     engine.render(dt);
+    if (themePre) {
+      // Szene steht im neuen Thema bereit, sichtbar ist noch das alte Bild: jetzt darf die Seite umschalten. Die Szene
+      // haelt an, bis data-theme gesetzt ist (Ereignis codani-theme, release). Sicherheitsnetz, falls das ausbleibt.
+      themePre = false;
+      themeBusy = true;
+      clearTimeout(themeWait);
+      themeWait = setTimeout(() => release(false), forcedGL ? 180000 : 8000);
+      prepDone();
+      return;
+    }
     // Themenwechsel: dieses Bild (altes Thema) festhalten, dann umstellen. Ab dem naechsten Bild blendet es aus.
+    // Kommt der Wechsel vom Schalter (prepare), wartet die Szene danach mit dem alten Bild auf die Seite (oben).
     if (themeWant !== themeOn) {
       themeOn = themeWant;
       if (!ui.reduced) engine.snapshot();
       runner.setTheme(themeOn);
       engine.setTheme(themeOn);
       themeBusy = true;
-      engine.compileScene().then(() => { themeBusy = false; themeHold = 1.2; last = performance.now(); });
+      const fromToggle = !!themePrep;
+      engine.compileScene().then(() => {
+        if (dead) return;
+        themeBusy = false;
+        themeHold = 1.2;
+        last = performance.now();
+        // Vom Schalter: zuerst ein Bild im neuen Thema unter dem festen alten Bild rendern (manche Treiber, z. B.
+        // SwiftShader, uebersetzen ein Programm erst beim ersten Zeichnen ganz), erst danach schaltet die Seite um
+        if (fromToggle && engine.fading && readTheme() !== themeOn) themePre = true;
+      });
+    } else if (themePrep) {
+      prepDone(); // Szene steht schon im gewuenschten Thema
     }
     if (background) return;
     engine.adapt(dtRaw);
@@ -314,6 +378,8 @@ async function boot() {
   if (new URLSearchParams(window.location.search).has('debug')) mountStats(engine, director);
 
   start();
+  // Schalter im Layout: erst die Szene vorbereiten, dann die Seite umschalten (siehe prepare oben)
+  window.__codaniTheme = { prepare };
   clearTimeout(safety);
   if (ScrollTrigger) ScrollTrigger.refresh();
   await ui.finish();

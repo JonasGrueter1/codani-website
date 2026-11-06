@@ -95,11 +95,15 @@ const THEME_TOGGLE = [
 
 // Umschalten ohne Neuladen: html[data-theme], Wahl speichern, Ereignis "codani-theme" fuer die 3D-Szene (js/main.js).
 // Die Seite blendet weich ueber (View Transitions, sonst kurze Farb-Uebergaenge per Klasse theme-fade).
+// Mit 3D (Pruefung 2): erst die Szene vorbereiten (window.__codaniTheme.prepare, main.js), dann die Seite. Die Szene
+// haelt solange ihr letztes Bild und kompiliert die Programme des neuen Themas (beim ersten Wechsel bis rund 2 s);
+// erst danach wechseln Seite und Szene zusammen. Der Knopf zeigt solange aria-busy, weitere Klicks warten.
 const THEME_SCRIPT = `<script>
   (function () {
     var d = document.documentElement, b = document.getElementById('theme-toggle');
     if (!b) return;
     var meta = document.querySelector('meta[name="theme-color"]');
+    var busy = false, timer = 0;
     function isHell() { return d.getAttribute('data-theme') === 'hell'; }
     function sync() {
       var h = isHell();
@@ -107,21 +111,26 @@ const THEME_SCRIPT = `<script>
       b.setAttribute('aria-label', h ? 'Dunkelmodus einschalten' : 'Hellmodus einschalten');
       if (meta) meta.setAttribute('content', h ? '#f3f5f7' : '#04060a');
     }
-    function apply(t) {
+    function apply(t, vt) {
+      busy = false;
+      b.removeAttribute('aria-busy');
+      d.classList.remove('theme-wait');
       d.setAttribute('data-theme', t);
       try { localStorage.setItem('codani-theme', t); } catch (e) {}
       sync();
-      try { window.dispatchEvent(new CustomEvent('codani-theme', { detail: t })); } catch (e) {}
+      try { window.dispatchEvent(new CustomEvent('codani-theme', { detail: { theme: t, vt: !!vt } })); } catch (e) {}
     }
-    var timer = 0;
-    b.addEventListener('click', function () {
-      var t = isHell() ? 'dunkel' : 'hell';
+    function show(t) {
       var rm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (rm) { apply(t); return; }
+      if (rm) { apply(t, false); return; }
       if (document.startViewTransition) {
         d.classList.add('theme-vt');
-        var vt = document.startViewTransition(function () { apply(t); });
-        var end = function () { d.classList.remove('theme-vt'); };
+        var vt;
+        try { vt = document.startViewTransition(function () { apply(t, true); }); } catch (e) { apply(t, false); d.classList.remove('theme-vt'); return; }
+        var end = function () {
+          d.classList.remove('theme-vt');
+          if (busy) { busy = false; b.removeAttribute('aria-busy'); d.classList.remove('theme-wait'); }
+        };
         var none = function () {};
         vt.finished.then(end, end);
         // Bricht der Browser die Blende ab (z. B. Zeitlimit bei sehr langsamem Bild), ist das Thema trotzdem gesetzt:
@@ -132,8 +141,22 @@ const THEME_SCRIPT = `<script>
       }
       clearTimeout(timer);
       d.classList.add('theme-fade');
-      apply(t);
+      apply(t, false);
       timer = setTimeout(function () { d.classList.remove('theme-fade'); }, 750);
+    }
+    b.addEventListener('click', function () {
+      if (busy) return;
+      var t = isHell() ? 'dunkel' : 'hell';
+      var hook = window.__codaniTheme;
+      if (!hook || !hook.prepare || !d.classList.contains('gl')) { show(t); return; }
+      busy = true;
+      b.setAttribute('aria-busy', 'true');
+      d.classList.add('theme-wait');
+      var done = false;
+      var go = function () { if (done) return; done = true; show(t); };
+      // Sicherheitsnetz: antwortet die Szene nicht (Tab im Hintergrund, Fehler), schaltet die Seite trotzdem um
+      setTimeout(go, d.getAttribute('data-gl-force') ? 180000 : 6000);
+      try { hook.prepare(t).then(go, go); } catch (e) { go(); }
     });
     sync();
   })();

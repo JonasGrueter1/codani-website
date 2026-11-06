@@ -1127,4 +1127,21 @@ Thema (unter dem festen Bild) und `data-theme` innerhalb von 13 bis 16 ms, nie S
 Hals): Anteil ab Grauwert 240 vorher 63 %, jetzt 15 %; Scheitel mit Konturlinie (dunkelster Wert 167, vorher 236 ohne
 Kante). robot@0.9: 56 % auf 5 %. Desktop zum Vergleich 38 %. Dunkel unverändert: alle 53 Programme ohne die hellen
 `#ifdef`-Blöcke gleich wie vor Prüfung 2 (`shader_cmp.py`), Fallback-Bilder dunkel pixelgleich.
+
+**Abnahme (06.11.2026), Messung** (Werkzeuge und Bilder in `S/hellmodus/abnahme/`):
+
+- Dunkel gegen den Stand vor dem Hellmodus (Commit 050d95c, entpackt nach `abnahme/repo-alt`): 53 Programme, nach
+  Entfernen der hellen `#ifdef`-Blöcke 52 gleich, nur der FxPass anders (ohne die ungenutzten Tonwert-Funktionen, wie
+  in Prüfung 1); gegen den Stand nach Prüfung 2 alle 53 gleich. Draw Calls und Dreiecke an allen sieben Stellen gleich.
+  Bildzeit abwechselnd alt und neu, je 12 s (SwiftShader 960 x 600, high): Hero 132 bis 133 gegen 136 bis 138 ms,
+  Röntgen 462 bis 480 gegen 400 bis 480 ms, Code 1333 gegen 1091 bis 1200 ms, also gleich im Rahmen der Messgenauigkeit.
+  Dieselben zehn Stellen dunkel alt und neu aufgenommen: mittlere Helligkeit und Farbe je Stelle höchstens 0.5 von 255
+  auseinander, sichtbar nur der neue Schalter und zeitabhängige Bewegung.
+- Schalter: Klick mit 3D live (Desktop high, Handy medium), Scroll-Position gleich, `aria-pressed`, `aria-label`,
+  `localStorage` und `meta[name=theme-color]` stimmen, Neuladen behält die Wahl, `?dunkel` und `?hell` überschreiben
+  sie, ohne sie zu ändern. Drei schnelle Klicks ergeben genau einen Wechsel (`abnahme/tools/dreifach.js`). Reihenfolge
+  (`switch_order.js`): erstes Bild im neuen Thema und `data-theme` 21 ms auseinander, nie Seite hell über dunklem Bild.
+  Ohne 3D (reduzierte Bewegung, `?nogl`) sofort, nur helle Poster geladen; ohne `localStorage` (wirft) und ohne
+  JavaScript ohne Fehler; Unterseiten ohne Schalter und ohne `data-theme`. axe-core (WCAG 2.1 AA) auf der Startseite
+  hell und dunkel ohne Verstoss, Fokus-Rahmen #0a6f86 auf Off-White 5.3:1. Keine Meldungen in der Konsole.
 (`S` = `/home/user/studio-arbeit`.)

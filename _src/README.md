@@ -31,7 +31,8 @@ _src/
   data/nav.json     Navigation, KI-Panel, Handy-Menü, Fusszeile
   data/form.json    Formular: Auswahl "Worum geht es?", Thema-Vorauswahl (?thema=), Texte und Fehlermeldungen
   lib/              html.js (esc, attrs, join), format.js (CHF, Platzhalter), check.js (Prüfungen), leads.js (Vertraulichkeit)
-  layouts/          base.js (helle Unterseiten), story.js (Startseite mit 3D-Kopf, Preloader, alte Anker)
+  layouts/          base.js (helle Unterseiten), story.js (Startseite mit 3D-Kopf, Preloader, alte Anker, Schalter
+                    fuer den Hellmodus)
   components/       layout.js (Kopf, Kopfzeile, KI-Panel, Handy-Menü, Fusszeile), blocks.js (Bausteine),
                     form.js (Kontaktformular), ki-vorlagen.js (Werkzeug- und Branchen-Vorlage),
                     ki-demo.js (Demo-Assistent), ki-mockups.js (Mockups der KI-Seiten), branchen-bilder.js,
@@ -163,12 +164,30 @@ Neue Seiten: Datei in `pages/` anlegen, Pfad in `data/nav.json` (Menü, Fusszeil
 - Unterseiten: `node /home/user/studio-arbeit/tools/pages.js <outdir> [all|ki/,preise/] --vp=desktop,mobile,small`
   (ganze Seiten 1440 x 900, 390 x 844 und 320 x 640, meldet Konsolenfehler, 404, horizontales Scrollen).
 - Startseite mit 3D: `studio_capture.js`, `story_shots.js`, `content_shots.js` (siehe ARCHITEKTUR.md Kapitel 10).
+  Hellmodus: dieselben Werkzeuge mit `?hell` im Query (`--page='?q=high&hell'`, `--q='?nogl&hell'`), Schalter live:
+  `studio-arbeit/hellmodus/tools/theme_switch.js`. Dunkel unverändert? `shader_dump.js` vorher und nachher, dann
+  `shader_cmp.py` (gleiche Programme ohne die hellen `#ifdef`-Blöcke, ARCHITEKTUR.md Kapitel 14).
 - Bilder immer ansehen. Keine Konsolenfehler, keine 404, kein horizontales Scrollen ab 320 px.
 
 ## Startseite: was das Fundament bereits erledigt hat
 
 - Kopfzeile und Fusszeile kommen aus `components/layout.js` (dunkle Variante `hdr--dark`, über dem hellen Inhalt
-  schaltet `js/site.js` auf hell, Auslöser ist `data-light` am Element `#content`).
+  schaltet `js/site.js` auf hell, Auslöser ist `data-light` am Element `#content`). `header(ctx, { extra })` setzt
+  zusätzliches HTML nach dem Kontakt-Knopf (Standard leer, nur die Startseite nutzt es für den Schalter).
+- **Hellmodus der Startseite** (02.11.2026, ARCHITEKTUR.md Kapitel 14): `layouts/story.js` setzt früh im Kopf
+  `html[data-theme]` (`dunkel` Standard, `hell`; gespeichert in `localStorage` `codani-theme`, Test-Schalter `?hell`
+  und `?dunkel`), legt den runden Knopf `#theme-toggle` (Sonne/Mond) neben Kontakt und schaltet live um (Ereignis
+  `codani-theme` für die 3D-Szene, weiche Blende; bricht der Browser die View Transition ab, bleibt das Thema gesetzt
+  und die Ablehnung wird abgefangen). Mit 3D erst die Szene, dann die Seite (Prüfung 2, 06.11.2026): der Knopf ruft
+  `window.__codaniTheme.prepare(t)` aus `js/main.js` und zeigt solange `aria-busy`; die Szene kompiliert die
+  Programme des neuen Themas und rendert ein erstes Bild unsichtbar, erst dann setzt der Knopf `data-theme`. Ohne
+  JavaScript ist der Knopf ausgeblendet. Farben der hellen Geschichte: `css/story.css`, Abschnitt "Hellmodus" (Kopfzeile
+  mit kräftigem Off-White-Verlauf über der Szene, HUD fast deckend). Helle Poster: `assets/img/poster-<beat>-hell.webp`
+  und `-hell-m.webp` (nach Prüfung 1 am 03.11.2026 neu aufgenommen, nach Prüfung 2 am 06.11.2026 brain sowie im
+  Hochformat robot, zoom, brain, cables und outro, bei der Abnahme am 06.11.2026 cables und alle sieben im
+  Hochformat; Werkzeuge und Ablauf in ARCHITEKTUR.md Kapitel 14). Im Fallback hell steht der Text im Hochformat auf einer fast
+  deckenden Off-White-Fläche (Kicker mindestens 6.6:1). Die Unterseiten sind schon hell und haben keinen
+  Schalter.
 - `js/ui.js` macht nur noch Geschichte, Preloader, HUD, Anker und Cursor. Navigation, Menü, FAQ, Formular und
   Einblenden liegen in `js/site.js`. `css/style.css` ist aufgeteilt: Geschichte in `css/story.css`, der Rest in `site.css`.
 - Die Kapitel und Texte stehen in `pages/start.js` (`CHAPTERS`, Namen wie `BEATS` in `js/config.js`). Hero und

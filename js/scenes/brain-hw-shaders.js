@@ -302,7 +302,7 @@ void main() {
 `;
 
 export function makeGlowMaterial(THREE, U) {
-  return new THREE.ShaderMaterial({
+  const m = new THREE.ShaderMaterial({
     name: 'brain-hw-glow',
     uniforms: U,
     vertexShader: GLOW_VS,
@@ -312,4 +312,6 @@ export function makeGlowMaterial(THREE, U) {
     depthTest: true,
     blending: THREE.AdditiveBlending,
   });
+  m.userData.themeKeep = true; // Lichtpunkte bleiben im hellen Thema Licht (theme.js)
+  return m;
 }

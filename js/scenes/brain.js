@@ -91,6 +91,15 @@ export function create(ctx) {
     uGlow: { value: glowVals },
   };
   const mats = makeMaterials(THREE, U, palette);
+  // Helles Thema (theme.js): dunkle Linien und Punkte auf Hell. Gleicher Faktor fuer Materialien mit gleichem Shader
+  // (cortex und dust, edges und fibers), sonst entstuenden zusaetzliche Programme. Die weichen Lichtflecken (glows)
+  // bleiben Licht (hellen auf Hell nur leise auf).
+  mats.cortex.userData.themeGain = 3.2;
+  mats.dust.userData.themeGain = 3.2;
+  mats.neurons.userData.themeGain = 2.6;
+  mats.edges.userData.themeGain = 4.5;
+  mats.fibers.userData.themeGain = 4.5;
+  mats.glows.userData.themeKeep = true;
   // Weniger Punkte (Handy): etwas groesser und heller, damit die Rinde gleich dicht wirkt
   const comp = 1 + 0.6 * (1 - Math.min(1, q));
   mats.cortex.uniforms.uSize.value *= comp;

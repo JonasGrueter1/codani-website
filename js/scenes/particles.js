@@ -152,6 +152,10 @@ export async function create(ctx) {
     depthTest: true,
     blending: THREE.AdditiveBlending,
   });
+  // Helles Thema (theme.js): Tinte statt Licht, etwas kraeftiger als der Standard (feine Punkte auf Off-White)
+  material.userData.themeGain = 1.3;
+  material.userData.themeCurve = 0.75; // Flaechen der Bueste deutlicher, Linien bleiben gleich kraeftig
+  material.userData.themeInk = 0.3;    // Linien in Tuerkis statt fast schwarz
   const points = new THREE.Points(geometry, material);
   points.frustumCulled = false;
   points.renderOrder = 2;
@@ -175,6 +179,8 @@ export async function create(ctx) {
     blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide,
   });
+  // Lichtkegel bleibt auch im hellen Thema Licht (hellt nur leise auf), keine Tinte
+  beamMat.userData.themeKeep = true;
   const beam = new THREE.Mesh(beamGeo, beamMat);
   beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), beamDir.clone().negate());
   beam.position.fromArray(BEAM.apex).addScaledVector(beamDir, BEAM.length / 2);
@@ -248,7 +254,8 @@ export async function create(ctx) {
         for (let i = 0; i < list.length; i++) if (list[i].name === 'scene:robot') { robotGroup = list[i]; break; }
       }
       const robotOn = robotGroup !== null && robotGroup.visible && robotGroup.parent !== null;
-      u.uHolo.value = robotOn ? smoothstep(0.05, 0.22, rb.p) : 0;
+      // Hell (Pruefung 1): spaeter zuruecktreten, erst wenn das Hologramm deckt (sonst verschwand das Motiv kurz im Off-White)
+      u.uHolo.value = !robotOn ? 0 : ctx.theme && ctx.theme.light ? smoothstep(0.14, 0.3, rb.p) : smoothstep(0.05, 0.22, rb.p);
       u.uIgnite.value = ignite;
       u.uHint.value = ignite;
       u.uAlpha.value = weight;

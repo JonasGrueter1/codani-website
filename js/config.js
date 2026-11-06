@@ -154,6 +154,74 @@ export const BACKDROPS = Object.freeze({
   },
 });
 
+// Helles Thema (Kapitel 14 in ARCHITEKTUR.md): eigene Farbwelten mit denselben Schluesseln und derselben Dynamik
+// (backdrop.js), aber anders gelesen (Lichtweg im Shader, CODANI_LIGHT): helles Studio wie ein Produktfoto.
+//   base / mid   Papier oben und am Horizont (Off-White bis sehr helles Kuehlgrau), hi = Licht hinter dem Motiv (Weiss)
+//   accent       kuehle Toenung aus accentAt, washA/B/C blasse Farbflaechen (Tuerkis, Blau, ein Hauch Ember)
+//   gridColor, streakColor, codeColor, rayColor   Linien, Pakete, Code-Zeichen in tiefem Tuerkis bis Tinte
+//   pool         weicher Kontaktschatten auf dem Boden unter dem Motiv (statt Lichtkegel)
+// Die Punkte (glowAt, rayAt, accentAt) und Formen (floorY, glowSize, ...) bleiben wie im dunklen Thema, fehlende
+// Schluessel kommen aus der dunklen Farbwelt desselben Beats. Keine grellen Flaechen: alles mischt nur leise.
+// Pruefung 1: das weisse Gegenlicht (glow) hinter der Bueste schwaecher (robot 0.5, zoom 0.6, outro 0.45) und das
+// Studio im Kapitel robot einen Hauch grauer, sonst stand die weisse Schale vor gleich hellem Grund und die Silhouette
+// loeste sich auf. Den Text schuetzen Scrim und Panel-Verlauf weiter mit Off-White.
+export const BACKDROPS_HELL = Object.freeze({
+  intro: {
+    base: 0xe6ebef, mid: 0xf5f7f8, hi: 0xffffff, accent: 0xdbe7ec, fogColor: 0xebeff2,
+    rayColor: 0xffffff, gridColor: 0x0a6f86, washA: 0x000000, washB: 0xcde6ec, washC: 0xf6ebe1,
+    horizonGlow: 0.4, glow: 0.75, fog: 0.6, rays: 0.6, stars: 0, dust: 0, bokeh: 0, wash: 0.75,
+  },
+  robot: {
+    base: 0xd9dfe4, mid: 0xe8ecef, hi: 0xffffff, accent: 0xe0e6eb, fogColor: 0xe2e7eb,
+    rayColor: 0xffffff, washA: 0xd2eaf1, washB: 0xdcdff2, washC: 0xf3e2d2,
+    horizonGlow: 0.5, glow: 0.5, fog: 0.35, rays: 0.4, dust: 0, wash: 0.9, floor: 0.9, floorShine: 1.0, pool: 1.0,
+  },
+  zoom: {
+    base: 0xdde4e9, mid: 0xedf1f3, hi: 0xffffff, accent: 0xd9e6ea, fogColor: 0xe4e9ed,
+    rayColor: 0xffffff, gridColor: 0x0a6f86, washA: 0xcfe8ee, washB: 0xd6def3, washC: 0xe0dcf0,
+    horizonGlow: 0.45, glow: 0.6, fog: 0.35, rays: 0.25, grid: 0.12, dust: 0, wash: 0.8, floor: 0.7, floorShine: 1.0, pool: 0.7,
+  },
+  brain: {
+    base: 0xe6e4ee, mid: 0xf2f1f6, hi: 0xffffff, accent: 0xdde9ec, fogColor: 0xebeaf1,
+    auroraA: 0xdcd3f2, auroraB: 0xeed5e6, auroraEdge: 0xcde9ea, bokehColor: 0xffffff,
+    horizonGlow: 0.25, glow: 0.9, fog: 0.75, aurora: 1.0, dust: 0, bokeh: 0,
+    washA: 0x000000, washB: 0xdfd6f3, washC: 0xd2ebec, wash: 0.6,
+  },
+  cables: {
+    base: 0xe7ecf1, mid: 0xf3f5f8, hi: 0xffffff, accent: 0xdde6f0, fogColor: 0xebeff3,
+    streakColor: 0x0a6f86, gridColor: 0x5b7f96, bokehColor: 0xffffff,
+    horizonGlow: 0.5, glow: 0.7, fog: 0.3, streaks: 0.7, bokeh: 0, stars: 0,
+    floor: 0.85, floorShine: 0.8, washA: 0x000000, washB: 0xdcdcf3, washC: 0xd0e3f3, wash: 0.7,
+  },
+  dna: {
+    base: 0xdfe9e7, mid: 0xeff5f3, hi: 0xffffff, accent: 0xd5e8e3, fogColor: 0xe5eeec,
+    codeColor: 0x0a6f86, bokehColor: 0xffffff,
+    washA: 0xcdebe4, washB: 0xd6def3, washC: 0xcfe8e9,
+    horizonGlow: 0.35, glow: 0.8, fog: 0.3, code: 0.06, dust: 0, bokeh: 0, stars: 0, wash: 0.7,
+  },
+  outro: {
+    base: 0xe9e5e1, mid: 0xf5f2ee, hi: 0xfffaf4, accent: 0xdfe6ee, fogColor: 0xede9e5,
+    rayColor: 0xfff6ea, washA: 0xf5dcc4, washB: 0xd9e1ef, washC: 0xf0d8d2,
+    horizonGlow: 0.6, glow: 0.45, fog: 0.3, rays: 0.5, dust: 0, wash: 0.85, floor: 0.85, floorShine: 1.0, pool: 0.85,
+  },
+  inhalt: {
+    base: 0xeef1f4, mid: 0xf3f5f7, hi: 0xffffff, accent: 0xeef1f4, fogColor: 0xf0f3f5,
+    horizonGlow: 0.2, glow: 0.3, detail: 0.1,
+  },
+});
+// Hell am Handy (ctx.isMobile, Pruefung 2): einzelne Werte, die BACKDROPS_HELL ueberschreiben. Hinter der Bueste
+// (robot, outro) einen Hauch grauer und weniger weisses Gegenlicht, sonst stand die weisse Schale (ohne Klarlack,
+// Stufe medium) gleich hell wie das Studio. Kabel-Kapitel: Lichtflaeche leiser (oben lag ein grau-lila Dunstband).
+export const BACKDROPS_HELL_M = Object.freeze({
+  robot: { base: 0xcfd6dc, mid: 0xdfe4e8, glow: 0.38 },
+  zoom: { base: 0xd6dde3, mid: 0xe6ebee },
+  outro: { base: 0xdcd8d3, mid: 0xebe7e2, glow: 0.32 },
+  cables: { wash: 0.4 },
+});
+// Helligkeit des Papiers im hellen Thema (linear vor der neutralen Tonwertkurve): 1.0 waere #f0f0f0 auf dem Schirm,
+// mit diesem Faktor landet das Off-White bei rund #f2f4f6. Gilt auch fuer die Nebelfarbe (Objekte laufen ins Papier).
+export const PAPER_GAIN = 1.16;
+
 /* ------------------------------------------------------- Szenen (Beats) */
 // Reihenfolge = Reihenfolge der <section data-scene> in index.html.
 // len = Hoehe des Abschnitts in vh. Daraus misst der Director die Zeitfenster (global 0..1).
@@ -332,6 +400,23 @@ export const BASE_LOOK = Object.freeze({
   dim: 0,               // Abdunkeln (Inhaltsbereich) 0..1
 });
 export const LOOK_KEYS = Object.freeze(Object.keys(BASE_LOOK));
+
+// Helles Thema (Kapitel 14 in ARCHITEKTUR.md): Grundwerte. Studio-Licht statt Nacht: kaum Bloom (nur Glanzlichter der
+// Bueste, Schwelle ueber dem Off-White des Hintergrunds), dezentes Korn, leise Vignette, keine Aberration.
+// Die Schluessel in THEME_LOOK_KEYS nimmt das helle Thema nie aus dem dunklen `look` einer Szene: entweder aus ihrem
+// `lookHell` oder von hier. Alle anderen (Licht, Nebel, Kamera) gelten fuer beide Themen gleich, solange `lookHell` sie
+// nicht setzt.
+export const BASE_LOOK_HELL = Object.freeze({
+  ...BASE_LOOK,
+  exposure: 1.0,
+  bloom: 0.16,
+  bloomRadius: 0.45,
+  bloomThreshold: 1.7,
+  aberration: 0,
+  vignette: 0.08,
+  grain: 0.02,
+});
+export const THEME_LOOK_KEYS = Object.freeze(['exposure', 'bloom', 'bloomRadius', 'bloomThreshold', 'aberration', 'vignette', 'grain', 'flash']);
 
 /* --------------------------------------------------------------- Helfer */
 // Nominelle Zeitfenster (ohne DOM), z. B. fuer dev.html. Gleiche Formel wie der Director.

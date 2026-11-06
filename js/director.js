@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {
   BEATS, BEAT_FADE, MODULES, MODULE_FADE, CAMERA_KEYS, CUT_FADE, PORTRAIT, TEMPO, nominalBeatWindows,
 } from './config.js';
+import { THEME } from './theme.js';
 
 /* ------------------------------------------------------------ Helfer */
 export const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -139,7 +140,7 @@ export class Director {
     this._clear = {};
     this._rects = {};
     // Abdunkeln hinter dem Text im Bild (FxPass): Mitte und halbe Groesse in UV (y oben), Staerke 0..1
-    this.scrim = { x: 0.25, y: 0.5, rx: 0.2, ry: 0.2, a: 0 };
+    this.scrim = { x: 0.25, y: 0.5, rx: 0.2, ry: 0.2, a: 0, fx: 1 };
     this.current = BEATS[0].name; // Beat mit hoechstem Gewicht
     this.beats = {};
     this.modules = {};
@@ -497,5 +498,9 @@ export class Director {
     // Hochformat: der Text steht dort auf einer eigenen, fast deckenden Flaeche. Ein voller Scrim reichte bis ueber
     // den Kopf oben im Bild (Ausklang: graues, flaues Gesicht), darum halb, im Ausklang gar nicht (Runde 2)
     if (this.portrait) sc.a *= name === 'outro' ? 0 : 0.5;
+    // Hell (Pruefung 2): im Hochformat zeichnet der FxPass den Scrim nicht (fx 0). Er lag als heller Schleier ueber
+    // Brust und Schultern der Bueste; der Text steht dort auf seiner eigenen hellen Flaeche (css/story.css). Die Zone
+    // selbst (a) bleibt: die Knoten-Beschriftungen der Kabel-Szene und der Hintergrund weichen ihr weiter aus.
+    sc.fx = this.portrait && THEME.light ? 0 : 1;
   }
 }

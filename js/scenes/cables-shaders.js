@@ -255,6 +255,9 @@ const NODE_FS = /* glsl */ `
   ${FOG}
   uniform float uTime, uAlpha;
   uniform vec3 uSig, uIce, uEmber, uDeep, uMist, uWhite;
+#ifdef CODANI_LIGHT
+  uniform vec3 uThemeInk, uThemeTeal, uThemeWarm; // helles Thema (Kapitel 14)
+#endif
   varying vec2 vP, vEntry;
   varying vec4 vA;
   varying vec4 vB;
@@ -377,6 +380,9 @@ const NODE_FS = /* glsl */ `
     // Hervorgehoben (focus): Icon voll hell und etwas kraeftiger, auch wenn das Kabel noch nicht angekommen ist
     float lit = max(on, focus);
     float hw = 0.03 + 0.008 * focus;
+#ifdef CODANI_LIGHT
+    hw *= 1.45; // hell: Striche kraeftiger (Tinte statt Leuchten)
+#endif
     float ic = cover(id.x, hw) * inside;
     float acc = cover(id.y, hw) * inside;
     vec3 icCol = mix(uMist * 0.3, uIce * 1.25, lit) + uIce * 1.3 * flash;
@@ -393,6 +399,32 @@ const NODE_FS = /* glsl */ `
     glow *= smoothstep(0.0, 0.6, appear) * (1.0 - 0.45 * dimO);
 
     float vis = uAlpha * fogVis(vDepth) * smoothstep(0.25, 0.7, vDepth);
+#ifdef CODANI_LIGHT
+    {
+      // Helles Thema: weisses Glas mit Ring, Skala und Icon in Tinte, leiser Schatten statt Halo (vormultipliziert)
+      float app = smoothstep(0.0, 0.6, appear) * (1.0 - 0.45 * dimO);
+      vec3 glass = mix(vec3(1.2), vec3(0.98, 1.08, 1.12), clamp(fres * 0.8 + entry * (0.3 * on + flash), 0.0, 1.0));
+      vec4 c = vec4(glass * bodyA, bodyA);
+      // Pruefung 2: am Handy sind die Knoten klein (5 bis 10 px Radius), Ring und Icon-Striche waren schmaler als ein
+      // Bildpunkt und wirkten blass. Darum mindestens rund 1.5 px breit, der Ring etwas deckender.
+      float minW = aaD * 0.75;
+      float rimL = cover(abs(d - 1.0), max(rimW, minW));
+      ic = cover(id.x, max(hw, minW / 0.9)) * inside;
+      acc = cover(id.y, max(hw, minW / 0.9)) * inside;
+      float la = clamp(rimL * (0.75 + 0.25 * on + 0.6 * flash) * (1.0 - 0.5 * portal), 0.0, 1.0) * app;
+      c = vec4(uThemeTeal * la + c.rgb * (1.0 - la), la + c.a * (1.0 - la));
+      la = clamp((inner * (0.3 + 0.4 * on) + sw * 0.8) * solid, 0.0, 1.0) * app;
+      c = vec4(uThemeTeal * la + c.rgb * (1.0 - la), la + c.a * (1.0 - la));
+      la = clamp(ic * (0.82 + 0.18 * lit), 0.0, 1.0) * icA * app;
+      c = vec4(uThemeInk * la + c.rgb * (1.0 - la), la + c.a * (1.0 - la));
+      la = clamp(acc * (0.82 + 0.18 * lit), 0.0, 1.0) * icA * app;
+      c = vec4((k == 4 ? uThemeInk : uThemeWarm) * la + c.rgb * (1.0 - la), la + c.a * (1.0 - la));
+      float sh = exp(-max(d - 1.0, 0.0) * 5.0) * step(1.0, d) * (0.1 + 0.08 * on) * solid * app;
+      c = vec4(uThemeInk * sh + c.rgb * (1.0 - sh), sh + c.a * (1.0 - sh));
+      gl_FragColor = c * vis;
+      return;
+    }
+#endif
     // vormultipliziert: Koerper deckt ab (Alpha), Glanz addiert sich
     gl_FragColor = vec4((body * bodyA + glow) * vis, bodyA * vis);
   }

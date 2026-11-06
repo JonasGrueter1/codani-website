@@ -2,14 +2,25 @@
 // Weiche Leuchtflaechen wie im Fotostudio: grosse Decke (Scheitel-Glanz), Fuehrungsflaeche vorne rechts (Seite der
 // Kamera), Aufheller vorne links, zwei schmale, harte Streifen (lange Glanzlinien im Klarlack), Kantenlicht hinten.
 // Farben nur aus der Palette (white, ice, signal, ember), Helligkeit ueber multiplyScalar.
-export function buildStudioEnv(THREE, renderer, palette) {
+// light: helles Studio (Kapitel 14): gleiche Lichter, aber helle Hohlkehle statt schwarzer Kuppel. Die weisse Schale
+// spiegelt dann hellgraue Verlaeufe wie ein Produkt auf weissem Grund (statt Schwarz zwischen den Glanzlinien).
+// Pruefung 1: alles neutral weiss statt kuehl (palette.white hat einen Blaustich, die Schale wirkte eisblau), die
+// Kuppel um den Horizont etwas dunkler (wie schwarze Abschatter im Produktstudio): streifende Spiegelungen an der
+// Silhouette bleiben grau, die Kante loest sich nicht im Off-White auf.
+export function buildStudioEnv(THREE, renderer, palette, { light = false } = {}) {
   const scene = new THREE.Scene();
   const disposables = [];
   const domeGeo = new THREE.SphereGeometry(30, 48, 24);
+  const neutral = new THREE.Color(1, 1, 1);
   const domeMat = new THREE.ShaderMaterial({
     side: THREE.BackSide,
     depthWrite: false,
-    uniforms: {
+    uniforms: light ? {
+      uLow: { value: neutral.clone().multiplyScalar(0.14) },
+      uMid: { value: neutral.clone().multiplyScalar(0.22) },
+      uHigh: { value: neutral.clone().multiplyScalar(0.5) },
+      uBand: { value: neutral.clone().multiplyScalar(0.55) },
+    } : {
       uLow: { value: palette.void.clone().multiplyScalar(0.4) },
       uMid: { value: palette.mist.clone().multiplyScalar(0.035) },
       uHigh: { value: palette.mist.clone().multiplyScalar(0.03) },
@@ -59,9 +70,9 @@ export function buildStudioEnv(THREE, renderer, palette) {
     disposables.push(mat);
     return m;
   };
-  const white = palette.white.clone();
-  const cool = palette.white.clone().lerp(palette.ice, 0.3);
-  const coolDeep = palette.white.clone().lerp(palette.signal, 0.22);
+  const white = light ? neutral.clone() : palette.white.clone();
+  const cool = light ? neutral.clone() : palette.white.clone().lerp(palette.ice, 0.3);
+  const coolDeep = light ? neutral.clone().multiplyScalar(0.9) : palette.white.clone().lerp(palette.signal, 0.22);
   // Die Kamera der Seite steht fast immer rechts vorne (+x): dort sitzt die Fuehrungsflaeche, damit die Schale im Bild
   // weiss und hell wirkt (frueher lag die Fuehrung links, die Seite zur Kamera blieb grau). Links vorne ein Aufheller.
   panel(8, 10, white.clone().multiplyScalar(4.3), [8.5, 4.2, 7.5], 0.4);
@@ -77,8 +88,8 @@ export function buildStudioEnv(THREE, renderer, palette) {
   panel(14, 2.6, cool.clone().multiplyScalar(3.0), [0, 8.5, -7.5], 0.4);
   // Glanzlinie oben vorne (Stirn, Chrom)
   panel(10, 1.4, white.clone().multiplyScalar(2.2), [1.5, 7.5, 9], 0.2);
-  // Boden: fast schwarz, leicht kuehl
-  panel(24, 24, palette.steel.clone().multiplyScalar(0.12), [0, -12, 0], 0.7);
+  // Boden: fast schwarz, leicht kuehl (hell: heller Studio-Boden)
+  panel(24, 24, light ? neutral.clone().multiplyScalar(0.3) : palette.steel.clone().multiplyScalar(0.12), [0, -12, 0], 0.7);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   const rt = pmrem.fromScene(scene, 0.02);

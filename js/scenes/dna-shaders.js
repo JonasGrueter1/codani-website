@@ -224,6 +224,9 @@ const GLYPH_FS = /* glsl */ `
     float a = smoothstep(cut - w, cut + w, d);
     float halo = smoothstep(cut - 0.35, cut, d);
     float k = (a + halo * halo * vSoft * 0.5) * vAlpha;
+#ifdef CODANI_LIGHT
+    k *= 1.0 - 0.7 * smoothstep(48.0, 140.0, vPx); // hell: grosse Zeichen nah an der Kamera leiser (Tinte lenkt ab)
+#endif
     if (!(k > 0.003)) discard;
     gl_FragColor = vec4(max(vCol, 0.0), min(k, 1.0));
   }
@@ -495,7 +498,13 @@ const WIRE_FS = /* glsl */ `
 
     float strokeCol = vBright * (1.0 + 0.22 * sweep + 0.9 * spot);
     col += uLine * stroke * shown * strokeCol;
+#ifdef CODANI_LIGHT
+    // Hell (Abnahme 06.11.2026): die Zeichenspitze nur als leise Verdichtung der Linie. Mit dem Hof (headGlow) wurde
+    // sie auf Hell zu einem dunklen, unscharfen Strich am Ende jeder Linie, der wie Schmutz wirkte.
+    col += uHead * (stroke * head * 0.45 + headGlow * 0.02);
+#else
     col += uHead * (stroke * head + headGlow * 0.12);
+#endif
 
     float fillOn = smoothstep(0.55, 1.0, vRev);
     float inside = 1.0 - smoothstep(-aa, aa, d);

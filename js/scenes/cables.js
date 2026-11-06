@@ -82,10 +82,18 @@ export function create(ctx) {
     uMotes: { value: 0 },
     uMoteCol: { value: palette.signal.clone().lerp(palette.ice, 0.4).multiplyScalar(0.9) },
   };
+  // Helles Thema (Kapitel 14): der Knoten-Shader hat einen eigenen hellen Weg (weisses Glas, Tinte), die additiven
+  // Materialien rechnet theme.js um (Faktoren unten)
+  if (ctx.themeUniforms) Object.assign(U, ctx.themeUniforms);
   for (let i = 0; i < count; i++) U.uCab2.value[i].w = curves[i].length;
 
   /* ------------------------------------------------------------ Objekte */
   const mats = makeMaterials(THREE, U);
+  mats.node.userData.themeDefine = true; // eigener heller Weg im Knoten-Shader (#ifdef CODANI_LIGHT)
+  mats.fibre.userData.themeGain = 6.5;
+  mats.ring.userData.themeGain = 2.0;
+  mats.tip.userData.themeGain = 1.6;
+  mats.mote.userData.themeGain = 0.4; // Pruefung 1: Schwebeteilchen als kaum sichtbarer Hauch (vorher grauer Staub)
   const fibreGeo = buildFibreGeometry(THREE, curves, strands);
   const ringGeo = buildRingGeometry(THREE, count, RING_SEG[quality] ?? RING_SEG.high);
   const nodeGeo = buildNodeGeometry(THREE, curves);
@@ -152,6 +160,10 @@ export function create(ctx) {
     textBox.x1 = (sc.x + sc.rx) * W + 12;
     textBox.y0 = (1 - sc.y - sc.ry) * H - 12;
     textBox.y1 = (1 - sc.y + sc.ry) * H + 12;
+    // Hell im Hochformat (Pruefung 2): oben ohne den Rand der Scrim-Zone (12 % der Texthoehe, bei hohen Textbloecken
+    // rund 50 px), sonst blendeten Knoten weit ueber dem Text (Kalender) ihre Beschriftung fast ganz aus. Der Text
+    // steht dort ohnehin auf seiner eigenen hellen Flaeche. Dunkel unveraendert.
+    if (portrait && ctx.theme && ctx.theme.light) textBox.y0 += sc.ry * H * (0.12 / 0.62);
   }
   // Abstand zum Text mit der vollen Breite (wf: mit Untertitel, den nodes.js beim Zeigen einblendet), damit die
   // Beschriftung auch beim Zeigen nicht in den Text laeuft

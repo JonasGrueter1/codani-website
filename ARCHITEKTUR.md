@@ -19,6 +19,9 @@ langsamer (mehr Scrollweg und eine Tempo-Grenze, Kapitel 4). Die fuenf Knoten de
 ueber den 3D-Knoten (`js/nodes.js`, Kapitel 13). Das Android-Gesicht ist weicher (Kapitel 11), der Hintergrund hat einen
 Studio-Boden und wandernde Lichtflaechen (Kapitel 12). Unter der Geschichte stehen helle Teaser (Kapitel 9).
 
+**Hellmodus (02.11.2026):** Die Geschichte gibt es in zwei Themen, dunkel (Standard, unverändert) und hell
+(Produktfoto im hellen Studio). Schalter in der Kopfzeile, Umschalten live mit weicher Blende. Alles dazu in Kapitel 14.
+
 ## 1. Dateien
 
 ```
@@ -34,6 +37,7 @@ studio/
   js/main.js            Seite starten: Fallback-Entscheid, Preloader, Loop, Pause bei verstecktem Tab
   js/ui.js              Ohne three.js: Preloader, Cursor, HUD, Einblendungen der Panels, Anker
   js/nodes.js           Ohne three.js: die fuenf Werkzeug-Links ueber den 3D-Knoten (Kapitel 13)
+  js/theme.js           Thema hell/dunkel der 3D-Szene: Zustand, Tinten-Uniforms, Umrechnung additiver Materialien (Kapitel 14)
   js/dev.js             Logik von dev.html
   js/fx/FxPass.js       Eigener Bild-Pass: chromatische Aberration, Vignette, Filmkorn, Blitz, Abblende, Abdunkeln
   js/scenes/*.js        backdrop, particles, robot, brain, cables, dna (je ein Szenen-Modul, Hilfsdateien <name>-*.js)
@@ -68,8 +72,10 @@ export function create(ctx) {           // darf auch async sein (Promise)
   return {
     group,                               // Pflicht: wird von main in die Szene gehängt
     look: { bloom: 1.1 },                // optional: Bildwirkung, wird nach Gewicht gemischt (Kapitel 6)
+    lookHell: { exposure: 1.1 },         // optional: Bildwirkung im hellen Thema (Kapitel 14)
     update(time, dt, local, global, weight) { ... },   // Pflicht, nur aufgerufen solange aktiv
     setActive(active) { ... },           // Pflicht (darf leer sein)
+    setTheme(light) { ... },             // optional: Thema wechselt (vor dem Vorkompilieren und live, Kapitel 14)
     dispose() { ... },                   // Pflicht: Geometrien, Materialien, Texturen freigeben
   };
 }
@@ -109,6 +115,8 @@ Wirft `update` einen Fehler, blendet der Runner die Szene aus und meldet es einm
 | `onResize(fn)` | Rückruf `fn(width, height, dpr)`, gibt eine Abmelde-Funktion zurück |
 | `time` | aktuelle Zeit (gleich wie `time` in update) |
 | `dev` | `true` in dev.html |
+| `theme` | `{ light }`: aktuelles Thema (nur lesen, Kapitel 14) |
+| `themeUniforms` | Tintenfarben `uThemeInk`, `uThemeTeal`, `uThemeWarm` (linear), in eigene Shader haengen; heller Weg mit `#ifdef CODANI_LIGHT` |
 
 ## 3. Koordinatensystem und Massstab
 
@@ -327,7 +335,9 @@ Kein `inert`: Überschriften und Texte bleiben im Accessibility-Baum, Screenread
 `director.scrim` (Mitte und halbe Grösse in UV, Stärke = `--o` x `BEATS[].scrim`). Der FxPass dunkelt dort das Bild weich ab
 (Neuronen, Code-Zeichen hinter dem Text). Hero nur 0.1 (Version 3.2: der stärkere Scrim reichte bis über den Kopf der
 Partikel-Büste und machte ihn grau). Im Hochformat halb so stark, im Ausklang dort gar nicht: die Texte stehen auf einer
-eigenen, fast deckenden Fläche, der volle Scrim lag sonst über dem Gesicht oben im Bild. Dazu der CSS-Verlauf `.chapter__text::before` (0.78) und im Hochformat ein
+eigenen, fast deckenden Fläche, der volle Scrim lag sonst über dem Gesicht oben im Bild. Im hellen Thema zeichnet der FxPass
+ihn im Hochformat gar nicht (`director.scrim.fx` 0, Prüfung 2: er lag als heller Schleier über Brust und Schultern
+der Büste); die Zone selbst bleibt, die Knoten-Beschriftungen und der Hintergrund weichen ihr weiter aus. Dazu der CSS-Verlauf `.chapter__text::before` (0.78) und im Hochformat ein
 linearer Verlauf vom unteren Rand (`.chapter__panel::before`). Die Knoten-Links weichen derselben Zone aus. Fixe Panels:
 die Zone wandert nicht mit (Hero und Ausklang wandern mit). Die Wörter steigen per GSAP aus einer Maske auf (`js/ui.js`, `panel()`); `gsap.ticker.lagSmoothing(0)`
 sorgt dafür, dass das in echter Zeit läuft, auch wenn ein 3D-Frame länger dauert.
@@ -373,6 +383,9 @@ Bild-Pipeline: Szene rendert linear in HalfFloat (HDR) -> UnrealBloom -> OutputP
 | `flash` | 0 | additiver Lichtblitz 0..1, klein in Signal-Cyan, ab ~0.3 weisser (Schnitt) |
 | `fade` | 0 | Abblende zu Schwarz 0..1 (am Schnitt nur leicht, der Runner setzt dort vor allem `flash`) |
 | `dim` | 0 | Abdunkeln. main setzt bis 0.62, sobald die normalen Inhalte kommen |
+
+Helles Thema: Grundwerte `BASE_LOOK_HELL`, die Schlüssel in `THEME_LOOK_KEYS` kommen dort nur aus `lookHell` der
+Szenen (Kapitel 14).
 
 Mischregel: Für jeden Schlüssel zählen nur Module, die ihn setzen, gewichtet mit `weight`. Summe der Gewichte unter 1: Rest kommt aus
 `BASE_LOOK`. Über 1: gewichteter Mittelwert. So blenden Looks bei Übergängen weich.
@@ -518,6 +531,8 @@ Formular und Einblenden der hellen Inhalte gehören dem Fundament (`js/site.js`,
 - Der Director setzt pro Abschnitt: `--p` (Fortschritt 0..1 nach Scroll, ungedämpft), `--o` (Sichtbarkeit), Klasse `.is-on`.
 - Hochformat-Layout (Text unten, Fortschrittsbalken oben statt HUD) gilt bei `max-width: 760px` **oder** Seitenverhältnis
   unter 0.85 (`max-aspect-ratio: 17/20`), also genau dann, wenn auch die Kamera ihre Hochformat-Werte nimmt.
+- `html[data-theme]`: `dunkel` (Standard) oder `hell`, früh im Kopf gesetzt (Kapitel 14). Sitzt wie `gl` auf `<html>`:
+  Selektoren darum `[data-theme="hell"].gl ...`, nicht `[data-theme="hell"] .gl ...`.
 - Klassen auf `<html>`: `gl` oder `no-gl` (früh im Kopf entschieden: WebGL2, importmap, keine reduzierte Bewegung),
   `reduced`, `is-ready` (Preloader fertig), `is-content` (Inhaltsbereich erreicht, HUD aus), `ui-on` (ui.js läuft),
   `nodes-on` (Knoten-Links über der Szene, Kapitel 13), `data-beat` (aktueller Beat).
@@ -570,6 +585,8 @@ S/tools/make_posters.sh      # Poster (Desktop, Hochformat) und OG-Hintergrund r
 python3 S/lead/convert_posters.py && node S/studio/og/render.js   # PNG -> WebP-Poster, OG-Bild (danach og.png -> og.jpg)
 node S/lead/techcheck.js S/lead/tech   # Tab-Reihenfolge, Kontextverlust, Handy-Menue, Formular-Timeout, ?glcheck
 ```
+
+Hellmodus: Test-Schalter `?hell` und `?dunkel` (z. B. `--page='?q=high&hell'`), helle Poster und Werkzeuge in Kapitel 14.
 
 Poster (Version 4 mit Kapitel Code, sieben Abschnitte): intro@0.06, robot@0.95, zoom@0.85, brain@0.3, cables@0.6, dna@0.42,
 outro@0.7, OG-Hintergrund
@@ -838,7 +855,9 @@ dritte Nebelschicht. low: Verlauf, 1 Nebelschicht, Strahlen einfach, ohne Staub,
 (nur gemittelte Deckung). Immer 1 Draw Call. Falls ein Handy das nicht schafft: Hintergrund in halber Auflösung in ein eigenes
 RenderTarget rechnen und hochskalieren (weich genug, noch nicht nötig).
 
-**Ändern.** Stimmung einer Szene: nur `BACKDROPS` in config.js. Neue Bausteine: Uniform in `backdrop-glsl.js`, Schlüssel in
+**Hellmodus:** eigene Farbwelten `BACKDROPS_HELL` und ein eigener Lichtweg im Shader (`lightBackdrop()`, Kapitel 14).
+
+**Ändern.** Stimmung einer Szene: nur `BACKDROPS` in config.js (hell: `BACKDROPS_HELL`). Neue Bausteine: Uniform in `backdrop-glsl.js`, Schlüssel in
 `BASE`, `NUMS` oder `COLORS` von backdrop.js, Wert in den Farbwelten. Testen: `dev.html?scene=backdrop` (alle Farbwelten
 über den Regler), `dev.html?scene=all&at=brain@0.3`, Vergleich ohne Hintergrund `&bg=0`.
 
@@ -913,3 +932,216 @@ beides ab cables@0 bis 0.2 aus). Das Icon unter der Maus oder mit Fokus wird vol
 
 **Ohne 3D** (Fallback, reduzierte Bewegung): nur die Pillen im Text, Posterbild dahinter. Dieselben fünf Ziele stehen
 gleich darunter noch einmal als Kacheln im Teaser `#werkzeuge`.
+
+## 14. Hellmodus (Thema hell und dunkel)
+
+Wunsch von Jonas (02.11.2026): Die Startgeschichte bekommt einen Hellmodus, den Besucher mit einem Schalter ein- und
+ausschalten. **Standard bleibt dunkel.** Der dunkle Modus sieht unverändert aus und ist gleich schnell: alles Helle
+kommt nur über Defines in die Shader (`CODANI_LIGHT`, im FxPass `FX_LIGHT` und `FX_SNAP`), dunkel ist der Shader-Text
+der bisherige. Gleiche 53 Programme, gleiche Draw Calls und Dreiecke (gemessen unten). Die Unterseiten sind schon hell
+und haben keinen Schalter.
+
+**Bildsprache hell:** helles Studio wie ein Produktfoto. Off-White bis sehr helles Kühlgrau mit weichen, kaum
+sichtbaren Lichtflächen (Türkis, Blau, ein Hauch Ember), weisses Gegenlicht hinter dem Motiv. Partikel, Linien, Kabel,
+Code-Zeichen und das Website-Gerüst sind Tinte (tiefes Türkis #0a6f86 bis #0b1220) mit normalem Blending statt
+additivem Leuchten. Die Android-Büste wirkt wie ein Produkt-Rendering, Gehirn und Röntgen sind dunkle Linien auf
+Hell, der Lichtblitz beim Schnitt ist eine ruhige Blende zum Off-White. Kaum Bloom, dezentes Korn, leise Vignette.
+
+### Ablauf
+
+| Teil | Aufgabe |
+| --- | --- |
+| Kopf von index.html (`THEME_HEAD` in `_src/layouts/story.js`) | setzt vor dem CSS `html[data-theme]` auf `dunkel` oder `hell`: `?hell` und `?dunkel` (Test-Schalter, ändern die gespeicherte Wahl nicht), sonst `localStorage` `codani-theme` (Werte `hell`, `dunkel`, mit try/catch), sonst dunkel. Nichts blitzt auf. |
+| Schalter (`THEME_TOGGLE`, `THEME_SCRIPT`) | runder Icon-Knopf `#theme-toggle` in der Kopfzeile nach Kontakt (Desktop 40 px wie Kontakt, Handy 44 px neben dem Menü, unter 360 px 40 px). Sonne im dunklen Thema, Mond im hellen. `aria-label` "Hellmodus einschalten" bzw. "Dunkelmodus einschalten", `aria-pressed` true im hellen Thema. Klick mit 3D (Prüfung 2): zuerst `window.__codaniTheme.prepare(t)` (main.js), der Knopf zeigt solange `aria-busy="true"` (Symbol pulsiert leise, weitere Klicks warten); erst wenn die Szene im neuen Thema bereit ist, `data-theme` setzen, speichern, `meta[name=theme-color]` nachführen, Ereignis `codani-theme` auf `window` (`detail: { theme, vt }`). Ohne 3D sofort. Weiche Blende der Seite über View Transitions (0.6 s, Klasse `theme-vt`), ohne View Transitions kurze Farb-Übergänge (Klasse `theme-fade`, 0.75 s). Bei reduzierter Bewegung sofort. Läuft ohne Module, also auch im Fallback. Antwortet die Szene nicht innert 6 s (Tests 180 s), schaltet die Seite trotzdem. Bricht der Browser die View Transition ab (Zeitlimit), bleibt das Thema gesetzt, die Ablehnung wird abgefangen. Ohne JavaScript ist der Knopf ausgeblendet (`.no-js .hdr__theme`). |
+| `layout.js` (Fundament) | `header(ctx, { extra })`: zusätzliches HTML nach dem Kontakt-Knopf (rein additiv, Standard leer). |
+| `js/theme.js` | Zustand `THEME.light`, Tintenfarben (`themeUniforms`), `patchScene` und `setSceneTheme` (unten). |
+| `js/main.js` | setzt das Thema vor dem Vorkompilieren (`runner.setTheme`, `engine.setTheme`): wer hell startet, bekommt gleich die hellen Programme. Stellt nach dem Start `window.__codaniTheme.prepare(t)` bereit und hört auf `codani-theme`. Wechsel vom Schalter (Prüfung 2, Reihenfolge Szene vor Seite): dieses Bild noch im alten Thema rendern, festhalten (`engine.snapshot()`), umstellen, die Programme des neuen Themas kompilieren (`engine.compileScene()`, beim ersten Wechsel neu, danach aus dem Cache; solange wird nicht gerendert, das letzte Bild bleibt stehen), dann ein Bild im neuen Thema unsichtbar unter dem festen Bild rendern (`uSnap` bleibt 1; manche Treiber, z. B. SwiftShader, übersetzen erst beim ersten Zeichnen), erst jetzt löst `prepare` auf und die Seite setzt `data-theme`. Die Szene hält bis dahin an (Sicherheitsnetz 8 s). Mit View Transition blendet der Browser die ganze Seite samt Szene (`engine.dropSnap()`), sonst blendet das feste Bild über 0.65 s aus (`engine.stepSnap`). Ein Wechsel nur über `data-theme` (ohne Schalter) läuft wie bisher. Kein Neuladen, die Scroll-Position bleibt. Im Inhaltsbereich (sonst eingefroren) wird weiter gerendert, bis die Blende fertig ist (`engine.fading`, mindestens 1.2 s). Vorher (Prüfung 2) wurde die Seite sofort hell, das 3D-Bild stand beim ersten Wechsel aber bis zum Ende der Kompilierung dunkel still: dunkle Schrift auf dunklem Bild. |
+| `js/engine.js` | `setTheme(light)`: Tonwertkurve dunkel ACES wie bisher, hell `NeutralToneMapping` (Produktfoto: Weiss bleibt weiss, Farben bleiben), FxPass-Define `FX_LIGHT` und Farben für Scrim, Abdunkeln, Abblende und Blitz, Clear-Farbe. `compileScene()`: mit `KHR_parallel_shader_compile` im Hintergrund (`compileAsync`), sonst Szene für Szene mit einem Bild Pause, unsichtbare Objekte dafür kurz sichtbar. `snapshot()` zeichnet den FxPass ein zweites Mal in ein eigenes Ziel (zwei Ziele im Wechsel, falls während einer Blende erneut geklickt wird), setzt danach das vorherige Render-Ziel wieder (sonst Speicherleck, siehe Prüfung 1) und schaltet `FX_SNAP` ein, nur während der Blende. `dropSnap()` beendet die Blende sofort (View Transition). |
+| `js/runner.js` | `setTheme(light)`: Blending der umgerechneten Materialien, Hook `setTheme(light)` der Szenen. Looks im hellen Thema siehe unten. |
+| `js/dev.js` | `dev.html?...&hell` zeigt eine Szene im hellen Thema. |
+
+### Additive Materialien werden Tinte (theme.js)
+
+`loadScenes` ruft nach dem Laden `patchScene` für jede Szene auf (vor dem Vorkompilieren). Jedes `ShaderMaterial` mit
+`AdditiveBlending` bekommt einen Zusatz, der nur mit dem Define `CODANI_LIGHT` in den Shader kommt (`onBeforeCompile`,
+dazu `customProgramCacheKey` mit den Werten unten): `main()` der Szene heisst dann `codaniSceneMain()`, das neue
+`main()` ruft sie auf und rechnet die Farbe um: Leuchtkraft e = hellster Kanal x Alpha, Farbton aus
+der Sättigung (Cyan wird Türkis, Weiss und Eis werden Tinte), starke Kerne dunkler, Deckkraft 1 - exp(-e x Faktor).
+Ember wird ganz zur hellen, warmen Tinte #c9875a und ist nur halb so deckend (Prüfung 1: mit #a14b0c lagen rostbraune
+Schlieren und Flecken auf Kabeln, Gehirn und Code). Beim Umschalten setzt `setSceneTheme` das Define (eigenes Programm je Thema, three.js
+behält beide im Cache) und `material.blending` (Additive oder Normal). Pro Material (in `create()` vor dem Laden setzen):
+
+| Wert | Wirkung |
+| --- | --- |
+| `material.userData.themeGain` | Deckkraft-Faktor im hellen Thema (Standard 1). Steht als Konstante im Shader: Materialien mit gleichem Shader brauchen denselben Wert, sonst entstehen zusätzliche Programme |
+| `material.userData.themeKeep` | nicht umrechnen, bleibt Licht (hellt auf Hell nur leise auf): Lichtkegel der Partikel, Lichtflecken im Gehirn und an der Gehirn-Hardware. Zusammen mit `themeDefine`: eigener heller Weg ohne Umrechnung, die Szene stellt das Blending selbst um (Hologramm, robot.js) |
+| `material.userData.themeInk` | Anteil, mit dem helle Kerne zur dunklen Tinte gehen (Standard 0.6) |
+| `material.userData.themeCurve` | Exponent auf die Leuchtkraft (Standard 1; kleiner: schwache Punkte deutlicher, starke Linien gleich) |
+| `material.userData.themeDefine` | Material hat einen eigenen hellen Weg (`#ifdef CODANI_LIGHT` im Shader), das Define kommt mit dem Thema (Hintergrund, Knoten der Kabel-Szene; umgerechnete Materialien haben es automatisch) |
+
+Eigene Anpassungen im hellen Thema immer mit `#ifdef CODANI_LIGHT` schreiben, nie mit einem Uniform-Vergleich: sonst
+rechnet der dunkle Modus unter Umständen mit (SwiftShader führt beide Zweige aus; gemessen in der Arbeitsfassung mit
+Uniform-Vergleichen: Hero 17 % langsamer, mit Defines wie vorher).
+
+Eigene helle Wege (weil kein reines Additiv): Knoten der Kabel-Szene (`cables-shaders.js`, weisses Glas, Ring und
+Skala in Türkis, Icon in Tinte und kräftiger, leiser Schatten statt Halo, vormultipliziert), Hintergrund
+(`backdrop-glsl.js`, `lightBackdrop()`), Partikel (unscharfe Scheiben und Staub leiser, sonst Flecken). Seit Prüfung 1
+(03.11.2026) dazu:
+
+- **Hologramm** (`makeHoloMaterial`, robot-materials.js; `themeKeep` und `themeDefine`, robot.js stellt das Blending
+  um): Milchglas mit Tintenlinien statt umgerechnetem Licht. Kontur (Fresnel-Rand) in Türkis bis Tinte, Fugen und
+  Öffnungskanten in Türkis, die Fläche als zarter, heller Schleier mit leiser Tiefe zum Rand hin, im Röntgen
+  (`uHoloX` = Röntgen-Anteil) noch leiser. Volle Tinte schon ab `uHolo` 0.18, damit der Aufbau nie verschwindet
+  (Kontur gegen Hintergrund robot@0.3 rund 5:1, vorher 2.1:1). Nah an der Kamera werden Fugen und Kontur leiser
+  (sonst dicke Balken). Scan-Kante: feine türkise Linie direkt am Schnitt, darüber eine weiche, weisse Lichtkante
+  und deckendes Milchglas (rund 0.07 bis 0.3 über dem Schnitt), das den Blick in die angeschnittene Schale verdeckt
+  (vorher: dunkles Türkisband und Kabel quer über den Augen).
+- **Mechanik** (`makeMechMaterial`): löst sich beim Eintauchen weich über die Deckkraft auf (`uMechFade`, gleiches
+  Fenster), dafür ist sie im hellen Thema `transparent` (robot.js `setTheme`). Dunkel bleibt das feine Korn.
+- **Schale** (`makeShellMaterial`): zur Silhouette hin bis 48 % dunkler, wie Abschatter im Produktstudio. Sonst stand
+  die weisse Schulter gleich hell wie das Off-White dahinter.
+- **Gehirn** (`brain-shaders.js`): nahe, unscharfe Punkte der Rinde und Schwebeteilchen bis 85 bis 90 % leiser,
+  grosse unscharfe Nervenzellen fast weg, ihr Hof halb (vorher dunkle Kleckse bis 40 px).
+
+### Werte pro Szene
+
+| Szene | hell |
+| --- | --- |
+| backdrop | eigene Farbwelten `BACKDROPS_HELL` (config.js), gleiche Schlüssel und Dynamik wie dunkel, im Shader anders gelesen: `base`/`mid` Papier, `hi` weisses Gegenlicht, `wash*` blasse Farbflächen, `pool` Kontaktschatten auf dem Studio-Boden, Raster, Pakete, Messkreis, Scanlinie und Code-Regen in Türkis. Keine Sterne, kein Staub, kein Bokeh. Helligkeit `PAPER_GAIN` 1.16 (gilt auch für die Nebelfarbe). Weisses Gegenlicht hinter der Büste schwächer (glow robot 0.5, zoom 0.6, outro 0.45) und das Studio im Kapitel robot einen Hauch grauer (base #d9dfe4, mid #e8ecef): die weisse Schale steht vor hellem Grau statt vor gleich hellem Weiss. Am Handy (`ctx.isMobile`) überschreibt `BACKDROPS_HELL_M` einzelne Werte (Prüfung 2): robot base #cfd6dc, mid #dfe4e8, glow 0.38; zoom base #d6dde3, mid #e6ebee; outro base #dcd8d3, mid #ebe7e2, glow 0.32; cables wash 0.4 (vorher 0.7, grau-lila Dunstband oben im Bild). |
+| particles | Faktor 1.3, Kurve 0.75 (Flächen der Büste deutlicher, Linien gleich kräftig), Tinten-Anteil 0.3 (Linien Türkis statt fast schwarz), unscharfe Scheiben x 0.15, Staub x 0.4 (Vordergrund x 0.15), ferne Lichter x 0.3, Lichtkegel bleibt Licht. Treten erst von robot@0.14 bis 0.3 zurück (dunkel 0.05 bis 0.22), wenn das Hologramm deckt |
+| robot | `lookHell` (Belichtung high 1.05 bis 1.15, Handy-Ausklang auf high 1.18; Stufe medium/low 1.04 bis 1.08, Prüfung 2: ohne Klarlack glänzt die Schale breiter und lief am Handy im Off-White aus; Führungslicht 0.5 bis 0.6, Fülllicht 0.26 bis 0.3, Kantenlicht neutral `rimWarm` 0.45, im Ausklang 0.85 wie dunkel, Bloom 0.12, Schwelle 2.0), helles Studio für die Spiegelungen (`buildStudioEnv(..., { light: true })`: alles neutral weiss statt mit dem Blaustich von `palette.white`, Kuppel 0.14 / 0.22 / 0.5, also um den Horizont dunkler wie Abschatter; erst beim ersten Wechsel gebaut, die Materialien tauschen nur die Textur), Schale neutral weiss 0.9 (`setTheme` tauscht nur die Farbe; vorher eisblau), auf medium/low Spiegelung 1.0 bis 1.1 statt 1.45 bis 1.65 (nur hell), Abschatter zur Silhouette dort 0.62 mit Exponent 1.6 statt 0.48 und 2.2 (`#ifdef AB_CHEAP` im hellen Weg), Hologramm und Mechanik mit eigenem Weg (oben), Röntgen-Kontur bleibt bis brain@0.26 und blendet bis 0.46 aus (dunkel 0.15 bis 0.46) |
+| brain | Faktoren cortex und dust 3.2, neurons 2.6, edges und fibers 4.5, glows bleiben Licht; nahe, unscharfe Punkte und Zellen leiser (oben). Prüfung 2: Impulse, Funken und Lichtpakete in Verbindungen und Fasern nur als leise Verdichtung der Linie in Türkis (gedeckelt, vorher dunkle Striche wie Kratzer auf der Linse), unscharfe Rindenpunkte ab 5 px leiser (vorher ab 8 px), mittlere Zellen ab 6 px wie grosse behandelt und feuernde Zellen 40 % leiser (vorher Tintentropfen von 5 bis 12 px) |
+| cables | fibre 6.5, ring 2.0, tip 1.6, mote 0.4 (vorher 1.2: grauer Staub hinter dem Text), Knoten eigener heller Weg; Ring und Icon-Striche dort mindestens rund 1.5 Bildpunkte breit, Ring deckender (Prüfung 2: am Handy waren die Knoten nur blasse Ringe). Beschriftungen der Tippflächen (`.node-hits`, Hochformat) im hellen Thema mit Deckkraft min(1, 1.7 x Sichtbarkeit) (`js/nodes.js`, liest das Thema nur beim Wechsel); die Textzone, der die Beschriftungen ausweichen, beginnt hell im Hochformat direkt über dem Text statt rund 50 px darüber (Kalender bei cables@0.6 vorher Sichtbarkeit 0.13, jetzt 0.64; Beschriftungen direkt am Kicker weiter aus) |
+| dna | glyph 2.3, rung 1.8, wire 2.6, band 2.2, streak 1.4; grosse Zeichen nah an der Kamera im hellen Thema bis 70 % leiser (`GLYPH_FS`, sonst lenkt die Tinte vom Text ab). Abnahme (06.11.2026): die Zeichenspitze beim Aufbau des Gerüsts ist hell nur eine leise Verdichtung der Linie (`WIRE_FS`, `#ifdef CODANI_LIGHT`: Spitze x 0.45, Hof 0.02 statt 0.12), vorher lag am Ende jeder Linie ein dunkler, unscharfer Strich wie Schmutz |
+
+**Looks:** `BASE_LOOK_HELL` (config.js) sind die Grundwerte hell (Bloom 0.16, Schwelle 1.7, Vignette 0.08, Korn 0.02,
+keine Aberration). Die Schlüssel in `THEME_LOOK_KEYS` (exposure, bloom, bloomRadius, bloomThreshold, aberration,
+vignette, grain, flash) nimmt das helle Thema nie aus dem dunklen `look` einer Szene, sondern aus ihrem `lookHell` oder
+aus `BASE_LOOK_HELL`. Die übrigen (Licht, Nebel, Kamera) gelten für beide Themen, solange `lookHell` sie nicht setzt.
+Schnitt hell: `flash` als Blende zum Off-White (smoothstep, bis 0.92), ohne Belichtung und Bloom hochzuziehen.
+
+**FxPass hell** (`FX_LIGHT`): Scrim hellt zum Off-White auf (`uScrimTone`), Abdunkeln im Inhaltsbereich geht zum
+Off-White (`uDimTone`), Blitz als Blende. Ohne Define die bisherigen Formeln. `FX_SNAP` (nur während der Blende) mischt
+das feste Bild `tSnap` mit `uSnap` darüber.
+
+**Messung (02.11.2026, SwiftShader 640 x 400, Stufe high, je 12 s, abwechselnd alt und neu):** Programme 53 alt, 53 neu
+dunkel, 53 neu hell. Draw Calls und Dreiecke an allen sieben Stellen gleich. Bildzeit Hero alt 132 bis 146 ms, neu
+dunkel 141 bis 143 ms; Büste alt 324 ms, neu dunkel 343 ms (35 statt 37 Bilder in 12 s, innerhalb der Messgenauigkeit),
+neu hell 324 ms. Vorher- und Nachher-Bilder dunkel: gleiche Bilder bis auf zeitabhängige Bewegung (Drehung der Helix,
+Blick im Ausklang), mittlere Helligkeit gleich.
+
+**Prüfung 1 (03.11.2026):** Dunkel unverändert: alle 53 Programme sind nach Entfernen der hellen `#ifdef`-Blöcke und
+der Leerzeilen dieselben wie vor der Behebung, 52 davon auch dieselben wie vor dem Hellmodus (nur der FxPass ohne die
+ungenutzten Tonwert-Funktionen, `toneMapped: false`). Werkzeug: `studio-arbeit/hellmodus/tools/shader_dump.js` und
+`shader_cmp.py`. Draw Calls und Dreiecke dunkel gleich (Hero 18 / 144, Büste robot@0.5 44 / 584k, Röntgen zoom@0.6
+51 / 696k). Die neuen JS-Zweige (Hologramm-Fenster, Partikel, Mechanik `transparent`, Farbe der Schale) greifen nur
+hell. Hell beim Start ebenfalls 53 Programme, nach dem ersten Wechsel von dunkel nach hell 90 statt 74 (Schale, Mechanik und Hologramm haben eigene helle Programme; sie entstehen erst
+beim ersten Wechsel oder beim hellen Start). Speicher: `engine.snapshot()` setzt das Render-Ziel zurück. Vorher merkte
+sich der Composer im nächsten Bild das feste Bild als aktuelles Ziel und band es nach der Blende wieder an, obwohl es
+freigegeben war (pro Wechsel eine Textur mehr). Jetzt bleibt es nach vier Wechseln bei 19 Texturen (18 plus das helle
+Studio). Der Schalter fängt den Abbruch einer View Transition ab (vorher eine unbehandelte Ablehnung in der Konsole,
+wenn ein Bild sehr lange dauert).
+
+### Seite drumherum (css/story.css, Abschnitt "Hellmodus")
+
+Alles mit `html[data-theme="hell"]` (Achtung: `.gl`, `.no-gl` und `data-theme` sitzen alle auf `<html>`, also
+`[data-theme="hell"].gl ...`). Farben der Geschichte als Tokens (`--c-*`), Kopfzeile in der hellen Variante (oben ohne
+Fläche, beim Scrollen ein kräftiger Off-White-Verlauf: 0.96 oben, 0.88 bis 0.9 auf Höhe der Links, 0.74 an der
+Unterkante, darunter weich auslaufend, am Desktop 40 px, am Handy 16 px, ohne Rand, keine Zeiger-Ereignisse; im
+Ausklang die feste Leiste), Knöpfe wie auf den hellen Seiten, helle
+Scrims hinter den Panels (Desktop radial, Hochformat Fläche unten), Glas-Karte im Ausklang weiss, Pillen
+"Animation überspringen" und HUD hell (das HUD steht oft über der türkisen Brust: 0.95 deckend, Index #085a6d, "/06"
+#4a5463), Angebotszeile, Knoten-Beschriftungen
+und Pillen weiss mit Tinte, Preloader, Cursor, Hinweis bei Standbildern (`gl-hint`), Schleier über der Szene im
+Inhaltsbereich. Kontraste gegen #f3f5f7: Text #0b1220 17.1:1, Fliesstext #2a3442 11.5:1, Nebentext #5a6575 5.4:1,
+Akzent und Fokus-Rahmen #0a6f86 5.3:1 (Fokus-Rahmen der Knoten: weisser und türkiser Ring), Weiss auf dem Knopf
+#0a6f86 5.8:1. Gemessen hinter den Text-Panels über der hellen Szene (02.11.2026, Desktop, 5-%-Wert des Hintergrunds
+im Textblock): Fliesstext mindestens 10.2:1, Nebentext 4.8:1, Akzent 4.7:1 (Hero über der Partikel-Büste, sonst 4.9:1).
+Prüfung 1 (03.11.2026, Desktop, dunkelster Bildpunkt hinter dem Text): HUD-Ziffern vorher 3.1 bis 3.8:1, jetzt
+mindestens 6.9:1 (Index 7.0:1); Links der Kopfzeile über Tintenlinien vorher bis 3.5:1, jetzt mindestens 8.1:1.
+
+Prüfung 2 (06.11.2026):
+
+- **Hero:** Titel, Kapitelmarke und Zeile darunter haben im hellen Thema einen engen Off-White-Hof um jede Glyphe
+  (Titel `filter: drop-shadow` 1.5 px und 6 px, die Wort-Masken schnitten einen `text-shadow` ab; Kapitelmarke und
+  Zeile `text-shadow`). Die Tintenlinien der Partikel-Büste laufen damit nicht mehr durch die Buchstaben ("abnimmt.",
+  am Handy die Halslinien durch "für KMU").
+- **Hochformat mit 3D:** Das Panel wandert beim Scrollen bis rund 18 px nach oben (`--p`), seine Verläufe endeten dann
+  über dem unteren Bildrand (harte Kante, 11 px). Hell reichen `.chapter__panel::before` und die Fläche hinter dem
+  Text darum 40 px tiefer. Die Fläche hinter dem Text beginnt 60 px über dem Kicker und ist nach 34 px dicht (0.94);
+  im Ausklang beginnt sie 30 px darüber (vorher wegen der Spezifität 80 px, hell über der Brust). Der helle Scrim im
+  FxPass ist im Hochformat aus (director.js).
+- **Fallback hell im Hochformat:** Der Text steht wie mit 3D auf einer fast deckenden Off-White-Fläche (ab rund 90 px
+  über dem Kicker, ganze Breite, bis zum unteren Rand des Abschnitts; das Panel liegt dafür mit `z-index` über dem
+  Poster), der Kicker in #085a6d, die Glas-Karte im Ausklang 0.92 deckend. Kicker vorher 2.3 bis 3.8:1 gegen den
+  dunkelsten 2-%-Wert hinter den Glyphen, jetzt 6.6 bis 7.2:1 (iPhone 13). Desktop unverändert 5.1 bis 5.6:1.
+- **Schalter:** ohne JavaScript ausgeblendet, während der Vorbereitung `aria-busy` (siehe Ablauf).
+
+Abnahme (06.11.2026): Die Bildbeschreibung des Hero-Posters (`poster` in `CHAPTERS`, `_src/pages/start.js`) gilt für
+beide Themen ("Büste eines Androiden aus feinen Punkten und Linien", vorher "aus leuchtenden Lichtpunkten vor dunklem
+Hintergrund", im hellen Fallback falsch).
+
+### Poster (ohne WebGL und bei reduzierter Bewegung)
+
+Eigene helle Poster `assets/img/poster-<beat>-hell.webp` (1440 x 900) und `poster-<beat>-hell-m.webp` (540 x 1170) an
+denselben Stellen wie die dunklen (intro@0.06, robot@0.95, zoom@0.85, brain@0.3, cables@0.6, dna@0.42, outro@0.7), ohne
+UI und ohne Korn, WebP Qualität 78. Aufnahme: `studio-arbeit/hellmodus/tools/posters_hell.js <out> dm`, Umwandlung
+`convert_posters_hell.py <out>`. Die Verläufe über den Postern sind im hellen Thema Off-White. Alle 14 hellen Poster am
+03.11.2026 nach Prüfung 1 neu aufgenommen (Mechanik ohne Krümel, Hologramm, Schale neutral weiss). Nach Prüfung 2
+(06.11.2026) neu: `poster-brain-hell.webp` (Impulse leise) und im Hochformat robot, zoom, brain, cables, outro
+(`-hell-m`, Studio am Handy grauer, Knoten kräftiger, Impulse leise). Die Aufnahme läuft auf `?q=high` mit 540 px
+Breite, also mit den Handy-Farbwelten `BACKDROPS_HELL_M`, aber der Büste der Stufe high. Abnahme (06.11.2026): neu
+`poster-cables-hell.webp` (die Knoten sind seit Prüfung 2 auch am Desktop kräftiger) und alle sieben `-hell-m` (im
+Hochformat weichen Hintergrund und Knoten-Beschriftungen der Textzone wieder aus, der Scrim im FxPass bleibt aus;
+intro und dna stammten noch vom 03.11. mit hellem Scrim). Aufnahme mit `abnahme/tools/shots.js` (`--clean --nograin
+--reload`, Handy `--vp=540x1170`), Umwandlung wie oben. Die übrigen sechs Desktop-Poster sind unverändert aktuell
+(neu aufgenommen und verglichen: Unterschiede nur durch Bewegung).
+
+### Testen
+
+```
+node S/tools/story_shots_codani.js <out> robot@0.5,... --page='?q=high&hell'          # 3D hell, Desktop
+node S/tools/story_shots_codani.js <out> robot@0.5,... --mobile --page='?q=medium&hell'
+node S/tools/pages_codani.js <out> start --q='?nogl&hell'                              # Fallback hell
+node S/hellmodus/tools/theme_switch.js <out> robot@0.5 [--mobile]    # Schalter live, Blende, Speicher, ?dunkel
+node S/hellmodus/tools/perf_probe.js <root> '?q=high'               # Programme und Bildzeit (Vergleich alt/neu)
+node S/hellmodus/tools/shader_dump.js <out.json> '?q=high&dunkel'      # alle Programme als Text (nach allen Beats)
+python3 S/hellmodus/tools/shader_cmp.py <alt.json> <neu.json>          # dunkel gleich? (ohne helle #ifdef-Bloecke)
+node S/hellmodus/behebung-2/tools/switch_order.js <out> robot@0.9 [--mobile]   # Reihenfolge Szene vor Seite beim Klick
+node S/hellmodus/behebung-2/tools/kicker_nogl.js <out> [--mobile] [--q=?nogl&hell] # Kicker im Fallback, Auswertung
+python3 S/hellmodus/behebung-2/tools/kicker_messen.py <out>/m-kicker.json 3        #   mit kicker_messen.py (DPR)
+python3 S/hellmodus/behebung-2/tools/bueste_messen.py <bild> x0,y0,x1,y1 [x,y0,y1] # Anteil ab 240, Spanne, Scheitel
+node S/hellmodus/abnahme/tools/shots.js <out> robot@0.5,... --page='?q=high&hell' [--mobile] [--root=<repo>]  # wartet auf Bilder
+node S/hellmodus/abnahme/tools/fallback_check.js <out>   # Fallback, Schalter ohne 3D, ?hell/?dunkel, ohne JS, Unterseiten
+node S/hellmodus/abnahme/tools/axe_start.js              # axe-core Startseite hell und dunkel (Fallback, Desktop und Handy)
+```
+
+**Aufnahmen nie parallel laufen lassen.** SwiftShader braucht pro Bild rund eine Sekunde; laufen zwei Aufnahmen
+gleichzeitig, kann ein Bildschirmfoto nach fester Wartezeit noch einen alten Stand zeigen (Abnahme: brain@0.3 mit
+Mechanik, die dort längst aufgelöst ist). `abnahme/tools/shots.js` zählt darum die gerenderten Bilder nach dem Sprung
+(Zähler an `engine.render`, Standard mindestens 6) und wartet zusätzlich eine feste Zeit.
+
+**Prüfung 2 (06.11.2026), Messung:** Reihenfolge beim ersten Wechsel (SwiftShader, robot@0.9): erstes Bild im neuen
+Thema (unter dem festen Bild) und `data-theme` innerhalb von 13 bis 16 ms, nie Seite hell über dunklem 3D-Bild
+(vorher 103 s Abstand in SwiftShader, auf echten Geräten geschätzt 0.3 bis 2 s). Büste am Handy (outro@0.5, Kopf und
+Hals): Anteil ab Grauwert 240 vorher 63 %, jetzt 15 %; Scheitel mit Konturlinie (dunkelster Wert 167, vorher 236 ohne
+Kante). robot@0.9: 56 % auf 5 %. Desktop zum Vergleich 38 %. Dunkel unverändert: alle 53 Programme ohne die hellen
+`#ifdef`-Blöcke gleich wie vor Prüfung 2 (`shader_cmp.py`), Fallback-Bilder dunkel pixelgleich.
+
+**Abnahme (06.11.2026), Messung** (Werkzeuge und Bilder in `S/hellmodus/abnahme/`):
+
+- Dunkel gegen den Stand vor dem Hellmodus (Commit 050d95c, entpackt nach `abnahme/repo-alt`): 53 Programme, nach
+  Entfernen der hellen `#ifdef`-Blöcke 52 gleich, nur der FxPass anders (ohne die ungenutzten Tonwert-Funktionen, wie
+  in Prüfung 1); gegen den Stand nach Prüfung 2 alle 53 gleich. Draw Calls und Dreiecke an allen sieben Stellen gleich.
+  Bildzeit abwechselnd alt und neu, je 12 s (SwiftShader 960 x 600, high): Hero 132 bis 133 gegen 136 bis 138 ms,
+  Röntgen 462 bis 480 gegen 400 bis 480 ms, Code 1333 gegen 1091 bis 1200 ms, also gleich im Rahmen der Messgenauigkeit.
+  Dieselben zehn Stellen dunkel alt und neu aufgenommen: mittlere Helligkeit und Farbe je Stelle höchstens 0.5 von 255
+  auseinander, sichtbar nur der neue Schalter und zeitabhängige Bewegung.
+- Schalter: Klick mit 3D live (Desktop high, Handy medium), Scroll-Position gleich, `aria-pressed`, `aria-label`,
+  `localStorage` und `meta[name=theme-color]` stimmen, Neuladen behält die Wahl, `?dunkel` und `?hell` überschreiben
+  sie, ohne sie zu ändern. Drei schnelle Klicks ergeben genau einen Wechsel (`abnahme/tools/dreifach.js`). Reihenfolge
+  (`switch_order.js`): erstes Bild im neuen Thema und `data-theme` 21 ms auseinander, nie Seite hell über dunklem Bild.
+  Ohne 3D (reduzierte Bewegung, `?nogl`) sofort, nur helle Poster geladen; ohne `localStorage` (wirft) und ohne
+  JavaScript ohne Fehler; Unterseiten ohne Schalter und ohne `data-theme`. axe-core (WCAG 2.1 AA) auf der Startseite
+  hell und dunkel ohne Verstoss, Fokus-Rahmen #0a6f86 auf Off-White 5.3:1. Keine Meldungen in der Konsole.
+(`S` = `/home/user/studio-arbeit`.)

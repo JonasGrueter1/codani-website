@@ -391,6 +391,10 @@ void main() {
 
   float ign = smoothstep(aRand.y * 0.75, aRand.y * 0.75 + 0.25, uIgnite);
   float intensity = bright * energy * fog * nearFade * edge * uAlpha * ign;
+#ifdef CODANI_LIGHT
+  // helles Thema (theme.js): unscharfe Scheiben und Staub leiser (auf Hell wirken sie wie Flecken)
+  intensity *= (1.0 - 0.85 * vBlur) * (isDust ? (aInfo.w > 0.5 ? 0.15 : 0.4) : (isFar ? 0.3 : 1.0));
+#endif
   vColor = col * intensity;
   gl_PointSize = pointSize;
   if (intensity < 0.0004 || depth < 0.05) {

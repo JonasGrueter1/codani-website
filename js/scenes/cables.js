@@ -160,6 +160,10 @@ export function create(ctx) {
     textBox.x1 = (sc.x + sc.rx) * W + 12;
     textBox.y0 = (1 - sc.y - sc.ry) * H - 12;
     textBox.y1 = (1 - sc.y + sc.ry) * H + 12;
+    // Hell im Hochformat (Pruefung 2): oben ohne den Rand der Scrim-Zone (12 % der Texthoehe, bei hohen Textbloecken
+    // rund 50 px), sonst blendeten Knoten weit ueber dem Text (Kalender) ihre Beschriftung fast ganz aus. Der Text
+    // steht dort ohnehin auf seiner eigenen hellen Flaeche. Dunkel unveraendert.
+    if (portrait && ctx.theme && ctx.theme.light) textBox.y0 += sc.ry * H * (0.12 / 0.62);
   }
   // Abstand zum Text mit der vollen Breite (wf: mit Untertitel, den nodes.js beim Zeigen einblendet), damit die
   // Beschriftung auch beim Zeigen nicht in den Text laeuft

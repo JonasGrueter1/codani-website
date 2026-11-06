@@ -307,7 +307,7 @@ export class Engine {
     const u = this.fx.uniforms;
     if (!sc) { u.uScrim.value = 0; return; }
     u.uScrimRect.value.set(sc.x, sc.y, Math.max(0.02, sc.rx), Math.max(0.02, sc.ry));
-    u.uScrim.value = sc.a;
+    u.uScrim.value = sc.fx === 0 ? 0 : sc.a; // fx 0: Zone ohne Bildwirkung (hell im Hochformat, director.js)
   }
 
   resize(force = false) {

@@ -4,7 +4,8 @@
 // (localStorage codani-theme, Test-Schalter ?hell und ?dunkel), umgeschaltet vom Knopf in der Kopfzeile (Skript im
 // Layout, Ereignis "codani-theme" auf window). main.js uebernimmt den Wechsel live: altes Bild festhalten
 // (engine.snapshot), Thema in Engine, Runner und Szenen umstellen, fehlende Programme kompilieren
-// (engine.compileScene), dann weiche Blende im FxPass.
+// (engine.compileScene), dann weiche Blende (View Transition des Browsers, sonst im FxPass). Beim Klick auf den
+// Schalter zuerst die Szene, dann die Seite (window.__codaniTheme.prepare, ARCHITEKTUR.md Kapitel 14).
 //
 // Hell: Partikel, Linien, Kabel, Code-Zeichen und das Website-Geruest sind dunkle Tinte mit normalem Blending statt
 // additivem Leuchten. Dafuer bekommt jedes additive ShaderMaterial der Szenen beim Laden einen Zusatz (patchScene),

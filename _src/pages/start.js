@@ -20,7 +20,8 @@ exports.meta = {
 const CHAPTERS = [
   {
     scene: 'intro', cls: 'chapter--intro', id: 'top',
-    poster: 'Büste eines Androiden aus leuchtenden Lichtpunkten vor dunklem Hintergrund',
+    // Bildbeschreibung gilt fuer beide Themen (hell: Tinte auf Off-White, dunkel: Licht auf Schwarz)
+    poster: 'Büste eines Androiden aus feinen Punkten und Linien',
   },
   {
     scene: 'robot', cls: 'chapter--left', kicker: ['01', 'Entlastung'],

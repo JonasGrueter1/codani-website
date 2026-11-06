@@ -1012,7 +1012,7 @@ Skala in Türkis, Icon in Tinte und kräftiger, leiser Schatten statt Halo, vorm
 | robot | `lookHell` (Belichtung high 1.05 bis 1.15, Handy-Ausklang auf high 1.18; Stufe medium/low 1.04 bis 1.08, Prüfung 2: ohne Klarlack glänzt die Schale breiter und lief am Handy im Off-White aus; Führungslicht 0.5 bis 0.6, Fülllicht 0.26 bis 0.3, Kantenlicht neutral `rimWarm` 0.45, im Ausklang 0.85 wie dunkel, Bloom 0.12, Schwelle 2.0), helles Studio für die Spiegelungen (`buildStudioEnv(..., { light: true })`: alles neutral weiss statt mit dem Blaustich von `palette.white`, Kuppel 0.14 / 0.22 / 0.5, also um den Horizont dunkler wie Abschatter; erst beim ersten Wechsel gebaut, die Materialien tauschen nur die Textur), Schale neutral weiss 0.9 (`setTheme` tauscht nur die Farbe; vorher eisblau), auf medium/low Spiegelung 1.0 bis 1.1 statt 1.45 bis 1.65 (nur hell), Abschatter zur Silhouette dort 0.62 mit Exponent 1.6 statt 0.48 und 2.2 (`#ifdef AB_CHEAP` im hellen Weg), Hologramm und Mechanik mit eigenem Weg (oben), Röntgen-Kontur bleibt bis brain@0.26 und blendet bis 0.46 aus (dunkel 0.15 bis 0.46) |
 | brain | Faktoren cortex und dust 3.2, neurons 2.6, edges und fibers 4.5, glows bleiben Licht; nahe, unscharfe Punkte und Zellen leiser (oben). Prüfung 2: Impulse, Funken und Lichtpakete in Verbindungen und Fasern nur als leise Verdichtung der Linie in Türkis (gedeckelt, vorher dunkle Striche wie Kratzer auf der Linse), unscharfe Rindenpunkte ab 5 px leiser (vorher ab 8 px), mittlere Zellen ab 6 px wie grosse behandelt und feuernde Zellen 40 % leiser (vorher Tintentropfen von 5 bis 12 px) |
 | cables | fibre 6.5, ring 2.0, tip 1.6, mote 0.4 (vorher 1.2: grauer Staub hinter dem Text), Knoten eigener heller Weg; Ring und Icon-Striche dort mindestens rund 1.5 Bildpunkte breit, Ring deckender (Prüfung 2: am Handy waren die Knoten nur blasse Ringe). Beschriftungen der Tippflächen (`.node-hits`, Hochformat) im hellen Thema mit Deckkraft min(1, 1.7 x Sichtbarkeit) (`js/nodes.js`, liest das Thema nur beim Wechsel); die Textzone, der die Beschriftungen ausweichen, beginnt hell im Hochformat direkt über dem Text statt rund 50 px darüber (Kalender bei cables@0.6 vorher Sichtbarkeit 0.13, jetzt 0.64; Beschriftungen direkt am Kicker weiter aus) |
-| dna | glyph 2.3, rung 1.8, wire 2.6, band 2.2, streak 1.4; grosse Zeichen nah an der Kamera im hellen Thema bis 70 % leiser (`GLYPH_FS`, sonst lenkt die Tinte vom Text ab) |
+| dna | glyph 2.3, rung 1.8, wire 2.6, band 2.2, streak 1.4; grosse Zeichen nah an der Kamera im hellen Thema bis 70 % leiser (`GLYPH_FS`, sonst lenkt die Tinte vom Text ab). Abnahme (06.11.2026): die Zeichenspitze beim Aufbau des Gerüsts ist hell nur eine leise Verdichtung der Linie (`WIRE_FS`, `#ifdef CODANI_LIGHT`: Spitze x 0.45, Hof 0.02 statt 0.12), vorher lag am Ende jeder Linie ein dunkler, unscharfer Strich wie Schmutz |
 
 **Looks:** `BASE_LOOK_HELL` (config.js) sind die Grundwerte hell (Bloom 0.16, Schwelle 1.7, Vignette 0.08, Korn 0.02,
 keine Aberration). Die Schlüssel in `THEME_LOOK_KEYS` (exposure, bloom, bloomRadius, bloomThreshold, aberration,
@@ -1077,6 +1077,10 @@ Prüfung 2 (06.11.2026):
   dunkelsten 2-%-Wert hinter den Glyphen, jetzt 6.6 bis 7.2:1 (iPhone 13). Desktop unverändert 5.1 bis 5.6:1.
 - **Schalter:** ohne JavaScript ausgeblendet, während der Vorbereitung `aria-busy` (siehe Ablauf).
 
+Abnahme (06.11.2026): Die Bildbeschreibung des Hero-Posters (`poster` in `CHAPTERS`, `_src/pages/start.js`) gilt für
+beide Themen ("Büste eines Androiden aus feinen Punkten und Linien", vorher "aus leuchtenden Lichtpunkten vor dunklem
+Hintergrund", im hellen Fallback falsch).
+
 ### Poster (ohne WebGL und bei reduzierter Bewegung)
 
 Eigene helle Poster `assets/img/poster-<beat>-hell.webp` (1440 x 900) und `poster-<beat>-hell-m.webp` (540 x 1170) an
@@ -1086,7 +1090,12 @@ UI und ohne Korn, WebP Qualität 78. Aufnahme: `studio-arbeit/hellmodus/tools/po
 03.11.2026 nach Prüfung 1 neu aufgenommen (Mechanik ohne Krümel, Hologramm, Schale neutral weiss). Nach Prüfung 2
 (06.11.2026) neu: `poster-brain-hell.webp` (Impulse leise) und im Hochformat robot, zoom, brain, cables, outro
 (`-hell-m`, Studio am Handy grauer, Knoten kräftiger, Impulse leise). Die Aufnahme läuft auf `?q=high` mit 540 px
-Breite, also mit den Handy-Farbwelten `BACKDROPS_HELL_M`, aber der Büste der Stufe high.
+Breite, also mit den Handy-Farbwelten `BACKDROPS_HELL_M`, aber der Büste der Stufe high. Abnahme (06.11.2026): neu
+`poster-cables-hell.webp` (die Knoten sind seit Prüfung 2 auch am Desktop kräftiger) und alle sieben `-hell-m` (im
+Hochformat weichen Hintergrund und Knoten-Beschriftungen der Textzone wieder aus, der Scrim im FxPass bleibt aus;
+intro und dna stammten noch vom 03.11. mit hellem Scrim). Aufnahme mit `abnahme/tools/shots.js` (`--clean --nograin
+--reload`, Handy `--vp=540x1170`), Umwandlung wie oben. Die übrigen sechs Desktop-Poster sind unverändert aktuell
+(neu aufgenommen und verglichen: Unterschiede nur durch Bewegung).
 
 ### Testen
 
@@ -1102,7 +1111,15 @@ node S/hellmodus/behebung-2/tools/switch_order.js <out> robot@0.9 [--mobile]   #
 node S/hellmodus/behebung-2/tools/kicker_nogl.js <out> [--mobile] [--q=?nogl&hell] # Kicker im Fallback, Auswertung
 python3 S/hellmodus/behebung-2/tools/kicker_messen.py <out>/m-kicker.json 3        #   mit kicker_messen.py (DPR)
 python3 S/hellmodus/behebung-2/tools/bueste_messen.py <bild> x0,y0,x1,y1 [x,y0,y1] # Anteil ab 240, Spanne, Scheitel
+node S/hellmodus/abnahme/tools/shots.js <out> robot@0.5,... --page='?q=high&hell' [--mobile] [--root=<repo>]  # wartet auf Bilder
+node S/hellmodus/abnahme/tools/fallback_check.js <out>   # Fallback, Schalter ohne 3D, ?hell/?dunkel, ohne JS, Unterseiten
+node S/hellmodus/abnahme/tools/axe_start.js              # axe-core Startseite hell und dunkel (Fallback, Desktop und Handy)
 ```
+
+**Aufnahmen nie parallel laufen lassen.** SwiftShader braucht pro Bild rund eine Sekunde; laufen zwei Aufnahmen
+gleichzeitig, kann ein Bildschirmfoto nach fester Wartezeit noch einen alten Stand zeigen (Abnahme: brain@0.3 mit
+Mechanik, die dort längst aufgelöst ist). `abnahme/tools/shots.js` zählt darum die gerenderten Bilder nach dem Sprung
+(Zähler an `engine.render`, Standard mindestens 6) und wartet zusätzlich eine feste Zeit.
 
 **Prüfung 2 (06.11.2026), Messung:** Reihenfolge beim ersten Wechsel (SwiftShader, robot@0.9): erstes Bild im neuen
 Thema (unter dem festen Bild) und `data-theme` innerhalb von 13 bis 16 ms, nie Seite hell über dunklem 3D-Bild

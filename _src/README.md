@@ -184,7 +184,8 @@ Neue Seiten: Datei in `pages/` anlegen, Pfad in `data/nav.json` (Menü, Fusszeil
   JavaScript ist der Knopf ausgeblendet. Farben der hellen Geschichte: `css/story.css`, Abschnitt "Hellmodus" (Kopfzeile
   mit kräftigem Off-White-Verlauf über der Szene, HUD fast deckend). Helle Poster: `assets/img/poster-<beat>-hell.webp`
   und `-hell-m.webp` (nach Prüfung 1 am 03.11.2026 neu aufgenommen, nach Prüfung 2 am 06.11.2026 brain sowie im
-  Hochformat robot, zoom, brain, cables und outro). Im Fallback hell steht der Text im Hochformat auf einer fast
+  Hochformat robot, zoom, brain, cables und outro, bei der Abnahme am 06.11.2026 cables und alle sieben im
+  Hochformat; Werkzeuge und Ablauf in ARCHITEKTUR.md Kapitel 14). Im Fallback hell steht der Text im Hochformat auf einer fast
   deckenden Off-White-Fläche (Kicker mindestens 6.6:1). Die Unterseiten sind schon hell und haben keinen
   Schalter.
 - `js/ui.js` macht nur noch Geschichte, Preloader, HUD, Anker und Cursor. Navigation, Menü, FAQ, Formular und

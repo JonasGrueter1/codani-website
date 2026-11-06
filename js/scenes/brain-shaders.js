@@ -107,6 +107,9 @@ void main() {
   float cover = 1.0;
   if (px < 1.5) { cover = px * px / 2.25; px = 1.5; }
   cover *= min(1.0, 9.0 / px);
+#ifdef CODANI_LIGHT
+  cover *= 1.0 - 0.85 * smoothstep(8.0, 32.0, px); // hell: unscharfe, nahe Punkte nicht als graue Flecken
+#endif
   gl_PointSize = min(px, 64.0);
   vA = uAlpha * rev * cover * smoothstep(0.035, 0.16, depth) * fogF(depth);
   if (vA < 0.003) gl_Position = vec4(2.0, 2.0, 2.0, 1.0); // unsichtbar: keine Fragmente erzeugen
@@ -184,6 +187,11 @@ void main() {
   float halo = exp(-d2 * 4.5) * (0.28 + 0.3 * vHot) * (1.0 - 0.75 * vBig);
   float m = (core * (1.2 + 1.5 * vHot) + halo) * (1.0 - smoothstep(0.8, 1.0, d2));
   float a = m * vA;
+#ifdef CODANI_LIGHT
+  // hell (Pruefung 1): nahe, unscharfe Zellen und ihr Hof wurden zu dunklen Klecksen bis 40 px. Grosse Scheiben fast
+  // weg, der Hof nur halb, der scharfe Kern bleibt.
+  a *= (1.0 - 0.88 * vBig) * mix(0.5, 1.0, core);
+#endif
   if (a < 0.002) discard;
   gl_FragColor = vec4(vCol, a);
 }
@@ -400,6 +408,9 @@ void main() {
   float cover = 1.0;
   if (px < 1.5) { cover = px * px / 2.25; px = 1.5; }
   cover *= min(1.0, 14.0 / px);
+#ifdef CODANI_LIGHT
+  cover *= 1.0 - 0.9 * smoothstep(6.0, 24.0, px); // hell: unscharfe Teilchen vor der Linse nicht als Staub
+#endif
   gl_PointSize = min(px, 64.0);
   vA = uAlpha * uReveal * cover * smoothstep(0.04, 0.2, depth) * fogF(depth);
   if (vA < 0.003) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);

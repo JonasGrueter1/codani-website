@@ -86,6 +86,9 @@ uniform float uWashSide;
 uniform float uDetail;
 uniform vec4 uScrimRect;
 uniform float uScrimA;
+#ifdef CODANI_LIGHT
+uniform float uPaper;  // Helligkeit des Papiers im hellen Thema (Lichtweg unten, nur mit CODANI_LIGHT, Kapitel 14)
+#endif
 
 varying vec3 vDir;
 
@@ -146,6 +149,249 @@ vec3 washAt(vec3 d) {
   return (uWashA * exp(-dot(a, a)) + uWashB * exp(-dot(b, b)) + uWashC * exp(-dot(c, c))) * 0.2 * smoothstep(0.0, 0.5, fr);
 }
 
+#ifdef CODANI_LIGHT
+// Helles Thema: Gewichte der drei Lichtflaechen (gleiche Lage wie washAt), damit sie als blasse Farbtoene mischen
+vec3 washG(vec3 d) {
+  vec3 gw = uGlowDir;
+  float fr = dot(d, gw);
+  if (fr <= 0.0) return vec3(0.0);
+  vec3 r1 = normalize(cross(gw, vec3(0.0, 1.0, 0.0)) + vec3(1e-5, 0.0, 0.0));
+  vec3 r2 = cross(r1, gw);
+  vec3 q = d - gw * fr;
+  vec2 p = vec2(dot(q, r1) * uWashSide, dot(q, r2));
+  float T = uTime * 0.045;
+  vec2 a = (p - vec2(0.21 + 0.035 * sin(T * 1.3), 0.04)) / vec2(0.07, 0.42);
+  vec2 b = (p - vec2(0.1 + 0.08 * sin(T * 0.9 + 1.0), 0.3 + 0.05 * sin(T * 0.7))) / vec2(0.36, 0.2);
+  vec2 c = (p - vec2(0.16 + 0.1 * sin(T * 0.8 + 4.0), -0.28)) / vec2(0.34, 0.16);
+  float m = smoothstep(0.0, 0.5, fr);
+  return vec3(exp(-dot(a, a)), exp(-dot(b, b)), exp(-dot(c, c))) * m;
+}
+vec3 washMix(vec3 col, vec3 g, float k) {
+  col = mix(col, uWashA, clamp(g.x * k * dot(uWashA, vec3(1.0)), 0.0, 1.0));
+  col = mix(col, uWashB, clamp(g.y * k * dot(uWashB, vec3(1.0)), 0.0, 1.0));
+  col = mix(col, uWashC, clamp(g.z * k * dot(uWashC, vec3(1.0)), 0.0, 1.0));
+  return col;
+}
+
+// Helles Thema: Studio-Hohlkehle wie bei einem Produktfoto. Papier oben (uBase), am Horizont heller (uMid), weiches
+// weisses Licht hinter dem Motiv (uHi, uGlowDir), blasse Lichtflaechen, Boden mit weichem Kontaktschatten und leiser
+// Spiegelung, Linien (Raster, Pakete, Code) in tiefem Tuerkis. Keine Sterne und kein Staub (auf Hell wirken sie wie
+// Schmutz). Gleiche Rausch-Zugriffe wie dunkel, eher weniger.
+vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
+  float e = d.y - uHorizon;
+  float cl = dot(d, uGlowDir);
+  float lit = max(cl, 0.0);
+  vec2 dxz = normalize(d.xz + vec2(1e-5, 0.0));
+  vec2 lxz = normalize(uGlowDir.xz + vec2(1e-5, 0.0));
+  float side = max(dot(dxz, lxz), 0.0);
+  float side2 = side * side;
+  float az = atan(d.x, -d.z);
+  float hl = max(length(d.xz), 1e-3);
+  float tanE = d.y / hl;
+
+  float ae = abs(e);
+  vec3 col = mix(uMid, uBase, smoothstep(0.0, 0.75, ae));
+  col *= e < 0.0 ? 1.0 - 0.05 * smoothstep(0.0, 0.6, -e) : 1.0;
+  float band = exp(-e * e * 30.0);
+  col = mix(col, uHi, band * uHorizonGlow * 0.4 * (0.35 + 0.65 * side2));
+  col = mix(col, uAccent, pow(max(dot(d, uAccentDir), 0.0), 3.0) * 0.6);
+
+  // weisses Gegenlicht hinter dem Motiv (trennt die weisse Bueste vom Grund: ihre Schattenseite steht davor)
+  float gs = max(uGlowSize, 0.2);
+  float halo = pow(lit, 9.0 / gs) * 0.55 + pow(lit, 2.4 / gs) * 0.45;
+  col = mix(col, uHi, clamp(halo * uGlow * 0.8, 0.0, 1.0));
+
+  vec3 wg = vec3(0.0);
+  if (uWash > 0.001) {
+    wg = washG(d);
+    col = washMix(col, wg, uWash * 0.55 * (1.0 - 0.6 * txt));
+  }
+
+  // Boden: gleiche Ebene wie dunkel, Kontaktschatten unter dem Motiv, leise Spiegelung der Lichtflaechen
+  float floorMask = 0.0;
+  if (uFloor > 0.001 && d.y < -0.001 && uCamPos.y > uFloorY + 0.05) {
+    float t = (uFloorY - uCamPos.y) / d.y;
+    vec3 P = uCamPos + d * t;
+    vec3 r = vec3(d.x, -d.y, d.z);
+    float rl = max(dot(r, uGlowDir), 0.0);
+    float fres = 0.05 + 0.95 * pow(1.0 - abs(d.y), 5.0);
+    vec3 fl = mix(uMid, uBase, 0.55);
+    fl = mix(fl, uHi, (pow(rl, 20.0) * 0.5 + pow(rl, 4.0) * 0.2) * uGlow * uFloorShine * (0.3 + 0.7 * fres));
+    if (uWash > 0.001) fl = washMix(fl, washG(r), uWash * 0.3 * uFloorShine);
+    vec2 pq = P.xz - uPoolAt.xz;
+    float pool = exp(-dot(pq, pq) * 0.09) * uPool;
+    fl *= 1.0 - 0.11 * pool;
+    if (uFloorGrid > 0.001) {
+      vec2 g = P.xz / uFloorGrid;
+      vec2 fw = max(fwidth(g), vec2(1e-4));
+      vec2 gl = abs(fract(g - 0.5) - 0.5) / fw;
+      float line = 1.0 - min(min(gl.x, gl.y) * 0.8, 1.0);
+      float fade = 1.0 - smoothstep(0.12, 0.45, max(fw.x, fw.y));
+      vec2 cg = abs(fract(g - 0.5) - 0.5);
+      float dotR = max(0.035, 1.2 * max(fw.x, fw.y));
+      float dotm = 1.0 - smoothstep(dotR * 0.5, dotR, length(cg));
+      fl = mix(fl, uGridColor, clamp((line * 0.06 + dotm * 0.32) * fade * det, 0.0, 1.0));
+#if BD_Q > 0
+      if (uStreaks > 0.001) {
+        float onZ = (1.0 - min(gl.y, 1.0)) * fade;
+        float onX = (1.0 - min(gl.x, 1.0)) * fade;
+        float lz = floor(g.y + 0.5);
+        float lx = floor(g.x + 0.5);
+        float hz = hash12(vec2(lz, 3.7));
+        float hx = hash12(vec2(lx, 9.1));
+        float pk = 0.0;
+        if (hz > 0.72) {
+          float ph = fract(g.x * 0.045 + uTime * (0.06 + 0.1 * hz) + hz * 13.0);
+          pk += onZ * (smoothstep(0.0, 0.008, ph) * (1.0 - smoothstep(0.008, 0.11, ph)));
+        }
+        if (hx > 0.78) {
+          float ph = fract(-g.y * 0.04 + uTime * (0.05 + 0.08 * hx) + hx * 7.0);
+          pk += onX * (smoothstep(0.0, 0.008, ph) * (1.0 - smoothstep(0.008, 0.11, ph)));
+        }
+        fl = mix(fl, uStreakColor, clamp(pk * uStreaks * 0.55 * det, 0.0, 1.0));
+      }
+#endif
+    }
+    float haze = 1.0 - exp(-t * 0.022);
+    haze = max(haze, smoothstep(-0.05, -0.002, d.y));
+    floorMask = uFloor * (1.0 - haze);
+    col = mix(col, fl, floorMask);
+  }
+  float sky = 1.0 - floorMask;
+
+  // Nebel: ganz leise, helle und etwas dunklere Schwaden (Luft im Studio)
+  float dens = 0.0;
+  float bioN = 0.5;
+  if (uFog > 0.001) {
+    vec3 p1 = rotY(d, uFogRot.x) * (2.2 * uFogScale) + vec3(11.3, 4.1, 7.7);
+    vec4 n1 = nz(p1);
+    float f = n1.x;
+    bioN = n1.w;
+#if BD_Q > 0
+    vec3 p2 = rotY(d, uFogRot.y) * (5.0 * uFogScale) + (n1.yzw - 0.5) * 1.7 + vec3(3.7, 9.2, 1.3);
+    vec4 n2 = nz(p2);
+    f = f * 0.6 + n2.x * 0.4;
+    bioN = n1.w * 0.55 + n2.z * 0.45;
+#endif
+    dens = smoothstep(0.36, 0.8, f);
+    float k = uFog * det * sky;
+    col = mix(col, uHi, dens * 0.22 * k * (0.4 + 0.6 * lit));
+    col *= 1.0 - (1.0 - dens) * 0.018 * k;
+  }
+
+  // Lichtstrahlen: helle, weiche Bahnen (nur aufhellen)
+  if (uRays > 0.001) {
+    vec3 L = uRayDir;
+    float rc = dot(d, L);
+    vec3 t1 = normalize(cross(L, abs(L.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0)));
+    vec3 t2 = cross(L, t1);
+    vec2 pc = normalize(vec2(dot(d, t1), dot(d, t2)) + vec2(1e-6, 0.0));
+    float ang = acos(clamp(rc, -1.0, 1.0));
+    float sr = nz(vec3(pc * uRayFreq, uTime * 0.03)).x;
+    float streak = smoothstep(0.45, 0.9, sr);
+    float fall = exp(-ang * 2.1);
+    col = mix(col, uRayColor, clamp(streak * fall * uRays * 0.28 * det * sky, 0.0, 1.0));
+  }
+
+  // Gehirn: blasse Schwaden in Flieder und Rose, Raender tuerkis
+  if (uAurora > 0.001 && uFog > 0.001) {
+    float rim = dens * (1.0 - dens) * 4.0;
+    float tone = smoothstep(0.25, 0.75, bioN);
+    vec3 bio = mix(uAuroraA, uAuroraB, tone);
+    float k = uAurora * det * sky * (0.35 + 0.65 * pow(lit, 1.5));
+    col = mix(col, bio, clamp(dens * 0.5 * k, 0.0, 1.0));
+    col = mix(col, uAuroraEdge, clamp(rim * pow(lit, 2.0) * 0.35 * k, 0.0, 1.0));
+  }
+
+  // Messraster, Scanlinie und Messkreis: feine Linien in Tuerkis
+  if (uGrid > 0.001) {
+    float ga = az * (180.0 / 3.14159265 / 8.0);
+    float gaw = max(fwidth(ga), 1e-4);
+    float ge = tanE / 0.14;
+    float gew = max(fwidth(ge), 1e-4);
+    float la = aaLine(fract(ga + 0.5) - 0.5, gaw, 0.0);
+    float le = aaLine(fract(ge + 0.5) - 0.5, gew, 0.0);
+    float gridL = max(la, le) * (1.0 - smoothstep(0.25, 0.7, max(gaw, gew)));
+    float gw = gridL * (0.3 + 0.7 * exp(-e * e * 5.0)) * (0.35 + 0.65 * side);
+    col = mix(col, uGridColor, clamp(gw * uGrid * 1.6 * det, 0.0, 1.0));
+    if (uScan > 0.001) {
+      float sd = tanE - uScanTan;
+      float sw = max(fwidth(tanE), 1e-5);
+      float line = aaLine(sd, sw, 0.5);
+      float trail = step(0.0, sd) * exp(-sd * 7.0);
+      col = mix(col, uGridColor, clamp((line * 0.7 + trail * 0.05) * uScan * det, 0.0, 1.0));
+    }
+    float rc = dot(d, uRingDir);
+    float rw = max(fwidth(rc), 1e-6);
+    float ring = aaLine(rc - uRingCos, rw, 0.3);
+    vec3 rt1 = normalize(cross(uRingDir, vec3(0.0, 1.0, 0.0)));
+    vec3 rt2 = cross(uRingDir, rt1);
+    float ra = atan(dot(d, rt2), dot(d, rt1)) * (60.0 / TAU);
+    float raw = max(fwidth(ra), 1e-4);
+    float tick = aaLine(fract(ra + 0.5) - 0.5, raw, 0.4)
+      * (1.0 - smoothstep(0.0, 1.0, abs(rc - uRingCos - 0.006) / 0.006));
+    col = mix(col, uGridColor, clamp((ring * 0.3 + tick * 0.22) * uGrid * 3.0 * det, 0.0, 1.0));
+  }
+
+  // Code auf der Tunnelwand: leise Zeichen in Tinte
+  if (uCode > 0.001) {
+    vec2 o2 = uCamPos.xy - vec2(0.0, 0.5);
+    vec2 d2 = d.xy;
+    float a = dot(d2, d2);
+    float c = dot(o2, o2) - 30.25;
+    if (a > 1e-5 && c < 0.0) {
+      float b = dot(o2, d2);
+      float t = (-b + sqrt(max(b * b - a * c, 0.0))) / a;
+      vec3 P = uCamPos + d * t;
+      float th = atan(P.y - 0.5, P.x);
+      float u = (th / TAU + 0.5) * 96.0;
+      float rowf0 = P.z / 0.5;
+      float ci = floor(u);
+      float hc = hash12(vec2(ci, 7.1));
+      float rowf = rowf0 + uTime * (1.2 + 2.4 * hc) + hc * 50.0;
+      float ri = floor(rowf);
+      float len = 10.0 + floor(hc * 16.0);
+      float ph = fract((ri + floor(hc * 997.0)) / len);
+      float bright = exp(-ph * 7.0) * step(ph, 0.75);
+      bright *= step(0.42, hash12(vec2(ci, 1.3)));
+      vec2 lc = vec2(fract(u), fract(rowf));
+      vec2 cw = max(fwidth(vec2(u, rowf)), vec2(1e-4));
+      float cellPx = 1.0 / max(cw.x, cw.y);
+      vec2 gq = (lc - vec2(0.18, 0.12)) / vec2(0.64, 0.76);
+      float glyph = 0.42;
+#if BD_Q > 0
+      if (cellPx > 7.0) {
+        vec2 gi = floor(gq * vec2(3.0, 5.0));
+        float inside = step(0.0, gq.x) * step(gq.x, 0.999) * step(0.0, gq.y) * step(gq.y, 0.999);
+        float flick = floor(uTime * (0.6 + 4.0 * step(0.86, hash12(vec2(ri, ci)))));
+        float bit = step(0.48, hash13(vec3(ci * 3.0 + gi.x, ri * 5.0 + gi.y, flick)));
+        vec2 gf = fract(gq * vec2(3.0, 5.0)) - 0.5;
+        float dotm = 1.0 - smoothstep(0.32, 0.48, max(abs(gf.x), abs(gf.y)));
+        glyph = mix(0.42, inside * bit * dotm, smoothstep(7.0, 13.0, cellPx));
+      }
+#endif
+      float fadeZ = exp(-abs(P.z - uCamPos.z) * 0.045);
+      col = mix(col, uCodeColor, clamp(bright * glyph * fadeZ * uCode * 2.2 * det, 0.0, 1.0));
+    }
+  }
+
+  // Bokeh: wenige, sehr weiche helle Scheiben (Licht im Objektiv), nur aufhellen
+  if (uBokeh > 0.001) {
+    vec3 q = rotY(d, uTime * 0.006) * 6.5 + vec3(0.0, uTime * 0.018, 0.0);
+    vec3 ci = floor(q);
+    vec3 h = hash33(ci + 17.0);
+    if (h.x > 0.55) {
+      vec3 cc = 0.25 + 0.5 * hash33(ci + 3.1);
+      float rr = 0.1 + 0.14 * h.y;
+      float dd = length(fract(q) - cc);
+      float disc = 1.0 - smoothstep(rr * 0.7, rr, dd);
+      col = mix(col, uBokehColor, clamp(disc * (0.2 + 0.3 * h.z) * uBokeh * det, 0.0, 1.0));
+    }
+  }
+  return col * uPaper;
+}
+#endif
+
 void main() {
   vec3 d = normalize(vDir);
   vec2 suv = gl_FragCoord.xy / uRes;
@@ -159,6 +405,11 @@ void main() {
     txt = clamp(uScrimA * 1.6, 0.0, 1.0) * (1.0 - smoothstep(0.0, 0.85, dq));
   }
   float det = uDetail * (1.0 - 0.75 * txt);
+
+#ifdef CODANI_LIGHT
+  gl_FragColor = vec4(max(lightBackdrop(d, px, txt, det), vec3(0.0)), 1.0);
+  return;
+#endif
 
   float e = d.y - uHorizon;
   float cl = dot(d, uGlowDir);

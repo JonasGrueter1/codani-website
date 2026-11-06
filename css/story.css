@@ -889,3 +889,247 @@ main { position: relative; z-index: 1; }
   .gl-hint { left: var(--gutter); right: var(--gutter); top: 84px; max-width: none; flex-wrap: wrap; font-size: 13.5px; }
   .gl-hint__try { order: 3; flex-basis: 100%; }
 }
+
+/* =====================================================================
+   Hellmodus der Startseite (Kapitel 14 in ARCHITEKTUR.md)
+   html[data-theme="hell"] setzt der Kopf von index.html (localStorage codani-theme, ?hell, ?dunkel), der Schalter
+   in der Kopfzeile schaltet live um. Dunkel bleibt der Standard und unveraendert: alles hier gilt nur mit
+   data-theme="hell" (ausser dem Schalter selbst). Bildsprache hell: helles Studio wie ein Produktfoto, Off-White
+   bis sehr helles Kuehlgrau, Schrift in Tinte, Akzent tiefes Tuerkis. Kontraste (WCAG AA) gegen #f3f5f7:
+   Text #0b1220 17.1:1, Fliesstext #2a3442 11.5:1, Nebentext #5a6575 5.4:1, Akzent #0a6f86 5.3:1 (gemessen hinter den
+   Panels ueber der Szene, 5-%-Wert des Hintergrunds: Fliesstext mindestens 10.2:1, Akzent 4.7:1).
+   ===================================================================== */
+
+/* ---- Schalter in der Kopfzeile (beide Themen): runder Icon-Knopf neben Kontakt, am Handy neben dem Menue */
+.hdr__theme {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line, #e3e7ec);
+  border-radius: 999px;
+  background: var(--bg, #fff);
+  color: var(--ink, #0b1220);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.hdr__theme:hover { border-color: var(--ink, #0b1220); }
+.hdr__theme-ico { grid-area: 1 / 1; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.hdr__theme-moon { display: none; }
+[data-theme="hell"] .hdr__theme-sun { display: none; }
+[data-theme="hell"] .hdr__theme-moon { display: block; }
+.hdr--dark:not(.is-light) .hdr__theme { background: rgba(4, 6, 10, 0.45); border-color: rgba(160, 214, 240, 0.26); color: var(--d-text, #eef4f8); }
+.hdr--dark:not(.is-light) .hdr__theme:hover { border-color: var(--signal, #46e6ff); color: #fff; }
+@media (max-width: 1023px) { .hdr__theme { width: 44px; height: 44px; } }
+@media (max-width: 359px) { .hdr__theme { width: 40px; height: 40px; } }
+.gl:not(.is-ready) .hdr__theme { visibility: hidden; }
+
+/* ---- Weiche Blende beim Umschalten: View Transitions (ganze Seite inklusive 3D-Bild), sonst kurze Farb-Uebergaenge */
+html.theme-vt::view-transition-old(root),
+html.theme-vt::view-transition-new(root) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+html.theme-fade :is(body, .hdr, .hdr__bar *, .chapter__text, .chapter__text *, .hud, .hud *, .story-skip, .chapter__offer,
+  .chapter__offer *, .tool-links a, .tl-label, .gl-hint, .gl-hint *, .preloader, .story-bar) {
+  transition: color 0.6s, background-color 0.6s, border-color 0.6s, box-shadow 0.6s, fill 0.6s, stroke 0.6s !important;
+}
+
+/* ---- Farben */
+html[data-theme="hell"] {
+  color-scheme: light;
+  --c-void: #f3f5f7;
+  --c-deep: #eef1f4;
+  --c-ink: #e6eaee;
+  --c-steel: #c3ccd5;
+  --c-text: #0b1220;
+  --c-soft: #2a3442;
+  --c-muted: #5a6575;
+  --c-story: #2a3442;
+  --c-page: #ffffff;
+  --c-page-alt: #f5f7f9;
+  --c-surface: linear-gradient(180deg, #ffffff, #f7f9fa);
+  --c-surface-line: rgba(11, 18, 32, 0.1);
+  --c-signal: #0a6f86;
+  --c-ice: #085a6d;
+  --c-ember: #a14b0c;
+  --c-line: rgba(11, 18, 32, 0.1);
+  --c-line-strong: rgba(11, 18, 32, 0.24);
+  --c-panel: rgba(255, 255, 255, 0.72);
+  --c-signal-a: rgba(10, 111, 134, 0.1);
+  --c-ember-a: rgba(161, 75, 12, 0.1);
+}
+[data-theme="hell"] .story.on-dark { color: var(--c-soft); }
+[data-theme="hell"] .story.on-dark :is(h2, h3) { color: var(--c-text); }
+[data-theme="hell"] .story ::selection { background: var(--accent-soft, #d7eff4); color: var(--c-text); }
+[data-theme="hell"] .on-dark :focus-visible { outline-color: var(--c-signal); }
+[data-theme="hell"] .story :is(.kicker, .eyebrow)::before { box-shadow: none; }
+[data-theme="hell"] .story .link:hover { color: var(--c-signal); }
+
+/* Knoepfe in der Geschichte: wie auf den hellen Seiten (Haupt in Tuerkis, Neben umrandet) */
+[data-theme="hell"] .story.on-dark .btn { background: var(--accent, #0a6f86); border-color: var(--accent, #0a6f86); color: #fff; }
+[data-theme="hell"] .story.on-dark .btn:hover { background: var(--accent-hover, #085a6d); border-color: var(--accent-hover, #085a6d); box-shadow: 0 0 0 4px rgba(10, 111, 134, 0.12); }
+[data-theme="hell"] .story.on-dark .btn--secondary { background: rgba(255, 255, 255, 0.6); color: var(--ink, #0b1220); border-color: var(--line-strong, #7d8a98); }
+[data-theme="hell"] .story.on-dark .btn--secondary:hover { background: #fff; border-color: var(--ink, #0b1220); color: var(--ink, #0b1220); box-shadow: none; }
+
+/* ---- Kopfzeile ueber der hellen Geschichte: helle Variante (wie auf den Unterseiten), oben ohne Flaeche */
+[data-theme="hell"] .hdr--dark:not(.is-light) { color: var(--ink, #0b1220); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__sub { color: var(--muted, #5a6575); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__link { color: var(--text, #2a3442); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__link:hover,
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__link[aria-current] { color: var(--ink, #0b1220); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__link::after { background: var(--accent, #0a6f86); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__more { color: var(--muted, #5a6575); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__more:hover,
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__more[aria-expanded="true"] { color: var(--ink, #0b1220); background: var(--bg-soft, #f5f7f9); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__toggle,
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__theme { background: rgba(255, 255, 255, 0.7); border-color: rgba(11, 18, 32, 0.14); color: var(--ink, #0b1220); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__theme:hover { border-color: var(--ink, #0b1220); color: var(--ink, #0b1220); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .btn { background: var(--accent, #0a6f86); border-color: var(--accent, #0a6f86); color: #fff; }
+[data-theme="hell"] .hdr--dark:not(.is-light) .btn:hover { background: var(--accent-hover, #085a6d); border-color: var(--accent-hover, #085a6d); box-shadow: none; }
+[data-theme="hell"] .hdr--dark:not(.is-light) .mark { border-color: var(--accent, #0a6f86); box-shadow: none; }
+[data-theme="hell"] .hdr--dark:not(.is-light) .mark::after { box-shadow: none; }
+[data-theme="hell"] .hdr--dark:not(.is-light) :focus-visible { outline-color: var(--accent, #0a6f86); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .menu { background: var(--bg, #fff); color: var(--text, #2a3442); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .menu__list > li { border-color: var(--line, #e3e7ec); }
+[data-theme="hell"] .hdr--dark:not(.is-light) :is(.menu__sub a, .menu__small a) { color: var(--muted, #5a6575); }
+[data-theme="hell"] .hdr--dark:not(.is-light) :is(.menu__link[aria-current], .menu__group[data-current], .menu__mail) { color: var(--accent, #0a6f86); }
+/* Schutz der Navigation ueber der hellen Szene (Pruefung 1: Tintenlinien und Code-Zeichen liefen durch "Preise" und
+   "KI", der alte Verlauf hatte auf Hoehe des Texts nur rund 45 % Deckung). Kraeftiger und laenger: deckend bis zur
+   Unterkante der Leiste (0.96 -> 0.74), dann rund 40 px weich auslaufend. Ohne backdrop-filter (kostet ueber dem
+   Canvas jedes Bild), ohne Zeiger-Ereignisse im Auslauf. */
+[data-theme="hell"] .hdr--dark:not(.is-light)::before {
+  bottom: -16px;
+  pointer-events: none;
+  border-bottom-width: 0; /* sonst wiederholt sich die oberste Zeile des Verlaufs im 1-px-Rand als helle Linie */
+  background: linear-gradient(to bottom, rgba(243, 245, 247, 0.96), rgba(243, 245, 247, 0.88) 40%, rgba(243, 245, 247, 0.62) 80%, rgba(243, 245, 247, 0));
+}
+/* Desktop mit Navigation: laengerer Auslauf (am Handy steht dort der Kopf des Motivs, nur Logo und Knoepfe oben) */
+@media (min-width: 1024px) {
+  [data-theme="hell"] .hdr--dark:not(.is-light)::before {
+    bottom: -40px;
+    background: linear-gradient(to bottom, rgba(243, 245, 247, 0.96), rgba(243, 245, 247, 0.9) 32%, rgba(243, 245, 247, 0.74) 61%, rgba(243, 245, 247, 0.32) 80%, rgba(243, 245, 247, 0));
+  }
+}
+[data-theme="hell"].gl[data-beat="outro"] .hdr--dark:not(.is-light)::before,
+[data-theme="hell"]:is(.no-gl, .no-js) .hdr--dark.is-scrolled:not(.is-light)::before {
+  bottom: 0;
+  border-bottom-width: 1px;
+  background: rgba(243, 245, 247, 0.8);
+  border-bottom-color: rgba(11, 18, 32, 0.08);
+}
+
+/* ---- Preloader, Fortschritt, Ueberspringen */
+[data-theme="hell"] .preloader__line i { box-shadow: none; }
+[data-theme="hell"] .hud__track > i { box-shadow: none; }
+/* HUD steht oft ueber der Bueste (Tuerkis auf Tuerkis): auf Hell eine helle Pille wie "Animation ueberspringen".
+   Pruefung 1: mit 0.72 Deckung schienen dunkle Kabel durch, "0X/06" hatte nur 3.1:1. Jetzt fast deckend und dunklere
+   Ziffern: Index #085a6d und "/06" #4a5463 auf mindestens #f2f3f4 (6.6:1 und 7.3:1). */
+[data-theme="hell"].gl .hud {
+  margin: -8px -14px 0 0;
+  padding: 8px 14px;
+  border: 1px solid rgba(11, 18, 32, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+}
+[data-theme="hell"].gl .hud__index { color: #085a6d; }
+[data-theme="hell"].gl .hud__index small { color: #4a5463; }
+@media (min-width: 761px) and (min-aspect-ratio: 17/20) {
+  [data-theme="hell"].gl .story-skip { right: calc(var(--gutter) + 352px + 6px); }
+}
+[data-theme="hell"].gl .story-skip { background: rgba(255, 255, 255, 0.72); color: var(--c-soft); border-color: var(--c-line-strong); }
+[data-theme="hell"].gl .story-skip:hover { border-color: var(--c-signal); color: var(--c-text); }
+
+/* ---- Text-Panels: helle, weiche Flaeche hinter dem Text (dazu hellt der FxPass das Bild dort auf, director.scrim) */
+[data-theme="hell"] .chapter__text::before { background: radial-gradient(closest-side, rgba(243, 245, 247, 0.86), rgba(243, 245, 247, 0.5) 55%, rgba(243, 245, 247, 0)); }
+[data-theme="hell"] .chapter--intro .chapter__text::before { background: radial-gradient(closest-side, rgba(243, 245, 247, 0.8), rgba(243, 245, 247, 0.42) 55%, rgba(243, 245, 247, 0)); }
+[data-theme="hell"] .chapter .headline { filter: drop-shadow(0 1px 14px rgba(255, 255, 255, 0.6)); }
+[data-theme="hell"] .chapter--outro .chapter__text {
+  border-color: rgba(11, 18, 32, 0.08);
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 30px 80px rgba(11, 18, 32, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  [data-theme="hell"] .chapter--outro .chapter__text { background: rgba(255, 255, 255, 0.92); }
+}
+
+/* ---- Werkzeug-Links: Pillen und Beschriftungen an den Knoten */
+[data-theme="hell"] .tool-links a { background: rgba(255, 255, 255, 0.72); color: var(--c-ice); }
+[data-theme="hell"] .tool-links a:hover { border-color: var(--c-signal); color: var(--c-text); background: #fff; }
+[data-theme="hell"] .is-nodes a:hover .tl-ring,
+[data-theme="hell"] .is-nodes a:focus-visible .tl-ring { background-color: rgba(10, 111, 134, 0.06); box-shadow: 0 0 0 5px rgba(10, 111, 134, 0.1); }
+[data-theme="hell"] .is-nodes a:focus-visible .tl-ring { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--c-signal); }
+[data-theme="hell"] :is(.is-nodes, .node-hits) .tl-label {
+  border-color: rgba(11, 18, 32, 0.14);
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--c-text);
+  box-shadow: 0 6px 18px rgba(11, 18, 32, 0.08);
+}
+[data-theme="hell"] .is-nodes a:hover .tl-label,
+[data-theme="hell"] .is-nodes a:focus-visible .tl-label { border-color: var(--c-signal); background-color: #fff; color: var(--c-text); }
+
+/* ---- Angebotszeile */
+[data-theme="hell"].gl .chapter__offer { background: rgba(255, 255, 255, 0.86); border-color: rgba(11, 18, 32, 0.12); box-shadow: 0 20px 50px rgba(11, 18, 32, 0.12); }
+
+/* ---- Inhaltsbereich: die Szene tritt hell statt dunkel zurueck */
+[data-theme="hell"] .stage::after { background: radial-gradient(120% 90% at 70% 40%, rgba(243, 245, 247, 0.5), rgba(243, 245, 247, 0.82)); }
+[data-theme="hell"].gl .content { box-shadow: 0 -24px 80px rgba(11, 18, 32, 0.1); }
+
+/* ---- Cursor, Hinweis bei Standbildern */
+[data-theme="hell"] .cursor__ring { border-color: rgba(11, 18, 32, 0.32); }
+[data-theme="hell"] .cursor.is-link .cursor__ring { border-color: var(--c-signal); background-color: rgba(10, 111, 134, 0.06); }
+[data-theme="hell"] .gl-hint { background: rgba(255, 255, 255, 0.95); color: var(--c-soft); border-color: rgba(11, 18, 32, 0.14); box-shadow: 0 10px 30px rgba(11, 18, 32, 0.1); }
+[data-theme="hell"] .gl-hint__close:hover,
+[data-theme="hell"] .gl-hint__close:focus-visible { background: rgba(11, 18, 32, 0.06); color: var(--c-text); }
+[data-theme="hell"] .gl-hint__close:focus-visible { outline: 2px solid var(--c-signal); outline-offset: 2px; }
+
+/* ---- Ohne 3D (Fallback, reduzierte Bewegung): helle Poster und helle Verlaeufe */
+[data-theme="hell"]:is(.no-gl, .no-js) .stage__poster {
+  background:
+    radial-gradient(38vmax 30vmax at 72% 34%, rgba(10, 111, 134, 0.06), transparent 70%),
+    radial-gradient(22vmax 18vmax at 64% 40%, rgba(255, 164, 92, 0.05), transparent 70%),
+    var(--c-void);
+}
+[data-theme="hell"]:is(.no-gl, .no-js) .chapter__poster::after {
+  background:
+    linear-gradient(90deg, rgba(243, 245, 247, 0.9) 0%, rgba(243, 245, 247, 0.58) 34%, rgba(243, 245, 247, 0) 62%),
+    linear-gradient(to bottom, var(--c-void) 0, rgba(243, 245, 247, 0) 14%, rgba(243, 245, 247, 0) 82%, var(--c-void) 100%);
+}
+[data-theme="hell"]:is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-image: url('../assets/img/poster-intro-hell.webp'); }
+[data-theme="hell"]:is(.no-gl, .no-js) [data-scene="robot"] .chapter__poster { background-image: url('../assets/img/poster-robot-hell.webp'); }
+[data-theme="hell"]:is(.no-gl, .no-js) [data-scene="zoom"] .chapter__poster { background-image: url('../assets/img/poster-zoom-hell.webp'); }
+[data-theme="hell"]:is(.no-gl, .no-js) [data-scene="brain"] .chapter__poster { background-image: url('../assets/img/poster-brain-hell.webp'); }
+[data-theme="hell"]:is(.no-gl, .no-js) [data-scene="cables"] .chapter__poster { background-image: url('../assets/img/poster-cables-hell.webp'); }
+[data-theme="hell"]:is(.no-gl, .no-js) [data-scene="dna"] .chapter__poster { background-image: url('../assets/img/poster-dna-hell.webp'); }
+[data-theme="hell"]:is(.no-gl, .no-js) [data-scene="outro"] .chapter__poster { background-image: url('../assets/img/poster-outro-hell.webp'); }
+@media (max-aspect-ratio: 4/5) {
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-image: url('../assets/img/poster-intro-hell-m.webp'); }
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="robot"] .chapter__poster { background-image: url('../assets/img/poster-robot-hell-m.webp'); }
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="zoom"] .chapter__poster { background-image: url('../assets/img/poster-zoom-hell-m.webp'); }
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="brain"] .chapter__poster { background-image: url('../assets/img/poster-brain-hell-m.webp'); }
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="cables"] .chapter__poster { background-image: url('../assets/img/poster-cables-hell-m.webp'); }
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="dna"] .chapter__poster { background-image: url('../assets/img/poster-dna-hell-m.webp'); }
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="outro"] .chapter__poster { background-image: url('../assets/img/poster-outro-hell-m.webp'); }
+  [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster::after {
+    background: linear-gradient(to bottom, var(--c-void) 0, rgba(243, 245, 247, 0) 14%, rgba(243, 245, 247, 0) 26%, rgba(243, 245, 247, 0.92) 44%, var(--c-void) 62%);
+  }
+  [data-theme="hell"]:is(.no-gl, .no-js) .chapter__poster::after {
+    background: linear-gradient(to bottom, var(--c-void) 0, rgba(243, 245, 247, 0) 16%, rgba(243, 245, 247, 0) 42%, rgba(243, 245, 247, 0.9) 72%, var(--c-void) 100%);
+  }
+}
+
+/* ---- Hochformat: Text unten auf heller Flaeche */
+@media (max-width: 760px), (max-aspect-ratio: 17/20) {
+  [data-theme="hell"].gl .story-bar { background: rgba(11, 18, 32, 0.08); }
+  [data-theme="hell"] .story-bar i { box-shadow: none; }
+  [data-theme="hell"] .chapter__text::before { background: radial-gradient(closest-side, rgba(243, 245, 247, 0.82), rgba(243, 245, 247, 0)); }
+  [data-theme="hell"].gl .chapter__panel::before { background: linear-gradient(to top, rgba(243, 245, 247, 0.9) 0%, rgba(243, 245, 247, 0.64) 28%, rgba(243, 245, 247, 0) 52%); }
+  [data-theme="hell"].gl .chapter--intro .chapter__panel::before { background: linear-gradient(to top, rgba(243, 245, 247, 0.84) 0%, rgba(243, 245, 247, 0.44) 30%, rgba(243, 245, 247, 0) 50%); }
+  [data-theme="hell"].gl .chapter:not(.chapter--intro) .chapter__panel::before { background: linear-gradient(to top, rgba(243, 245, 247, 0.62) 0%, rgba(243, 245, 247, 0) 46%); }
+  [data-theme="hell"].gl .chapter:not(.chapter--intro) .chapter__text::before { background: linear-gradient(to bottom, rgba(243, 245, 247, 0) 0, rgba(243, 245, 247, 0.9) 48px, rgba(243, 245, 247, 0.95) 100%); }
+  [data-theme="hell"].gl .chapter--outro .chapter__text { background: none; border: 0; box-shadow: none; }
+}
+@media (max-width: 760px) {
+  [data-theme="hell"].gl .chapter--outro .chapter__text::before {
+    background: linear-gradient(to bottom, rgba(243, 245, 247, 0) 0, rgba(243, 245, 247, 0.9) 30px, rgba(243, 245, 247, 0.95) calc(100% - 180px), rgba(243, 245, 247, 0) 100%);
+  }
+}

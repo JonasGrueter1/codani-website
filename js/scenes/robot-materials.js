@@ -41,6 +41,7 @@ export function makeShellMaterial(THREE, U, opts) {
   });
   m.forceSinglePass = true;
   if (opts.cheap) m.defines = { AB_CHEAP: '' };
+  m.userData.themeDefine = true; // heller Weg (#ifdef CODANI_LIGHT): Kante zur Silhouette hin grauer
   m.onBeforeCompile = (sh) => {
     for (const k of ['uHeadMat', 'uBreath', 'uScanY', 'uInner', 'uShellIn', 'uWall', 'uFall', 'uDebug', 'uEdgeGlow', 'uEdgeCol', 'uEdgeY', 'uTime', 'uRidge']) sh.uniforms[k] = U[k];
     sh.vertexShader = sh.vertexShader
@@ -173,6 +174,11 @@ reflectedLight.directDiffuse *= 0.22 + 0.78 * pow(1.0 - clamp(dot(normal, normal
 outgoingLight *= 1.0 - 0.8 * abGap;
 if (gl_FrontFacing) outgoingLight += uRidge * abRidge * (0.35 + 0.65 * pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 2.0)) * mix(0.4, 1.0, vAO);
 outgoingLight *= 0.35 + 0.65 * abFall;
+#ifdef CODANI_LIGHT
+// Helles Thema (Pruefung 1): zur Silhouette hin grauer, wie Abschatter im Produktstudio. Sonst stand die weisse
+// Schulter gleich hell wie das Off-White dahinter und die Kante loeste sich auf.
+if (gl_FrontFacing) outgoingLight *= 1.0 - 0.48 * pow(1.0 - clamp(abs(dot(normal, normalize(vViewPosition))), 0.0, 1.0), 2.2);
+#endif
 diffuseColor.a = abFall * abOpenA * abInA;
 // Obergrenze knapp ueber der Bloom-Schwelle der Bueste: Glanzlinien bleiben scharf, kein Lichthof um die Silhouette
 outgoingLight = min(outgoingLight, vec3(1.45));
@@ -479,7 +485,9 @@ outgoingLight = gl_FrontFacing ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0); diff
 /* -------------------------------------------------------------- Hologramm */
 export function makeHoloMaterial(THREE, U) {
   return new THREE.ShaderMaterial({
-    uniforms: { uHeadMat: U.uHeadMat, uBreath: U.uBreath, uScanY: U.uScanY, uHolo: U.uHolo, uHoloCol: U.uHoloCol, uHoloHi: U.uHoloHi, uTime: U.uTime, uFall: U.uFall },
+    // uHoloX, uThemeInk, uThemeTeal nur fuer den hellen Weg (#ifdef CODANI_LIGHT), dunkel ungenutzt
+    uniforms: { uHeadMat: U.uHeadMat, uBreath: U.uBreath, uScanY: U.uScanY, uHolo: U.uHolo, uHoloCol: U.uHoloCol, uHoloHi: U.uHoloHi, uTime: U.uTime, uFall: U.uFall,
+      uHoloX: U.uHoloX, uThemeInk: U.uThemeInk, uThemeTeal: U.uThemeTeal },
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -505,6 +513,9 @@ void main() {
 }`,
     fragmentShader: /* glsl */ `
 uniform float uScanY; uniform float uHolo; uniform vec3 uHoloCol; uniform vec3 uHoloHi; uniform float uTime; uniform vec2 uFall;
+#ifdef CODANI_LIGHT
+uniform float uHoloX; uniform vec3 uThemeInk; uniform vec3 uThemeTeal;
+#endif
 varying vec3 vRest; varying vec3 vN; varying vec3 vV; varying float vArm;
 ${LAYOUT_GLSL}
 void main() {
@@ -527,6 +538,46 @@ void main() {
   float eyeF = smoothstep(0.3, 0.42, vRest.z);
   float eyeZ = (1.0 - smoothstep(0.85, 1.0, eyeE)) * eyeF;   // Lagen in der Hoehle
   float eyeR = (1.0 - smoothstep(1.02, 1.3, eyeE)) * eyeF;   // Rand der Hoehle: kein Fresnel-Ring
+#ifdef CODANI_LIGHT
+  // Helles Thema (Kapitel 14, Pruefung 1): kein umgerechnetes Licht, sondern ein eigener Weg mit normalem Blending.
+  // Milchglas mit klaren Tintenlinien: Kontur (Fresnel-Rand), Fugen und Oeffnungskanten in Tuerkis bis Tinte, die
+  // Flaeche nur als zarter, heller Schleier mit leiser Tiefe zum Rand hin. Im Roentgen (uHoloX) noch leiser, damit
+  // Gehirn und Hardware darin gut zu sehen sind. Scan-Kante: feine tuerkise Linie direkt am Schnitt, darueber eine
+  // weiche, weisse Lichtkante und deckendes Milchglas, das den Blick in die angeschnittene Schale verdeckt.
+  float hA = smoothstep(0.0, 0.18, uHolo) * smoothstep(uFall.x, uFall.y, vRest.y);
+  float near = vRest.y - uScanY;
+  vec3 milk = vec3(1.0, 1.012, 1.024);
+  vec3 inkC = uThemeTeal;
+  float aI = 0.0;
+  float aM = 0.0;
+  if (gl_FrontFacing) {
+    float cont = smoothstep(0.42, 0.85, fres) * mix(1.0, 0.15, eyeR);
+    float depthK = smoothstep(0.04, 0.5, fres);
+    // nah an der Kamera werden Fugen und Kontur breit: dann leiser (sonst dicke, unscharfe Balken quer durchs Bild)
+    float linePx = 0.005 / max(fwidth(s), 1e-5);
+    float contPx = 0.43 / max(fwidth(fres), 1e-4);
+    cont *= mix(1.0, 0.5, smoothstep(10.0, 40.0, contPx));
+    aI = max(max(cont * 0.95, line * 0.85 * mix(1.0, 0.2, smoothstep(2.0, 8.0, linePx))), edge * 0.8) + depthK * mix(0.16, 0.07, uHoloX) + 0.045 * stripes * (1.0 - uHoloX);
+    if (o < 0.0) aI *= 0.3;
+    aI *= mix(1.0, 0.55, eyeZ);
+    inkC = mix(uThemeTeal, uThemeInk, 0.4 * cont);
+    aM = mix(0.24, 0.08, uHoloX);
+    float glowL = exp(-(near - 0.028) * (near - 0.028) / 0.00048);
+    float cover = 1.0 - smoothstep(0.07, 0.3, near);
+    aM = max(aM, max(0.95 * cover, 0.97 * glowL));
+    milk *= 1.0 + 0.3 * glowL;
+    float tl = 1.0 - smoothstep(0.004, 0.012, near);
+    aI = max(aI * (1.0 - 0.6 * glowL), 0.9 * tl);
+    inkC = mix(inkC, uThemeTeal, tl);
+  } else {
+    // Rueckseite: nur eine leise Kontur der fernen Seite, kein Schleier
+    aI = smoothstep(0.42, 0.85, fres) * 0.14;
+  }
+  aI = clamp(aI, 0.0, 1.0) * hA;
+  aM = clamp(aM, 0.0, 1.0) * hA;
+  float aO = aI + aM * (1.0 - aI);
+  gl_FragColor = vec4((inkC * aI + milk * aM * (1.0 - aI)) / max(aO, 1e-4), aO);
+#else
   if (gl_FrontFacing) {
     c = uHoloCol * (fres * mix(0.9, 0.12, eyeR) + 0.06 + 0.05 * stripes) + uHoloHi * (line * 0.55 + edge * 0.4) + uHoloHi * scan * 2.0;
     if (o < 0.0) c *= 0.15;
@@ -536,6 +587,7 @@ void main() {
     c = uHoloCol * fres * 0.18;
   }
   gl_FragColor = vec4(c * uHolo * smoothstep(uFall.x, uFall.y, vRest.y), 1.0);
+#endif
 }`,
   });
 }
@@ -544,6 +596,10 @@ void main() {
 // kind: 'metal' (Chrom, Graphit), 'gel' (Muskelstraenge: Fasern entlang uv.y, Impulse), 'cable' (Gummi, einzelne leuchten)
 export function makeMechMaterial(THREE, U, params, kind = 'metal', key = '') {
   const m = new THREE.MeshPhysicalMaterial(params);
+  // Helles Thema: eigener Weg (#ifdef CODANI_LIGHT, Define setzt theme.js), robot.js schaltet dort transparent ein
+  m.userData.themeDefine = true;
+  m.userData.abMech = true;
+  m.userData.abTr0 = m.transparent;
   const thin = kind === 'cable' || key === 'hose' || key === 'rubber';
   m.onBeforeCompile = (sh) => {
     for (const k of ['uHeadMat', 'uBreath', 'uScanY', 'uFall', 'uTime', 'uGelHi', 'uPulse', 'uMechDim', 'uMechCut', 'uMechFade', 'uChromeCol', 'uRes']) sh.uniforms[k] = U[k];
@@ -578,6 +634,15 @@ float abFadeN(vec3 p) {
 }`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
 if (vRest.y < uFall.x || vRest.y > uMechCut) discard;
+#ifdef CODANI_LIGHT
+// Helles Thema (Pruefung 1): weich ueber die Deckkraft ausblenden (Material im hellen Thema transparent, robot.js).
+// Das Korn unten wirkte auf Hell wie dunkle Kruemel und Splitter.
+if (uMechFade > 0.0) {
+  float abMA = 1.0 - smoothstep(0.0, 0.85, uMechFade);
+  if (abMA < 0.004) discard;
+  diffuseColor.a *= abMA;
+}
+#else
 if (uMechFade > 0.0) {
   // Aufloesen mit feinem Korn und leiser Kante statt hartem Verschwinden am Ende des Fensters (Runde 2: Rauschen
   // rund dreimal feiner, Kante schmaler und dunkler; vorher grosse, kantige Fetzen mit Leuchtrand, vor allem am Handy)
@@ -586,6 +651,7 @@ if (uMechFade > 0.0) {
   if (dn < th) discard;
   totalEmissiveRadiance += uGelHi * 1.1 * (1.0 - smoothstep(0.0, 0.02, dn - th)) * step(0.001, uMechFade);
 }
+#endif
 ${key.endsWith('-scan') ? 'if (vRest.y > uScanY) discard;' : ''}
 ${kind === 'gel' ? `{
   // Fasern entlang des Strangs, zwei Lagen, Impulse laufen nach unten

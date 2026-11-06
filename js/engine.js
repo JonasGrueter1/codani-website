@@ -8,6 +8,14 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { FxPass } from './fx/FxPass.js';
 import { PALETTE, QUALITY, BASE_LOOK, LOOK_KEYS } from './config.js';
+import { THEME_HEX } from './theme.js';
+
+// Thema (Kapitel 14): dunkel mit ACES wie bisher, hell mit der neutralen Tonwertkurve (Produktfoto: Weiss bleibt weiss,
+// Farben bleiben, wie sie sind). Werte fuer den FxPass im Anzeige-Farbraum (sRGB 0..1).
+const srgb = (hex) => [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+const PAPER = srgb(THEME_HEX.paper);
+const VOID = [0.0157, 0.0235, 0.039];
+const THEME_FADE = 0.65; // Sekunden: Blende vom alten zum neuen Bild
 
 const damp = (a, b, l, dt) => a + (b - a) * (1 - Math.exp(-l * dt));
 const PIXEL_BUDGET = 3.5e6;
@@ -135,6 +143,11 @@ export class Engine {
     this.composer.addPass(this.output);
     this.composer.addPass(this.fx);
 
+    this.light = false;
+    this._snap = null; // Render-Target mit dem letzten Bild vor dem Themenwechsel (nur waehrend der Blende)
+    this._snapB = null; // zweites Ziel (Wechsel, falls waehrend einer Blende erneut umgeschaltet wird)
+    this._snapT = 0;
+
     /* Maus: x/y roh (-1..1, y oben), sx/sy geglaettet, vx/vy Geschwindigkeit */
     this.pointer = { x: 0, y: 0, sx: 0, sy: 0, vx: 0, vy: 0, inside: false, touch: isMobile };
     this._onPointer = (e) => {
@@ -170,6 +183,117 @@ export class Engine {
 
   /** true, wenn die Aufloesung nicht weiter sinken kann (fuer den FPS-Waechter in main.js) */
   atFloor() { return this.dprScale <= DPR_SCALE_MIN + 1e-3 && !this._msaa; }
+
+  /**
+   * Thema der Bildkette: Tonwertkurve, Farbe von Scrim, Abdunkeln, Abblende und Blitz. Die Szenen stellt der Runner um.
+   * Wechselt die Tonwertkurve, baut der OutputPass sein (kleines) Programm einmal neu.
+   */
+  setTheme(light) {
+    this.light = !!light;
+    const r = this.renderer;
+    r.toneMapping = this.light ? THREE.NeutralToneMapping : THREE.ACESFilmicToneMapping;
+    const u = this.fx.uniforms;
+    const tone = this.light ? PAPER : [0, 0, 0];
+    u.uScrimTone.value.setRGB(tone[0], tone[1], tone[2]);
+    u.uDimTone.value.setRGB(tone[0], tone[1], tone[2]);
+    const fade = this.light ? PAPER : VOID;
+    u.uFadeColor.value.setRGB(fade[0], fade[1], fade[2]);
+    this.fx.setDefine('FX_LIGHT', this.light);
+    r.setClearColor(this.light ? 0xf3f5f7 : PALETTE.void, 1);
+  }
+
+  /**
+   * Nach einem Themenwechsel die Programme des neuen Themas kompilieren, bevor wieder gerendert wird (beim ersten
+   * Wechsel neu, danach aus dem Cache). Mit KHR_parallel_shader_compile im Hintergrund, sonst Gruppe fuer Gruppe mit
+   * einem Bild Pause (wie warmup). Unsichtbare Objekte sind dafuer kurz sichtbar (sonst kaemen sie spaeter dran).
+   * Bis das Versprechen aufloest, soll main.js nicht rendern: das letzte Bild bleibt stehen.
+   */
+  async compileScene() {
+    const r = this.renderer;
+    const target = this.composer.readBuffer;
+    const hidden = [];
+    this.scene.traverse((o) => { if (!o.visible) { hidden.push(o); o.visible = true; } });
+    const restore = () => { for (const o of hidden) o.visible = false; hidden.length = 0; };
+    try {
+      const prev = r.getRenderTarget();
+      if (r.extensions.has('KHR_parallel_shader_compile') && r.compileAsync) {
+        r.setRenderTarget(target);
+        let wait;
+        try { wait = r.compileAsync(this.scene, this.camera); } finally { r.setRenderTarget(prev); restore(); }
+        await wait;
+      } else {
+        const groups = this.scene.children.filter((c) => !c.isLight && !c.isCamera);
+        restore();
+        const nextFrame = () => new Promise((res) => { requestAnimationFrame(() => res()); setTimeout(res, 60); });
+        for (const g of groups) {
+          const hid = [];
+          g.traverse((o) => { if (!o.visible) { hid.push(o); o.visible = true; } });
+          r.setRenderTarget(target);
+          try { r.compile(g, this.camera, this.scene); } finally { r.setRenderTarget(prev); for (const o of hid) o.visible = false; }
+          await nextFrame();
+        }
+      }
+    } catch (e) {
+      restore();
+      console.warn('Programme fuer das Thema nicht vorab kompiliert:', e && e.message);
+    }
+  }
+
+  /**
+   * Themenwechsel, Schritt 1: das eben gezeichnete Bild festhalten (gleich nach render(), noch im alten Thema). Der
+   * FxPass zeichnet es dafuer ein zweites Mal in ein eigenes Ziel. Danach blendet es ueber THEME_FADE aus.
+   */
+  snapshot() {
+    const c = this.composer;
+    const src = c.writeBuffer; // nach render(): Ergebnis des OutputPass (Eingang des FxPass)
+    const w = src.width;
+    const h = src.height;
+    // Zwei Ziele im Wechsel: laeuft noch eine Blende (zweimal schnell geklickt), enthaelt das neue feste Bild genau
+    // das, was gerade zu sehen ist (altes festes Bild plus neues Bild), ohne aus demselben Ziel zu lesen
+    const old = this._snap;
+    let next = this._snapB && this._snapB !== old ? this._snapB : null;
+    if (!next || next.width !== w || next.height !== h) {
+      if (next) next.dispose();
+      next = new THREE.WebGLRenderTarget(w, h, { type: THREE.UnsignedByteType, depthBuffer: false });
+      next.texture.name = 'Studio.themeSnap';
+    }
+    const toScreen = this.fx.renderToScreen;
+    const prevTarget = this.renderer.getRenderTarget();
+    this.fx.renderToScreen = false;
+    this.fx.render(this.renderer, next, src);
+    this.fx.renderToScreen = toScreen;
+    // Ziel zuruecksetzen (Pruefung 1): sonst merkte sich der Composer im naechsten Bild das feste Bild als aktuelles
+    // Ziel und band es nach der Blende wieder an, obwohl es schon freigegeben war (pro Wechsel eine Textur zu viel)
+    this.renderer.setRenderTarget(prevTarget);
+    this._snapB = old;
+    this._snap = next;
+    const u = this.fx.uniforms;
+    u.uSnap.value = 1;
+    u.tSnap.value = next.texture;
+    this.fx.setDefine('FX_SNAP', true);
+    this._snapT = 0;
+  }
+
+  /** true, solange die Blende eines Themenwechsels laeuft */
+  get fading() { return this._snap !== null; }
+
+  /** Themenwechsel, Schritt 2 (jedes Bild vor render()): Blende weiterfuehren, am Ende das Ziel freigeben */
+  stepSnap(dt) {
+    if (!this._snap) return false;
+    this._snapT += Math.min(dt, 0.1); // ein langes Bild springt nicht durch die ganze Blende
+    const t = Math.min(1, this._snapT / THEME_FADE);
+    const u = this.fx.uniforms;
+    u.uSnap.value = 1 - t * t * (3 - 2 * t);
+    if (t >= 1) {
+      u.uSnap.value = 0;
+      u.tSnap.value = null;
+      this.fx.setDefine('FX_SNAP', false);
+      this._snap.dispose();
+      this._snap = null;
+      if (this._snapB) { this._snapB.dispose(); this._snapB = null; }
+    }
+    return true;
+  }
 
   /** Abdunkeln hinter dem Text (director.scrim) */
   setScrim(sc) {
@@ -356,6 +480,8 @@ export class Engine {
     this.composer.passes.forEach((p) => p.dispose && p.dispose());
     this.composer.renderTarget1.dispose();
     this.composer.renderTarget2.dispose();
+    if (this._snap) this._snap.dispose();
+    if (this._snapB) this._snapB.dispose();
     this.envMap.dispose();
     this.renderer.dispose();
   }

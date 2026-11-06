@@ -105,12 +105,13 @@ async function boot() {
   const story = document.getElementById('story');
   ui.progress(0.04);
 
-  const [engineMod, directorMod, runnerMod, config, nodesMod] = await Promise.all([
+  const [engineMod, directorMod, runnerMod, config, nodesMod, themeMod] = await Promise.all([
     import('./engine.js'),
     import('./director.js'),
     import('./runner.js'),
     import('./config.js'),
     import('./nodes.js'),
+    import('./theme.js'),
   ]);
   if (dead) return;
   ui.progress(0.22);
@@ -155,6 +156,18 @@ async function boot() {
     alive: () => !cablesMod.failed,
   }) : null;
   if (nodeLinks) cleanups.push(() => nodeLinks.dispose());
+
+  // Thema (Kapitel 14): vor dem Vorkompilieren setzen, die Programme sind fuer beide Themen dieselben
+  const { readTheme } = themeMod;
+  let themeOn = readTheme();
+  let themeWant = themeOn;
+  let themeHold = 0; // Sekunden: so lange wird auch im Inhaltsbereich weiter gerendert (Blende laeuft)
+  let themeBusy = false; // Programme des neuen Themas werden kompiliert: nicht rendern, das letzte Bild bleibt stehen
+  runner.setTheme(themeOn);
+  engine.setTheme(themeOn);
+  const onTheme = () => { themeWant = readTheme(); themeHold = 1.2; };
+  window.addEventListener('codani-theme', onTheme);
+  cleanups.push(() => window.removeEventListener('codani-theme', onTheme));
 
   // Alle Shader vorab kompilieren, damit Uebergaenge nicht ruckeln
   director.update(0);
@@ -206,6 +219,7 @@ async function boot() {
     last = now;
     const dtRaw = Math.min(gap, 0.25);
     const dt = Math.min(dtRaw, 1 / 20);
+    if (themeBusy) return;
     time += dt;
     ctx.time = time;
     engine.shared.uTime.value = time;
@@ -218,8 +232,10 @@ async function boot() {
     director.update(dtRaw);
     if (director.beats.dna) ui.setOffer(director.beats.dna.tp, contentDim > 0.35);
 
-    // Im Inhaltsbereich ist das Canvas fast ganz abgedeckt: ein letztes Bild rendern, dann anhalten (spart Akku)
-    if (background) {
+    // Im Inhaltsbereich ist das Canvas fast ganz abgedeckt: ein letztes Bild rendern, dann anhalten (spart Akku).
+    // Ausnahme: Themenwechsel (die Blende braucht ein paar Bilder)
+    if (themeHold > 0) themeHold -= dtRaw;
+    if (background && themeHold <= 0 && themeWant === themeOn && !engine.fading) {
       if (frozen) return;
       frozen = true;
     } else {
@@ -236,8 +252,18 @@ async function boot() {
     look.dim = Math.max(look.dim, contentDim * 0.62);
     engine.setScrim(director.scrim);
     engine.applyLook(look, time);
+    engine.stepSnap(dtRaw);
     frameNo += 1;
     engine.render(dt);
+    // Themenwechsel: dieses Bild (altes Thema) festhalten, dann umstellen. Ab dem naechsten Bild blendet es aus.
+    if (themeWant !== themeOn) {
+      themeOn = themeWant;
+      if (!ui.reduced) engine.snapshot();
+      runner.setTheme(themeOn);
+      engine.setTheme(themeOn);
+      themeBusy = true;
+      engine.compileScene().then(() => { themeBusy = false; themeHold = 1.2; last = performance.now(); });
+    }
     if (background) return;
     engine.adapt(dtRaw);
 

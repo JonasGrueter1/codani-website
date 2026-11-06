@@ -4,7 +4,7 @@
 // local    Startwert 0..1 im Hauptfenster der ersten Szene
 // at       statt local ein fester Punkt der Story (beat@p, z. B. at=zoom@0.4)
 // cam      path (Kamerapfad der Seite), orbit (ziehen, Mausrad) oder fix (pos=x,y,z tgt=x,y,z fov=32)
-// q        high|medium|low   post=0 ohne Postprocessing   play laeuft selbst   scroll=0 nur Regler
+// q        high|medium|low   post=0 ohne Postprocessing   play laeuft selbst   scroll=0 nur Regler   hell helles Thema
 // bg       der Hintergrund (Szene backdrop) laeuft immer mit, bg=0 schaltet ihn ab (reiner Szenen-Test)
 // Sonst steuert das Scrollen local (fuer studio_capture.js).
 // Konsole und Testskripte: window.__dev (setLocal, setAt, setCam, fix, orbit, advance, freeze, setTime, ready).
@@ -82,6 +82,11 @@ async function boot() {
   const mods = await loadScenes(loadList, ctx);
   const runner = new Runner({ director, mods });
   if (sceneName !== 'all') runner.force = sceneName;
+  // Thema wie auf der Seite: ?hell schaltet das helle Thema ein (Kapitel 14)
+  // (nur die 3D-Szene, die Regler von dev.html bleiben dunkel)
+  const light = params.has('hell');
+  runner.setTheme(light);
+  engine.setTheme(light);
 
   const win = sceneName === 'all' ? { start: 0, end: 1 } : director.modules[sceneName].windows[0];
   const toGlobal = (l) => win.start + l * (win.end - win.start);

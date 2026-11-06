@@ -53,7 +53,8 @@ function chevron() {
 }
 
 /** Kopfzeile. dark: Variante der 3D-Startseite. */
-function header(ctx, { dark = false } = {}) {
+// extra: zusaetzliches HTML nach dem Kontakt-Knopf (Startseite: Schalter fuer den Hellmodus). Standard leer.
+function header(ctx, { dark = false, extra = '' } = {}) {
   const { site, data } = ctx;
   const nav = data.nav;
   const items = nav.haupt.map((e) => {
@@ -74,6 +75,7 @@ function header(ctx, { dark = false } = {}) {
     `<ul class="hdr__list">${items}</ul>`,
     '</nav>',
     `<a class="btn btn--sm hdr__cta" href="${ctx.url(nav.kontakt.href)}"${attrs({ 'aria-current': kontaktCur })}>${esc(nav.kontakt.label)}</a>`,
+    extra,
     '<button class="hdr__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen" data-label-open="Menü öffnen" data-label-close="Menü schliessen">',
     '<span class="hdr__toggle-text" aria-hidden="true" data-open="Menü" data-close="Schliessen">Menü</span>',
     '<span class="hdr__burger" aria-hidden="true"><i></i><i></i></span>',

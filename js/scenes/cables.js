@@ -82,10 +82,18 @@ export function create(ctx) {
     uMotes: { value: 0 },
     uMoteCol: { value: palette.signal.clone().lerp(palette.ice, 0.4).multiplyScalar(0.9) },
   };
+  // Helles Thema (Kapitel 14): der Knoten-Shader hat einen eigenen hellen Weg (weisses Glas, Tinte), die additiven
+  // Materialien rechnet theme.js um (Faktoren unten)
+  if (ctx.themeUniforms) Object.assign(U, ctx.themeUniforms);
   for (let i = 0; i < count; i++) U.uCab2.value[i].w = curves[i].length;
 
   /* ------------------------------------------------------------ Objekte */
   const mats = makeMaterials(THREE, U);
+  mats.node.userData.themeDefine = true; // eigener heller Weg im Knoten-Shader (#ifdef CODANI_LIGHT)
+  mats.fibre.userData.themeGain = 6.5;
+  mats.ring.userData.themeGain = 2.0;
+  mats.tip.userData.themeGain = 1.6;
+  mats.mote.userData.themeGain = 0.4; // Pruefung 1: Schwebeteilchen als kaum sichtbarer Hauch (vorher grauer Staub)
   const fibreGeo = buildFibreGeometry(THREE, curves, strands);
   const ringGeo = buildRingGeometry(THREE, count, RING_SEG[quality] ?? RING_SEG.high);
   const nodeGeo = buildNodeGeometry(THREE, curves);

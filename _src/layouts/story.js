@@ -27,7 +27,7 @@ const HUD_LAST = require('../pages/start.js').CHAPTERS.length - 1;
 
 // Module der 3D-Kette, parallel vorgeladen (nur mit 3D). Reihenfolge egal.
 const MODULES = [
-  'vendor/three/three.module.min.js', 'js/config.js', 'js/engine.js', 'js/director.js', 'js/runner.js', 'js/fx/FxPass.js',
+  'vendor/three/three.module.min.js', 'js/config.js', 'js/theme.js', 'js/engine.js', 'js/director.js', 'js/runner.js', 'js/fx/FxPass.js',
   'vendor/three/addons/postprocessing/EffectComposer.js', 'vendor/three/addons/postprocessing/RenderPass.js',
   'vendor/three/addons/postprocessing/UnrealBloomPass.js', 'vendor/three/addons/postprocessing/OutputPass.js',
   'vendor/three/addons/postprocessing/Pass.js', 'vendor/three/addons/postprocessing/ShaderPass.js',
@@ -70,6 +70,72 @@ const GL_HINT_SCRIPT = `<script>
     });
     show();
     if (window.MutationObserver) new MutationObserver(show).observe(d, { attributes: true, attributeFilter: ['data-fb'] });
+  })();
+</script>`;
+
+// Thema der Startseite (Kapitel 14 in ARCHITEKTUR.md): dunkel (Standard) oder hell. Frueh im Kopf, vor dem CSS, damit
+// nichts aufblitzt. Test-Schalter ?hell und ?dunkel ueberschreiben die gespeicherte Wahl (ohne sie zu aendern).
+const THEME_HEAD = `<script>
+    (function () {
+      var d = document.documentElement, s = location.search, t = null;
+      if (/[?&]hell\\b/.test(s)) t = 'hell';
+      else if (/[?&]dunkel\\b/.test(s)) t = 'dunkel';
+      else { try { t = localStorage.getItem('codani-theme'); } catch (e) { t = null; } }
+      d.setAttribute('data-theme', t === 'hell' ? 'hell' : 'dunkel');
+    })();
+  </script>`;
+
+// Schalter in der Kopfzeile (neben Kontakt): Sonne im dunklen Thema (schaltet auf hell), Mond im hellen Thema
+const THEME_TOGGLE = [
+  '<button class="hdr__theme" id="theme-toggle" type="button" aria-pressed="false" aria-label="Hellmodus einschalten">',
+  '<svg class="hdr__theme-ico hdr__theme-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>',
+  '<svg class="hdr__theme-ico hdr__theme-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M19.6 14.6A8 8 0 0 1 9.4 4.4a8 8 0 1 0 10.2 10.2z"/></svg>',
+  '</button>',
+].join('');
+
+// Umschalten ohne Neuladen: html[data-theme], Wahl speichern, Ereignis "codani-theme" fuer die 3D-Szene (js/main.js).
+// Die Seite blendet weich ueber (View Transitions, sonst kurze Farb-Uebergaenge per Klasse theme-fade).
+const THEME_SCRIPT = `<script>
+  (function () {
+    var d = document.documentElement, b = document.getElementById('theme-toggle');
+    if (!b) return;
+    var meta = document.querySelector('meta[name="theme-color"]');
+    function isHell() { return d.getAttribute('data-theme') === 'hell'; }
+    function sync() {
+      var h = isHell();
+      b.setAttribute('aria-pressed', h ? 'true' : 'false');
+      b.setAttribute('aria-label', h ? 'Dunkelmodus einschalten' : 'Hellmodus einschalten');
+      if (meta) meta.setAttribute('content', h ? '#f3f5f7' : '#04060a');
+    }
+    function apply(t) {
+      d.setAttribute('data-theme', t);
+      try { localStorage.setItem('codani-theme', t); } catch (e) {}
+      sync();
+      try { window.dispatchEvent(new CustomEvent('codani-theme', { detail: t })); } catch (e) {}
+    }
+    var timer = 0;
+    b.addEventListener('click', function () {
+      var t = isHell() ? 'dunkel' : 'hell';
+      var rm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (rm) { apply(t); return; }
+      if (document.startViewTransition) {
+        d.classList.add('theme-vt');
+        var vt = document.startViewTransition(function () { apply(t); });
+        var end = function () { d.classList.remove('theme-vt'); };
+        var none = function () {};
+        vt.finished.then(end, end);
+        // Bricht der Browser die Blende ab (z. B. Zeitlimit bei sehr langsamem Bild), ist das Thema trotzdem gesetzt:
+        // keine unbehandelte Ablehnung in der Konsole
+        if (vt.ready) vt.ready.catch(none);
+        if (vt.updateCallbackDone) vt.updateCallbackDone.catch(none);
+        return;
+      }
+      clearTimeout(timer);
+      d.classList.add('theme-fade');
+      apply(t);
+      timer = setTimeout(function () { d.classList.remove('theme-fade'); }, 750);
+    });
+    sync();
   })();
 </script>`;
 
@@ -150,6 +216,7 @@ function story(ctx, body) {
     `<html lang="${site.seite.sprache}" class="no-js">`,
     '<head>',
     redirectScript(),
+    THEME_HEAD,
     headMeta(ctx, { themeColor: '#04060a', colorScheme: 'dark light' }),
     '<link rel="preload" href="assets/fonts/geist-latin-var.woff2" as="font" type="font/woff2" crossorigin>',
     '<link rel="preload" href="assets/fonts/geist-mono-latin-var.woff2" as="font" type="font/woff2" crossorigin>',
@@ -187,7 +254,7 @@ function story(ctx, body) {
     '<div class="stage__poster"></div>',
     '<div id="gl-overlay" class="stage__overlay"></div>',
     '</div>',
-    header(ctx, { dark: true }),
+    header(ctx, { dark: true, extra: THEME_TOGGLE }),
     '<div class="story-bar" aria-hidden="true"><i></i></div>',
     '<a class="story-skip" href="#weiter" aria-label="Animation überspringen, weiter zum Inhalt">Animation überspringen</a>',
     // Hinweis bei Standbildern statt 3D (Text je nach Grund, siehe GL_HINT_SCRIPT)
@@ -206,6 +273,7 @@ function story(ctx, body) {
     '</main>',
     footer(ctx),
     GL_HINT_SCRIPT,
+    THEME_SCRIPT,
     '</body>',
     '</html>',
     '',

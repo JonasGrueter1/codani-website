@@ -22,7 +22,7 @@
 // 0 (low: Verlauf, 1 Nebelschicht, Strahlen einfach, ohne Staub und Datenbahnen).
 import { makeNoiseVolume } from './backdrop-noise.js';
 import { BACKDROP_VERT, BACKDROP_FRAG } from './backdrop-glsl.js';
-import { BACKDROPS, BACKDROP_FADE, BEATS } from '../config.js';
+import { BACKDROPS, BACKDROPS_HELL, PAPER_GAIN, BACKDROP_FADE, BEATS } from '../config.js';
 
 const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const smoothstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -54,19 +54,26 @@ export function create(ctx) {
   /* --------------------------------------------------------- Farbwelten */
   // Jede Farbwelt einmal in feste Objekte umrechnen (Farben linear)
   const names = [...BEATS.map((b) => b.name), 'inhalt'];
-  const presets = names.map((name) => {
-    const src = { ...BASE, ...(BACKDROPS[name] || {}) };
+  const makePreset = (name, src, mul) => {
     const num = new Float32Array(NUMS.length);
     for (const k of NUMS) num[N[k]] = k === 'shiftX' ? src.glowShift[0] : k === 'shiftY' ? src.glowShift[1] : src[k];
     return {
       name,
       num,
-      mul: new Float32Array(NUMS.length).fill(1), // Dynamik pro Frame (Faktor je Schluessel)
+      mul, // Dynamik pro Frame (Faktor je Schluessel), dunkel und hell teilen dasselbe Feld
       col: COLORS.map((k) => new THREE.Color(src[k])),
       pt: POINTS.map((k) => new THREE.Vector3().fromArray(src[k])),
     };
+  };
+  const presetsDark = names.map((name) => makePreset(name, { ...BASE, ...(BACKDROPS[name] || {}) }, new Float32Array(NUMS.length).fill(1)));
+  // Helles Thema (Kapitel 14): eigene Farben und Mengen, Formen und Punkte aus der dunklen Farbwelt
+  const presetsHell = names.map((name, i) => {
+    const p = makePreset(name, { ...BASE, ...(BACKDROPS[name] || {}), ...(BACKDROPS_HELL[name] || {}) }, presetsDark[i].mul);
+    p.col[COLORS.indexOf('fogColor')].multiplyScalar(PAPER_GAIN);
+    return p;
   });
-  const P = Object.fromEntries(presets.map((p) => [p.name, p]));
+  let presets = presetsDark;
+  const P = Object.fromEntries(presetsDark.map((p) => [p.name, p]));
   const weights = new Float32Array(presets.length);
   const mix = {
     num: new Float32Array(NUMS.length),
@@ -104,6 +111,7 @@ export function create(ctx) {
     uPool: { value: 0 }, uPoolAt: { value: PT.glowAt }, uWashSide: { value: 1 },
     uDetail: { value: 1 },
     uScrimRect: { value: new THREE.Vector4(0.25, 0.5, 0.2, 0.2) }, uScrimA: { value: 0 },
+    uPaper: { value: PAPER_GAIN },
   };
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3));
@@ -117,6 +125,7 @@ export function create(ctx) {
     depthWrite: false,
     fog: false,
   });
+  mat.userData.themeDefine = true; // heller Lichtweg im Shader (#ifdef CODANI_LIGHT, theme.js)
   const mesh = new THREE.Mesh(geo, mat);
   // Deckend und vor allen anderen deckenden Objekten (die Nebelkugel von particles.js liegt bei -100 und wird
   // ueberdeckt). Transparente Objekte zeichnet three ohnehin danach.
@@ -280,6 +289,10 @@ export function create(ctx) {
       if (scene.fog) scene.fog.color.copy(C.fogColor);
     },
     setActive() {},
+    // Thema: Farbwelten wechseln (den Lichtweg im Shader schaltet das Define CODANI_LIGHT, gesetzt von theme.js)
+    setTheme(light) {
+      presets = light ? presetsHell : presetsDark;
+    },
     dispose() {
       geo.dispose();
       mat.dispose();

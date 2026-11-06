@@ -106,12 +106,19 @@ export async function create(ctx) {
     uHolo: { value: 0 },
     uHoloCol: { value: palette.signal.clone().multiplyScalar(0.55) },
     uHoloHi: { value: palette.ice.clone().multiplyScalar(1.6) },
+    // nur im hellen Weg des Hologramms (Kapitel 14): Roentgen-Anteil und Tintenfarben
+    uHoloX: { value: 0 },
+    uThemeInk: ctx.themeUniforms ? ctx.themeUniforms.uThemeInk : { value: palette.ink.clone() },
+    uThemeTeal: ctx.themeUniforms ? ctx.themeUniforms.uThemeTeal : { value: palette.signal.clone() },
   };
 
   /* ------------------------------------------------------- Materialien */
   const env = buildStudioEnv(THREE, ctx.renderer, palette);
+  let envLight = null; // helles Studio (setTheme)
   // Weisse Glanzschale (Albedo um 0.85, kaum Blaustich), Klarlack voll, glatt. Auf medium/low ohne Klarlack (Leistung)
   const shellCol = palette.white.clone().lerp(new THREE.Color(1, 1, 1), 0.35).multiplyScalar(0.9);
+  // Helles Thema (Pruefung 1): neutral weiss statt mit dem Blaustich von palette.white (setTheme tauscht nur die Farbe)
+  const shellColLight = new THREE.Color(1, 1, 1).multiplyScalar(0.9);
   const mats = {
     shell: makeShellMaterial(THREE, U, { color: shellCol, envMap: env.texture, envIntensity: hi ? 1.15 : 1.45, roughness: hi ? 0.34 : 0.2, clearcoat: hi ? 1.0 : 0, clearcoatRoughness: 0.06, cheap: !hi, side: THREE.FrontSide }),
     // Innenseite der Schale (nur durch die Oeffnungen sichtbar), ohne Klarlack
@@ -122,6 +129,10 @@ export async function create(ctx) {
     glass: makeGlassMaterial(THREE, U, { color: palette.white.clone(), envMap: env.texture, side: THREE.FrontSide }),
     glassIn: makeGlassMaterial(THREE, U, { color: palette.white.clone(), envMap: env.texture, side: THREE.BackSide }),
   };
+  // Helles Thema: das Hologramm hat einen eigenen Weg (#ifdef CODANI_LIGHT in robot-materials.js: Milchglas mit
+  // Tintenlinien, weisse Scan-Kante) statt der allgemeinen Umrechnung von theme.js. Blending stellt setTheme um.
+  mats.holo.userData.themeKeep = true;
+  mats.holo.userData.themeDefine = true;
   if (dbgFlags.includes('glass')) { mats.glass.defines = { AB_DBG_GLASS: '' }; mats.glassIn.defines = { AB_DBG_GLASS: '' }; }
   const shellMesh = new THREE.Mesh(geo.shell, mats.shell);
   const shellInMesh = new THREE.Mesh(geo.shell, mats.shellIn);
@@ -159,12 +170,16 @@ export async function create(ctx) {
     exposure: 1.0, bloom: 0.55, bloomRadius: 0.5, bloomThreshold: 1.15, key: 1.35, rim: 1.0, amb: 0.1,
     parallax: 0.26, drift: 0.025, aberration: 0.0012, flash: 0, vignette: 0.74, env: 0.35,
   };
+  // Helles Thema (Kapitel 14): Produktfoto im hellen Studio. Mehr Fuehrungslicht und Fuellung (die Schattenseite der
+  // Schale steht grau vor dem weissen Gegenlicht und traegt so die Silhouette), Glanzlichter ohne Lichthof.
+  const lookHell = { exposure: 1.2, bloom: 0.12, bloomRadius: 0.4, bloomThreshold: 2.0, aberration: 0, vignette: 0.08, grain: 0.018, key: 0.5, rim: 1.0, amb: 0.25, rimWarm: 0.45 };
   const bw = { r: 0, z: 0, b: 0, o: 0, s: 1 };
   const mix4 = (a, b, c, d) => (a * bw.r + b * bw.z + c * bw.b + d * bw.o) / bw.s;
 
   const api = {
     group,
     look,
+    lookHell,
     update(time, dt, local, global, weight = 1) {
       const rb = director.beat('robot');
       const zm = director.beat('zoom');
@@ -184,7 +199,9 @@ export async function create(ctx) {
         const lp = clamp01((zm.p - 0.24) / 0.07);
         leak = lp > 0 && lp < 1 ? Math.sin(Math.PI * lp) : 0;
         U.uEdgeY.value = 1.25 - 2.9 * lp;
-        holoAmt = 0.6 * smoothstep(0.3, 0.42, zm.p) * (1 - 0.55 * smoothstep(0.6, 0.95, zm.p)) * (1 - smoothstep(0.15, 0.46, br.p));
+        // Hell (Pruefung 1): die Roentgen-Kontur bleibt bis zum Eintauchen stehen (sonst verschwindet der Kopf im Off-White)
+        const holoOut = ctx.theme && ctx.theme.light ? 1 - smoothstep(0.26, 0.46, br.p) : 1 - smoothstep(0.15, 0.46, br.p);
+        holoAmt = 0.6 * smoothstep(0.3, 0.42, zm.p) * (1 - 0.55 * smoothstep(0.6, 0.95, zm.p)) * holoOut;
         // Aufbau im Beat robot: erst Hologramm (0.08-0.26), dann von unten nach oben fest (0.26-0.64)
         const b = smoothstep(0.26, 0.64, rb.p);
         buildLine = b >= 0.999 ? 9 : -3.6 + (1.25 + 3.6) * b;
@@ -239,6 +256,7 @@ export async function create(ctx) {
       const flick = power > 0 && power < 1 ? 0.55 + 0.45 * Math.sin(time * 47) * Math.sin(time * 13) : 1;
       const irisBoost = power * flick * (inOutro ? 1 + 1.4 * Math.exp(-Math.pow(out.p / 0.12, 2)) : 1);
       U.uHolo.value = holoAmt * weight;
+      U.uHoloX.value = scan.xray;
       U.uEdgeGlow.value = leak * 0.5 * weight;
       U.uDim.value = 0.35 * scan.xray;
       U.uMechDim.value = 0.4 * scan.xray;
@@ -284,13 +302,48 @@ export async function create(ctx) {
       look.parallax = (inOutro ? 0.28 : 0.26) * follow + 0.02;
       look.drift = 0.025 * (1 - smoothstep(0.4, 0.9, zm.p)) + 0.004;
       look.flash = inOutro ? 0 : 0.06 * Math.exp(-Math.pow((br.p - 0.4) / 0.086, 2));
+      if (ctx.theme && ctx.theme.light) {
+        lookHell.exposure = mix4(1.15, 1.12, 1.05, ctx.isMobile ? 1.18 : 1.15);
+        lookHell.key = mix4(0.55, 0.5, 0.6, ctx.isMobile ? 0.6 : 0.5);
+        lookHell.rim = mix4(1.1, 1.0, 1.0, 1.1);
+        lookHell.amb = mix4(0.28, 0.26, 0.3, 0.28);
+        lookHell.bloom = 0.12 + 0.1 * xr * (1 - smoothstep(0.12, 0.46, br.p));
+        // Kantenlicht neutral weiss statt Cyan (sonst wirkt die weisse Schale hellblau), im Ausklang warm wie dunkel
+        lookHell.rimWarm = mix4(0.45, 0.45, 0.45, 0.85);
+      }
     },
     setActive() {},
+    // Helles Thema: Spiegelungen aus dem hellen Studio (erst beim ersten Wechsel gebaut, dunkel kostet es nichts).
+    // Gleicher Umgebungs-Typ und gleiche Groesse: three.js nimmt dasselbe Programm, nur die Textur wechselt.
+    // Hologramm: eigener heller Weg mit normalem Blending. Mechanik: im hellen Thema transparent, damit sie sich beim
+    // Eintauchen weich ueber die Deckkraft aufloest (dunkel bleibt sie deckend mit dem Korn wie bisher).
+    setTheme(light) {
+      mats.holo.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
+      mats.shell.color.copy(light ? shellColLight : shellCol);
+      mats.shellIn.color.copy(light ? shellColLight : shellCol);
+      group.traverse((o) => {
+        const list = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
+        for (const m of list) {
+          if (!m.userData.abMech) continue;
+          const tr = light ? true : !!m.userData.abTr0;
+          if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; }
+        }
+      });
+      if (light && !envLight) envLight = buildStudioEnv(THREE, ctx.renderer, palette, { light: true });
+      const from = light ? env.texture : envLight && envLight.texture;
+      const to = light ? envLight.texture : env.texture;
+      if (!from || from === to) return;
+      group.traverse((o) => {
+        const list = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
+        for (const m of list) if (m.envMap === from) m.envMap = to;
+      });
+    },
     dispose() {
       new Set(Object.values(geo)).forEach((g) => g.dispose());
       Object.values(mats).forEach((m) => m.dispose());
       mech.dispose();
       env.dispose();
+      if (envLight) envLight.dispose();
       group.clear();
     },
   };

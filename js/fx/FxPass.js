@@ -1,6 +1,9 @@
 // Letzter Bild-Pass (nach OutputPass, also im Anzeige-Farbraum sRGB):
 // FXAA (nur ohne MSAA bei kleiner Aufloesung), chromatische Aberration, Abdunkeln hinter dem Text (Scrim),
-// Vignette, Filmkorn, Lichtblitz, Abblende, Abdunkeln.
+// Vignette, Filmkorn, Lichtblitz, Abblende, Abdunkeln, Blende beim Themenwechsel.
+// Helles Thema (Define FX_LIGHT): Scrim und Abdunkeln gehen zum Off-White (uScrimTone, uDimTone) statt zu Schwarz, der
+// Blitz ist eine ruhige Blende zur selben Farbe. Blende beim Themenwechsel (Define FX_SNAP, nur waehrend der Blende).
+// Ohne diese Defines ist der Shader genau der bisherige (dunkel, gleiche Rechenarbeit).
 import { ShaderMaterial, Vector2, Vector4, Color } from 'three';
 import { Pass, FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 
@@ -27,6 +30,14 @@ uniform vec3 uFadeColor;
 uniform float uFxaa;
 uniform float uScrim;
 uniform vec4 uScrimRect; // Mitte (UV), halbe Groesse (UV) der Textzone
+#ifdef FX_LIGHT
+uniform vec3 uScrimTone; // Off-White (aufhellen statt abdunkeln)
+uniform vec3 uDimTone;
+#endif
+#ifdef FX_SNAP
+uniform sampler2D tSnap; // letztes Bild vor dem Themenwechsel
+uniform float uSnap;     // 0..1 Anteil des alten Bildes (Blende)
+#endif
 varying vec2 vUv;
 
 // FXAA (nach Timothy Lottes, vereinfachte Konsolen-Variante): 5 Abtastungen, bei wenig Kontrast sofort fertig
@@ -88,19 +99,35 @@ void main() {
   if (uScrim > 0.0) {
     vec2 q = (uv - uScrimRect.xy) / uScrimRect.zw;
     float dq = length(max(abs(q) - vec2(0.62), vec2(0.0)));
+#ifdef FX_LIGHT
+    col = mix(col, uScrimTone, uScrim * (1.0 - smoothstep(0.0, 0.85, dq)));
+#else
     col *= 1.0 - uScrim * (1.0 - smoothstep(0.0, 0.85, dq));
+#endif
   }
 
+#ifdef FX_LIGHT
+  // Hell: ruhige Blende zum Off-White statt Lichtblitz, Abdunkeln geht zum Off-White
+  col = mix(col, uDimTone, clamp(uFlash, 0.0, 1.0));
+  col = mix(col, uFadeColor, clamp(uFade, 0.0, 1.0));
+  col = mix(col, uDimTone, clamp(uDim, 0.0, 1.0));
+#else
   // Kleine Blitze in Signal-Cyan, starke (Schnitt) werden weisser
   col += mix(uFlashColor, vec3(0.85, 0.97, 1.0), smoothstep(0.15, 0.5, uFlash)) * uFlash;
   col = mix(col, uFadeColor, clamp(uFade, 0.0, 1.0));
   col *= 1.0 - clamp(uDim, 0.0, 1.0);
+#endif
 
   // Filmkorn mit 24 Bildern pro Sekunde, staerker in dunklen Bereichen (verhindert auch Banding)
   float frame = floor(uTime * 24.0);
   float n = hash12(gl_FragCoord.xy + frame * vec2(37.0, 17.0)) - 0.5;
   float luma = dot(col, vec3(0.299, 0.587, 0.114));
   col += n * uGrain * (1.0 - 0.6 * luma);
+
+#ifdef FX_SNAP
+  // Themenwechsel: das alte Bild blendet ueber das neue aus (nur waehrend der Blende)
+  col = mix(col, texture2D(tSnap, vUv).rgb, uSnap);
+#endif
 
   gl_FragColor = vec4(max(col, 0.0), 1.0);
 }`;
@@ -123,14 +150,22 @@ export class FxPass extends Pass {
       uFxaa: { value: 0 },
       uScrim: { value: 0 },
       uScrimRect: { value: new Vector4(0.25, 0.5, 0.2, 0.2) },
+      uScrimTone: { value: new Color(0, 0, 0) },
+      uDimTone: { value: new Color(0, 0, 0) },
+      tSnap: { value: null },
+      uSnap: { value: 0 },
     };
     this.material = new ShaderMaterial({
       name: 'FxPass',
       uniforms: this.uniforms,
       vertexShader,
       fragmentShader,
+      defines: {},
       depthTest: false,
       depthWrite: false,
+      // Rendert auf den Bildschirm: ohne toneMapped wechselt das Programm nicht, wenn die Engine im hellen Thema die
+      // Tonwertkurve des OutputPass umstellt (der Shader ruft toneMapping() ohnehin nicht auf)
+      toneMapped: false,
     });
     this.fsQuad = new FullScreenQuad(this.material);
   }
@@ -144,6 +179,15 @@ export class FxPass extends Pass {
     renderer.setRenderTarget(this.renderToScreen ? null : writeBuffer);
     if (this.clear) renderer.clear();
     this.fsQuad.render(renderer);
+  }
+
+  /** Define an- oder ausschalten (eigenes kleines Programm, three.js behaelt beide im Cache) */
+  setDefine(name, on) {
+    const d = this.material.defines;
+    if ((d[name] !== undefined) === on) return;
+    if (on) d[name] = '';
+    else delete d[name];
+    this.material.needsUpdate = true;
   }
 
   dispose() {

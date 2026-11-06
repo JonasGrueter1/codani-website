@@ -224,6 +224,9 @@ const GLYPH_FS = /* glsl */ `
     float a = smoothstep(cut - w, cut + w, d);
     float halo = smoothstep(cut - 0.35, cut, d);
     float k = (a + halo * halo * vSoft * 0.5) * vAlpha;
+#ifdef CODANI_LIGHT
+    k *= 1.0 - 0.7 * smoothstep(48.0, 140.0, vPx); // hell: grosse Zeichen nah an der Kamera leiser (Tinte lenkt ab)
+#endif
     if (!(k > 0.003)) discard;
     gl_FragColor = vec4(max(vCol, 0.0), min(k, 1.0));
   }

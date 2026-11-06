@@ -109,6 +109,12 @@ export async function create(ctx) {
 
   /* ------------------------------------------------------------ Objekte */
   const mats = makeMaterials(THREE, U);
+  // Helles Thema (theme.js): Code und Geruest als Tinte auf Hell, etwas kraeftiger als der Standard
+  mats.glyph.userData.themeGain = 2.3;
+  mats.rung.userData.themeGain = 1.8;
+  mats.wire.userData.themeGain = 2.6;
+  mats.band.userData.themeGain = 2.2;
+  mats.streak.userData.themeGain = 1.4;
 
   const plane = new THREE.PlaneGeometry(1, 1);
   const glyphGeo = new THREE.InstancedBufferGeometry();

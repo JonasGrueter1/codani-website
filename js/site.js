@@ -125,11 +125,23 @@
           }
           el.classList.add('is-in');
           io.unobserve(el);
+          if (above) above.unobserve(el);
         });
       }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+      // Zweiter Beobachter fuer alles ueber dem Bildschirm: Ein Sprung per Anker oder die Zurueck-Taste wechselt von
+      // "unterhalb" direkt zu "oberhalb", ohne dass der erste Beobachter etwas meldet.
+      var above = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting || e.target.classList.contains('is-in')) return;
+          e.target.style.transitionDuration = '0s';
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+          above.unobserve(e.target);
+        });
+      }, { threshold: 0, rootMargin: '100000px 0px -100% 0px' });
       rev.forEach(function (el) {
         if (inScroller(el)) el.classList.add('is-in');
-        else io.observe(el);
+        else { io.observe(el); above.observe(el); }
       });
     }
   }

@@ -65,7 +65,7 @@ exports.render = (ctx) => ctx.c.branchenSeite({
     text: 'Mundart erkennt die Spracherkennung oft gut, aber nicht fehlerfrei. Darum bleibt die Abschrift beim Entwurf, und Sie sehen, worauf er beruht. Wie viel Zeit das bei Ihnen spart, messen wir im Pilot.',
   },
   extra: [{
-    id: 'rechnung', tone: 'tint',
+    id: 'rechnung', tone: 'stage',
     head: { eyebrow: 'Beispielrechnung', title: 'Lohnt sich das für Ihren Betrieb?', intro: 'Rechnen Sie mit Ihren eigenen Zahlen, in Stunden und in Franken. Die Startwerte sind Annahmen, keine Messung.' },
     body: ctx.c.kiRechner({
       id: 'rechner-handwerk',

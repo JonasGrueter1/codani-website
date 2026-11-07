@@ -66,7 +66,7 @@ exports.render = (ctx) => ctx.c.branchenSeite({
     text: ctx.t('Im KI-Check sehe ich keine Mandantendaten. Wir besprechen Abläufe und arbeiten mit Musterbelegen oder Belegen Ihres eigenen Büros. Auf Wunsch unterschreibe ich vor dem ersten Gespräch eine Vertraulichkeitserklärung. Mandantendaten kommen erst im Pilot dazu, nach dem unterschriebenen Vertrag zur Auftragsbearbeitung. Verarbeitet werden sie standardmässig {{daten_standard}}, etwas anderes nur mit Ihrer schriftlichen Zustimmung, pro Fall.'),
   },
   extra: [{
-    id: 'sonderfaelle', tone: 'tint', width: 'wide',
+    id: 'sonderfaelle', tone: 'stage', width: 'wide',
     head: { eyebrow: 'Zum Ausprobieren', title: 'Sonderfälle und Steuersaison.', intro: 'Den einfachen Beleg liest Ihr Programm oft schon selbst. Hier zwei Fälle, bei denen die KI Ihrer Fachperson Arbeit abnimmt: ein Beleg mit Sonderfall und fehlende Unterlagen in der Steuersaison.' },
     body: ctx.c.demoAssistent({ id: 'demo-treuhand', szenen: ['sonderfall', 'steuern'], link: { href: 'kontakt/?thema=treuhand', label: 'Beispiel für mein Büro besprechen' } }),
   }, {
@@ -82,7 +82,7 @@ exports.render = (ctx) => ctx.c.branchenSeite({
       '<p class="note">Ich bin kein Jurist. Revisionsmandate und Fragen zum Berufsgeheimnis klären Sie mit Ihrer Fachperson. Ich liefere die technischen Angaben dazu.</p>',
     ].join('\n'),
   }, {
-    id: 'rechnung', tone: 'soft',
+    id: 'rechnung', tone: 'stage',
     head: { eyebrow: 'Beispielrechnung', title: 'Was bringt das einem Büro in Franken?', intro: 'Zum Beispiel ein Büro mit 9 Mitarbeitenden. Ersetzen Sie die Startwerte durch Ihre Zahlen.' },
     body: ctx.c.kiRechner({
       id: 'rechner-treuhand',

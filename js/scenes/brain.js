@@ -94,12 +94,17 @@ export function create(ctx) {
   // Helles Thema (theme.js): dunkle Linien und Punkte auf Hell. Gleicher Faktor fuer Materialien mit gleichem Shader
   // (cortex und dust, edges und fibers), sonst entstuenden zusaetzliche Programme. Die weichen Lichtflecken (glows)
   // bleiben Licht (hellen auf Hell nur leise auf).
-  mats.cortex.userData.themeGain = 3.2;
-  mats.dust.userData.themeGain = 3.2;
+  mats.cortex.userData.themeGain = 4.0; // 07.11.2026: 3.2 -> 4.0 (Rinde vor dem getoenten Innenraum)
+  mats.dust.userData.themeGain = 4.0;
   mats.neurons.userData.themeGain = 2.6;
   mats.edges.userData.themeGain = 4.5;
   mats.fibers.userData.themeGain = 4.5;
   mats.glows.userData.themeKeep = true;
+  // Hell (07.11.2026, Jonas: "Wenn man ins Gehirn zoomt, ... sieht man nichts"): Verbindungen und Faserbahnen breiter,
+  // damit die Tinte vor dem getoenten Innenraum (backdrop, Farbwelt brain) klar steht. Nur Uniform-Werte (setTheme),
+  // dunkel bleiben sie genau wie bisher.
+  const WIDTH = { edges: mats.edges.uniforms.uWidth.value, fibers: mats.fibers.uniforms.uWidth.value };
+  const WIDTH_HELL = { edges: 1.5, fibers: 1.6 };
   // Weniger Punkte (Handy): etwas groesser und heller, damit die Rinde gleich dicht wirkt
   const comp = 1 + 0.6 * (1 - Math.min(1, q));
   mats.cortex.uniforms.uSize.value *= comp;
@@ -283,6 +288,11 @@ export function create(ctx) {
       glowVals[11].set(cSig.r * hz, cSig.g * hz, cSig.b * hz, 0);
     },
     setActive() {},
+    setTheme(light) {
+      mats.edges.uniforms.uWidth.value = WIDTH.edges * (light ? WIDTH_HELL.edges : 1);
+      mats.fibers.uniforms.uWidth.value = WIDTH.fibers * (light ? WIDTH_HELL.fibers : 1);
+      if (hw.setTheme) hw.setTheme(light);
+    },
     dispose() {
       hw.dispose();
       geos.forEach((g) => g.dispose());

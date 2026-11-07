@@ -108,10 +108,17 @@ void main() {
   if (px < 1.5) { cover = px * px / 2.25; px = 1.5; }
   cover *= min(1.0, 9.0 / px);
 #ifdef CODANI_LIGHT
-  cover *= 1.0 - 0.85 * smoothstep(5.0, 22.0, px); // hell: unscharfe, nahe Punkte nicht als graue Flecken (Pruefung 2: frueher)
+  // hell: unscharfe, nahe Punkte nicht als graue Flecken (Pruefung 2). Seit 07.11.2026 auch nicht mehr fast weg, sondern
+  // kleine, klare Punkte (hoechstens 5.5 px): Windungen und Hirnstamm (die Punktkette, Jonas: "DNA-Straehne im Gehirn")
+  // bleiben beim Flug durch das Gehirn sichtbar
+  cover *= max(1.0, px / 9.0) * (1.0 - 0.6 * smoothstep(14.0, 48.0, px)); // Deckung wie ein kleiner Punkt, ganz nah leiser
+  px = min(px, 5.5);
 #endif
   gl_PointSize = min(px, 64.0);
   vA = uAlpha * rev * cover * smoothstep(0.035, 0.16, depth) * fogF(depth);
+#ifdef CODANI_LIGHT
+  vA *= 1.0 + 1.3 * uInside; // hell: im Gehirn kraeftiger (Windungen und Punktkette vor dem Innenraum)
+#endif
   if (vA < 0.003) gl_Position = vec4(2.0, 2.0, 2.0, 1.0); // unsichtbar: keine Fragmente erzeugen
 }
 `;
@@ -126,6 +133,10 @@ void main() {
   float a = m * vA;
   if (a < 0.002) discard;
   gl_FragColor = vec4(vCol, a);
+#ifdef CODANI_LIGHT
+  // hell (07.11.2026): etwas weniger gesaettigt, die Tinte wird tiefer (Petrol statt Tuerkis, siehe RIBBON_FS)
+  gl_FragColor.rgb = mix(vCol, vec3(max(vCol.r, max(vCol.g, vCol.b))), 0.3);
+#endif
 }
 `;
 
@@ -357,6 +368,11 @@ void main() {
 #ifdef CODANI_LIGHT
   col = uLine * conv * (1.0 + 0.3 * dash * uFlow); // hell: Lichtpakete nur leise (Pruefung 2)
 #endif
+#endif
+#ifdef CODANI_LIGHT
+  // hell (07.11.2026): Farbe weniger gesaettigt, die Umrechnung (theme.js) waehlt dann tiefes Petrol statt Tuerkis.
+  // Vor dem getoenten Innenraum des Gehirns ist Tuerkis zu schwach (Jonas: "man sieht nichts").
+  col = mix(col, vec3(max(col.r, max(col.g, col.b))), 0.4);
 #endif
   gl_FragColor = vec4(col, a);
 }

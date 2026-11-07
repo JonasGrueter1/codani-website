@@ -128,7 +128,7 @@
 </div>
 </header>
 <main id="inhalt" tabindex="-1">
-<section class="hero hero--split">
+<section class="hero hero--split hero--show">
 <div class="wrap wrap--wide hero__grid">
 <div class="hero__text"><nav class="crumbs" aria-label="Brotkrumen"><ol><li><a href="../../ki/">KI</a></li><li><a href="../../branchen/">Branchen</a></li><li><span aria-current="page">Treuhand und Büro</span></li></ol></nav>
 <p class="t-eyebrow">Branche · Treuhand und Büro</p>
@@ -163,7 +163,7 @@
 <p class="t-lead" data-reveal>Wo KI hier hilft: dort, wo Ihr Programm aufhört. Beim Konto-Vorschlag aus Ihrer bisherigen Buchungsgeschichte, beim Erkennen von Sonderfällen und beim Entwurf von Rückfragen an Mandanten.</p>
 </div>
 </section>
-<section class="sec sec--soft" id="beispiel" aria-labelledby="beispiel-t">
+<section class="sec sec--stage" id="beispiel" aria-labelledby="beispiel-t">
 <div class="wrap wrap--wide">
 <header class="sec__head" data-reveal>
 <p class="t-eyebrow">Beispiel in Bildern</p>
@@ -241,7 +241,7 @@
 <div class="sec__foot"><figure class="principle" data-reveal><blockquote><p>Die KI bereitet vor. Sie entscheiden.</p></blockquote><figcaption>Jonas Grüter</figcaption></figure></div>
 </div>
 </section>
-<section class="sec sec--tint" id="sonderfaelle" aria-labelledby="sonderfaelle-t">
+<section class="sec sec--stage" id="sonderfaelle" aria-labelledby="sonderfaelle-t">
 <div class="wrap wrap--wide">
 <header class="sec__head" data-reveal>
 <p class="t-eyebrow">Zum Ausprobieren</p>
@@ -249,7 +249,7 @@
 <p class="t-lead">Den einfachen Beleg liest Ihr Programm oft schon selbst. Hier zwei Fälle, bei denen die KI Ihrer Fachperson Arbeit abnimmt: ein Beleg mit Sonderfall und fehlende Unterlagen in der Steuersaison.</p>
 </header>
 <div class="demo" id="demo-treuhand" data-demo data-texte="{&quot;schritt&quot;:&quot;Schritt {n} von {gesamt}&quot;,&quot;bereit&quot;:&quot;Bereit: {gesamt} Schritte&quot;,&quot;fertig&quot;:&quot;Alle {gesamt} Schritte gezeigt&quot;,&quot;arbeitet&quot;:&quot;Die KI bereitet vor&quot;}">
-<div class="demo__bar"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><p class="demo__title">Demo-Assistent</p></div>
+<div class="demo__bar"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><p class="demo__title">Demo-Assistent</p><span class="demo__live">Zum Ausprobieren</span></div>
 <p class="demo__band"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../../assets/icons.svg#schild"></use></svg><span>Vorführung mit erfundenen Daten, vorbereitete Antworten. Es wird nichts gesendet.</span></p>
 <fieldset class="demo__pick" hidden>
 <legend class="demo__legend">Beispiel wählen</legend>
@@ -274,7 +274,7 @@
 </div>
 <div class="demo__out">
 <h3 class="demo__h">Was die KI vorbereitet</h3>
-<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<div class="demo__empty"><p>Hier erscheint Schritt für Schritt, was die KI mit dieser Anfrage macht. Sie entscheiden am Schluss.</p><button type="button" class="btn btn--sm demo__start" data-act="next">Ersten Schritt zeigen<span class="btn__arrow" aria-hidden="true"></span></button></div>
 <ol class="demo__steps"><li class="demo__step" data-name="Auslesen">
 <span class="demo__node" aria-hidden="true">1</span>
 <div class="demo__body">
@@ -350,7 +350,7 @@
 </div>
 <div class="demo__out">
 <h3 class="demo__h">Was die KI vorbereitet</h3>
-<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<div class="demo__empty"><p>Hier erscheint Schritt für Schritt, was die KI mit dieser Anfrage macht. Sie entscheiden am Schluss.</p><button type="button" class="btn btn--sm demo__start" data-act="next">Ersten Schritt zeigen<span class="btn__arrow" aria-hidden="true"></span></button></div>
 <ol class="demo__steps"><li class="demo__step" data-name="Checkliste aus dem Vorjahr">
 <span class="demo__node" aria-hidden="true">1</span>
 <div class="demo__body">
@@ -426,7 +426,7 @@
 <p class="note">Ich bin kein Jurist. Revisionsmandate und Fragen zum Berufsgeheimnis klären Sie mit Ihrer Fachperson. Ich liefere die technischen Angaben dazu.</p>
 </div>
 </section>
-<section class="sec sec--soft" id="rechnung" aria-labelledby="rechnung-t">
+<section class="sec sec--stage" id="rechnung" aria-labelledby="rechnung-t">
 <div class="wrap">
 <header class="sec__head" data-reveal>
 <p class="t-eyebrow">Beispielrechnung</p>
@@ -435,6 +435,7 @@
 </header>
 <form class="rechner" id="rechner-treuhand" data-rechner data-reveal aria-label="Ersparnis bei Belegen und Rückfragen berechnen"
  data-periode="monat" data-einmal="1710" data-monat="129">
+<div class="rechner__kopf"><p class="badge badge--try">Zum Ausprobieren</p><p class="rechner__tipp">Ändern Sie die Zahlen, das Ergebnis rechnet sofort mit.</p></div>
 <fieldset class="rechner__zeile"><legend class="rechner__legend">Belege kontieren</legend>
 <div class="rechner__felder">
 <label class="rechner__feld"><span>Belege pro Monat</span><input type="number" name="anzahl0" min="0" max="5000" step="1" value="500" inputmode="decimal"></label>

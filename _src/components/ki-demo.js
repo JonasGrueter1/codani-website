@@ -160,7 +160,7 @@ function szene(ctx, key, sc, first, T) {
     '</div>',
     '<div class="demo__out">',
     `<h3 class="demo__h">${esc(T.assistent)}</h3>`,
-    `<p class="demo__empty">${T.leer}</p>`,
+    `<div class="demo__empty"><p>${T.leer}</p><button type="button" class="btn btn--sm demo__start" data-act="next">${esc(T.start || T.weiter)}<span class="btn__arrow" aria-hidden="true"></span></button></div>`,
     `<ol class="demo__steps">${sc.schritte.map((s, i) => schritt(ctx, s, i, n, T)).join('\n')}</ol>`,
     when(sc.fussnote, () => `<p class="demo__fussnote">${sc.fussnote}</p>`),
     '</div>',
@@ -190,7 +190,7 @@ function demoAssistent(ctx, { id = 'demo-app', szenen, link = { href: 'kontakt/?
   ]) : '';
   return join([
     `<div class="${cls('demo', keys.length === 1 && 'demo--fix')}" id="${esc(id)}" data-demo${attrs({ 'data-texte': JSON.stringify(jsTexte) })}>`,
-    `<div class="demo__bar"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><p class="demo__title">${esc(T.fenster)}</p></div>`,
+    `<div class="demo__bar"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><p class="demo__title">${esc(T.fenster)}</p>${when(T.live, () => `<span class="demo__live">${esc(T.live)}</span>`)}</div>`,
     `<p class="demo__band">${ctx.c.icon('schild')}<span>${esc(T.band)}</span></p>`,
     pick,
     keys.map((k, i) => szene(ctx, k, D.szenen[k], i === 0, T)),

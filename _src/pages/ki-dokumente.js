@@ -36,7 +36,7 @@ exports.render = (ctx) => ctx.c.werkzeugSeite({
     head: { eyebrow: 'Zweites Beispiel', title: 'Fragen an Ihre eigenen Dokumente.', intro: 'Die KI sucht die Antwort in Ihren Reglementen und Vorlagen und nennt immer die Quelle. So lässt sich jede Antwort nachprüfen.' },
     body: `<div class="frage" data-reveal>
       ${ctx.c.badge('beispiel')}
-      <div class="frage__win">
+      <div class="frage__win stage">
         <p class="frage__q"><span class="frage__who">Frage</span>Bis wann müssen Spesen eingereicht werden?</p>
         <div class="frage__a"><span class="frage__who">${ctx.c.who('ki')} Antwort</span><p>Laut Spesenreglement, Abschnitt 3, bis zum 5. des Folgemonats.</p>
           <p class="frage__src">${ctx.c.icon('dokument')}<span>Quelle: Spesenreglement.pdf, Seite 2</span></p>

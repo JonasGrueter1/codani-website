@@ -23,6 +23,7 @@
 
     each(root.querySelectorAll('.demo__decide'), function (d) { d.hidden = false; });
     if (pick) pick.hidden = false;
+    root.classList.add('is-js');
     if (!reduced && ctrl) { ctrl.hidden = false; root.classList.add('is-live'); }
 
     function name(i) { return steps[i] ? steps[i].getAttribute('data-name') : ''; }
@@ -88,7 +89,11 @@
       if (!b || !root.contains(b)) return;
       if (b.getAttribute('aria-disabled') === 'true') return;
       var act = b.getAttribute('data-act');
-      if (act === 'next') next();
+      if (act === 'next') {
+        next();
+        // Startknopf im leeren Feld verschwindet: Fokus auf "Naechster Schritt" in der Leiste
+        if (b.classList.contains('demo__start') && btn.next) btn.next.focus({ preventScroll: true });
+      }
       else if (act === 'all') { clearTimeout(timer); set(steps.length); each(steps, function (li) { li.classList.remove('is-working'); }); }
       else if (act === 'reset') {
         clearTimeout(timer);

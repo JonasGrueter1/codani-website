@@ -143,6 +143,10 @@ body {
 
 /* ------------------------------------------------------------ Buehne (3D) */
 .stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+/* Schutz (07.11.2026): css/site.css hat eine Klasse .stage fuer die Schaufenster der Unterseiten (Innenabstand, Rundung,
+   Flaeche, Punktraster). Hier ist .stage die 3D-Buehne: nichts davon uebernehmen (sonst Raender links und rechts). */
+.stage { padding: 0; border-radius: 0; background: none; box-shadow: none; isolation: auto; }
+.stage::before { content: none; }
 .stage__canvas { width: 100%; height: 100vh; height: 100lvh; }
 .stage__overlay { position: absolute; inset: 0; overflow: hidden; transition: opacity 0.5s; }
 .is-content .stage__overlay { opacity: 0; }

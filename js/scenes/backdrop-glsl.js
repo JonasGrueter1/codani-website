@@ -88,6 +88,8 @@ uniform vec4 uScrimRect;
 uniform float uScrimA;
 #ifdef CODANI_LIGHT
 uniform float uPaper;  // Helligkeit des Papiers im hellen Thema (Lichtweg unten, nur mit CODANI_LIGHT, Kapitel 14)
+uniform float uVig;      // hell (07.11.2026): Randabschattung nur des Hintergrunds (Tiefe statt leerer Flaeche)
+uniform vec3 uVigColor;  // Ton am Rand (kuehles Blaugrau, im Gehirn tiefer)
 #endif
 
 varying vec3 vDir;
@@ -150,7 +152,8 @@ vec3 washAt(vec3 d) {
 }
 
 #ifdef CODANI_LIGHT
-// Helles Thema: Gewichte der drei Lichtflaechen (gleiche Lage wie washAt), damit sie als blasse Farbtoene mischen
+// Helles Thema: Gewichte der drei Farbfelder (gleiche Lage wie washAt, aber breiter und weicher), damit sie als
+// Farbtoene mischen. Hell (07.11.2026): Softbox (a) breiter, die Flaechen oben (b) und unten (c) gross wie Farbfelder.
 vec3 washG(vec3 d) {
   vec3 gw = uGlowDir;
   float fr = dot(d, gw);
@@ -160,24 +163,29 @@ vec3 washG(vec3 d) {
   vec3 q = d - gw * fr;
   vec2 p = vec2(dot(q, r1) * uWashSide, dot(q, r2));
   float T = uTime * 0.045;
-  vec2 a = (p - vec2(0.21 + 0.035 * sin(T * 1.3), 0.04)) / vec2(0.07, 0.42);
-  vec2 b = (p - vec2(0.1 + 0.08 * sin(T * 0.9 + 1.0), 0.3 + 0.05 * sin(T * 0.7))) / vec2(0.36, 0.2);
-  vec2 c = (p - vec2(0.16 + 0.1 * sin(T * 0.8 + 4.0), -0.28)) / vec2(0.34, 0.16);
-  float m = smoothstep(0.0, 0.5, fr);
+  vec2 a = (p - vec2(0.17 + 0.035 * sin(T * 1.3), 0.03)) / vec2(0.1, 0.42);
+  vec2 b = (p - vec2(0.04 + 0.08 * sin(T * 0.9 + 1.0), 0.22 + 0.04 * sin(T * 0.7))) / vec2(0.5, 0.18);
+  vec2 c = (p - vec2(0.1 + 0.08 * sin(T * 0.8 + 4.0), -0.2)) / vec2(0.42, 0.15);
+  float m = smoothstep(0.0, 0.45, fr);
   return vec3(exp(-dot(a, a)), exp(-dot(b, b)), exp(-dot(c, c))) * m;
 }
+// Schwarz schaltet ein Feld ab, sonst mischt es bis zu seiner vollen Farbe (k = Staerke)
 vec3 washMix(vec3 col, vec3 g, float k) {
-  col = mix(col, uWashA, clamp(g.x * k * dot(uWashA, vec3(1.0)), 0.0, 1.0));
-  col = mix(col, uWashB, clamp(g.y * k * dot(uWashB, vec3(1.0)), 0.0, 1.0));
-  col = mix(col, uWashC, clamp(g.z * k * dot(uWashC, vec3(1.0)), 0.0, 1.0));
+  col = mix(col, uWashA, clamp(g.x * k, 0.0, 1.0) * step(1e-4, dot(uWashA, vec3(1.0))));
+  col = mix(col, uWashB, clamp(g.y * k, 0.0, 1.0) * step(1e-4, dot(uWashB, vec3(1.0))));
+  col = mix(col, uWashC, clamp(g.z * k, 0.0, 1.0) * step(1e-4, dot(uWashC, vec3(1.0))));
   return col;
 }
 
-// Helles Thema: Studio-Hohlkehle wie bei einem Produktfoto. Papier oben (uBase), am Horizont heller (uMid), weiches
-// weisses Licht hinter dem Motiv (uHi, uGlowDir), blasse Lichtflaechen, Boden mit weichem Kontaktschatten und leiser
-// Spiegelung, Linien (Raster, Pakete, Code) in tiefem Tuerkis. Keine Sterne und kein Staub (auf Hell wirken sie wie
-// Schmutz). Gleiche Rausch-Zugriffe wie dunkel, eher weniger.
-vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
+// Helles Thema: gestaltetes Studio wie bei einem Produktfoto (07.11.2026, Rueckmeldung Jonas: "Der Hellmodus ist
+// weiss, kein Hintergrund, nichts"). Hohlkehle mit kuehlem Verlauf (oben uBase tiefer, am Horizont uMid hell), ein
+// grosses Farbfeld aus accentAt, weisses Gegenlicht hinter dem Motiv (uHi, uGlowDir), drei Farbfelder (Tuerkis, Blau,
+// ein Hauch Ember), die mit der Kamera wandern, Boden mit weichem Kontaktschatten, Lichtkante und feinem Punktraster,
+// Luft (Nebel), ruhige Lichtscheiben (uBokeh) und feine Schwebeteilchen in Tinte (uDust, uStarColor) fuer Tiefe,
+// Randabschattung nur des Hintergrunds in kuehlem Blaugrau (uVig, uVigColor). Im Gehirn und in der Helix tragen die
+// Farbwelten selbst einen tieferen, getoenten Raum (config.js). Linien (Raster, Pakete, Code) in tiefem Tuerkis.
+// In der Textzone (txt) treten Farbfelder, Muster und Randabschattung zurueck. Gleiche Rausch-Zugriffe wie bisher.
+vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det) {
   float e = d.y - uHorizon;
   float cl = dot(d, uGlowDir);
   float lit = max(cl, 0.0);
@@ -188,26 +196,30 @@ vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
   float az = atan(d.x, -d.z);
   float hl = max(length(d.xz), 1e-3);
   float tanE = d.y / hl;
+  float calm = 1.0 - 0.6 * txt;
 
+  // Hohlkehle: am Horizont hell, nach oben und unten tiefer
   float ae = abs(e);
-  vec3 col = mix(uMid, uBase, smoothstep(0.0, 0.75, ae));
-  col *= e < 0.0 ? 1.0 - 0.05 * smoothstep(0.0, 0.6, -e) : 1.0;
+  vec3 col = mix(uMid, uBase, pow(smoothstep(0.0, 0.7, ae), 0.7));
+  col *= e < 0.0 ? 1.0 - 0.06 * smoothstep(0.0, 0.6, -e) : 1.0;
   float band = exp(-e * e * 30.0);
-  col = mix(col, uHi, band * uHorizonGlow * 0.4 * (0.35 + 0.65 * side2));
-  col = mix(col, uAccent, pow(max(dot(d, uAccentDir), 0.0), 3.0) * 0.6);
+  col = mix(col, uHi, band * uHorizonGlow * 0.5 * (0.35 + 0.65 * side2));
+  // grosses, weiches Farbfeld (kuehler Gegenpol zum Gegenlicht)
+  col = mix(col, uAccent, pow(max(dot(d, uAccentDir), 0.0), 2.0) * 0.9 * calm);
 
   // weisses Gegenlicht hinter dem Motiv (trennt die weisse Bueste vom Grund: ihre Schattenseite steht davor)
   float gs = max(uGlowSize, 0.2);
-  float halo = pow(lit, 9.0 / gs) * 0.55 + pow(lit, 2.4 / gs) * 0.45;
+  float halo = pow(lit, 16.0 / gs) * 0.6 + pow(lit, 5.0 / gs) * 0.4;
   col = mix(col, uHi, clamp(halo * uGlow * 0.8, 0.0, 1.0));
 
   vec3 wg = vec3(0.0);
   if (uWash > 0.001) {
     wg = washG(d);
-    col = washMix(col, wg, uWash * 0.55 * (1.0 - 0.6 * txt));
+    col = washMix(col, wg, uWash * 0.85 * calm);
   }
 
-  // Boden: gleiche Ebene wie dunkel, Kontaktschatten unter dem Motiv, leise Spiegelung der Lichtflaechen
+  // Boden: gleiche Ebene wie dunkel, weicher Kontaktschatten unter dem Motiv, Lichtkante am Uebergang in die
+  // Hohlkehle, leise Spiegelung der Farbfelder, feines Punktraster in Tinte
   float floorMask = 0.0;
   if (uFloor > 0.001 && d.y < -0.001 && uCamPos.y > uFloorY + 0.05) {
     float t = (uFloorY - uCamPos.y) / d.y;
@@ -215,12 +227,16 @@ vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
     vec3 r = vec3(d.x, -d.y, d.z);
     float rl = max(dot(r, uGlowDir), 0.0);
     float fres = 0.05 + 0.95 * pow(1.0 - abs(d.y), 5.0);
-    vec3 fl = mix(uMid, uBase, 0.55);
+    vec3 fl = mix(uMid, uBase, 0.75) * 0.97;
+    fl *= 1.0 - 0.14 * smoothstep(0.05, 0.6, -d.y);  // nah an der Kamera etwas tiefer (Licht faellt ab)
     fl = mix(fl, uHi, (pow(rl, 20.0) * 0.5 + pow(rl, 4.0) * 0.2) * uGlow * uFloorShine * (0.3 + 0.7 * fres));
-    if (uWash > 0.001) fl = washMix(fl, washG(r), uWash * 0.3 * uFloorShine);
+    if (uWash > 0.001) fl = washMix(fl, washG(r), uWash * 0.35 * uFloorShine);
     vec2 pq = P.xz - uPoolAt.xz;
-    float pool = exp(-dot(pq, pq) * 0.09) * uPool;
-    fl *= 1.0 - 0.11 * pool;
+    float pq2 = dot(pq, pq);
+    float pool = (exp(-pq2 * 0.09) * 0.16 + exp(-pq2 * 0.5) * 0.14) * uPool;
+    fl *= 1.0 - pool;
+    // Studio (pool): Raster um das Motiv deutlicher, zum Rand leise. Tiefe Ebene der Kabel-Szene (ohne pool): kraeftiger
+    float gridNear = mix(1.7, 0.3 + 0.7 * exp(-pq2 * 0.012), min(uPool, 1.0));
     if (uFloorGrid > 0.001) {
       vec2 g = P.xz / uFloorGrid;
       vec2 fw = max(fwidth(g), vec2(1e-4));
@@ -230,7 +246,7 @@ vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
       vec2 cg = abs(fract(g - 0.5) - 0.5);
       float dotR = max(0.035, 1.2 * max(fw.x, fw.y));
       float dotm = 1.0 - smoothstep(dotR * 0.5, dotR, length(cg));
-      fl = mix(fl, uGridColor, clamp((line * 0.06 + dotm * 0.32) * fade * det, 0.0, 1.0));
+      fl = mix(fl, uGridColor, clamp((line * 0.035 + dotm * 0.36) * fade * det * gridNear, 0.0, 1.0));
 #if BD_Q > 0
       if (uStreaks > 0.001) {
         float onZ = (1.0 - min(gl.y, 1.0)) * fade;
@@ -248,18 +264,23 @@ vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
           float ph = fract(-g.y * 0.04 + uTime * (0.05 + 0.08 * hx) + hx * 7.0);
           pk += onX * (smoothstep(0.0, 0.008, ph) * (1.0 - smoothstep(0.008, 0.11, ph)));
         }
-        fl = mix(fl, uStreakColor, clamp(pk * uStreaks * 0.55 * det, 0.0, 1.0));
+        fl = mix(fl, uStreakColor, clamp(pk * uStreaks * 0.7 * det, 0.0, 1.0));
       }
 #endif
     }
-    float haze = 1.0 - exp(-t * 0.022);
-    haze = max(haze, smoothstep(-0.05, -0.002, d.y));
+    float haze = 1.0 - exp(-t * 0.016);
+    haze = max(haze, smoothstep(-0.03, -0.002, d.y));
     floorMask = uFloor * (1.0 - haze);
     col = mix(col, fl, floorMask);
   }
+  // Lichtkante, wo der Boden in die Hohlkehle uebergeht (ausserhalb des Bodens, sonst eine harte Linie am Horizont)
+  if (uFloor > 0.001) {
+    float ek = (d.y + 0.008) / 0.022; // kein pow() mit negativer Basis (NaN, Kapitel 6)
+    col = mix(col, uHi, exp(-ek * ek) * uFloor * uHorizonGlow * 0.5 * (0.35 + 0.65 * side2));
+  }
   float sky = 1.0 - floorMask;
 
-  // Nebel: ganz leise, helle und etwas dunklere Schwaden (Luft im Studio)
+  // Luft: weiche helle Schwaden und etwas tiefere Luecken (Tiefe im Raum)
   float dens = 0.0;
   float bioN = 0.5;
   if (uFog > 0.001) {
@@ -275,8 +296,8 @@ vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
 #endif
     dens = smoothstep(0.36, 0.8, f);
     float k = uFog * det * sky;
-    col = mix(col, uHi, dens * 0.22 * k * (0.4 + 0.6 * lit));
-    col *= 1.0 - (1.0 - dens) * 0.018 * k;
+    col = mix(col, mix(uMid, uHi, 0.6), dens * 0.26 * k * (0.35 + 0.65 * lit));
+    col *= 1.0 - (1.0 - dens) * 0.06 * k;
   }
 
   // Lichtstrahlen: helle, weiche Bahnen (nur aufhellen)
@@ -290,17 +311,17 @@ vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
     float sr = nz(vec3(pc * uRayFreq, uTime * 0.03)).x;
     float streak = smoothstep(0.45, 0.9, sr);
     float fall = exp(-ang * 2.1);
-    col = mix(col, uRayColor, clamp(streak * fall * uRays * 0.28 * det * sky, 0.0, 1.0));
+    col = mix(col, uRayColor, clamp(streak * fall * uRays * 0.34 * det * sky, 0.0, 1.0));
   }
 
-  // Gehirn: blasse Schwaden in Flieder und Rose, Raender tuerkis
+  // Gehirn und Helix: Schwaden in den Farben des Innenraums, Raender heller (wie Licht im Gewebe)
   if (uAurora > 0.001 && uFog > 0.001) {
     float rim = dens * (1.0 - dens) * 4.0;
     float tone = smoothstep(0.25, 0.75, bioN);
     vec3 bio = mix(uAuroraA, uAuroraB, tone);
-    float k = uAurora * det * sky * (0.35 + 0.65 * pow(lit, 1.5));
-    col = mix(col, bio, clamp(dens * 0.5 * k, 0.0, 1.0));
-    col = mix(col, uAuroraEdge, clamp(rim * pow(lit, 2.0) * 0.35 * k, 0.0, 1.0));
+    float k = uAurora * det * sky * (0.45 + 0.55 * pow(lit, 1.5));
+    col = mix(col, bio, clamp(dens * 0.6 * k, 0.0, 1.0));
+    col = mix(col, uAuroraEdge, clamp(rim * (0.3 + 0.7 * pow(lit, 2.0)) * 0.4 * k, 0.0, 1.0));
   }
 
   // Messraster, Scanlinie und Messkreis: feine Linien in Tuerkis
@@ -375,18 +396,44 @@ vec3 lightBackdrop(vec3 d, float px, float txt, float det) {
     }
   }
 
-  // Bokeh: wenige, sehr weiche helle Scheiben (Licht im Objektiv), nur aufhellen
+  // Lichtscheiben (Tiefe): wenige, sehr weiche Scheiben mit leiser Kante, wie Licht ausserhalb der Schaerfe
   if (uBokeh > 0.001) {
     vec3 q = rotY(d, uTime * 0.006) * 6.5 + vec3(0.0, uTime * 0.018, 0.0);
     vec3 ci = floor(q);
     vec3 h = hash33(ci + 17.0);
-    if (h.x > 0.55) {
+    if (h.x > 0.5) {
       vec3 cc = 0.25 + 0.5 * hash33(ci + 3.1);
       float rr = 0.1 + 0.14 * h.y;
       float dd = length(fract(q) - cc);
-      float disc = 1.0 - smoothstep(rr * 0.7, rr, dd);
-      col = mix(col, uBokehColor, clamp(disc * (0.2 + 0.3 * h.z) * uBokeh * det, 0.0, 1.0));
+      float disc = 1.0 - smoothstep(rr * 0.82, rr, dd);
+      float edge = smoothstep(rr * 0.55, rr * 0.92, dd) * disc;
+      col = mix(col, uBokehColor, clamp((disc * 0.6 + edge * 0.4) * (0.22 + 0.3 * h.z) * uBokeh * det, 0.0, 1.0));
     }
+  }
+
+#if BD_Q > 0
+  // Schwebeteilchen in Tinte: fein, wenige, mit Tiefenunschaerfe (nah grosser und blasser), steigen langsam
+  if (uDust > 0.001) {
+    vec3 q = rotY(d, uTime * 0.01) * 34.0 + vec3(0.0, -uTime * 0.06, 0.0);
+    vec3 ci = floor(q);
+    vec3 h = hash33(ci + 5.3);
+    if (h.x > 0.82) {
+      vec3 sp = 0.3 + 0.4 * hash33(ci + 2.9);
+      float dist = length(fract(q) - sp);
+      float pxc = px * 34.0;
+      float r = max(0.035 + 0.06 * h.y * h.y, pxc * 1.1);
+      float m = 1.0 - smoothstep(r * 0.35, r, dist);
+      float a = m * (0.16 + 0.3 * h.z) * min(1.0, 0.055 / r);
+      col = mix(col, uStarColor, clamp(a * uDust * det * (1.0 - 0.5 * lit), 0.0, 1.0));
+    }
+  }
+#endif
+
+  // Randabschattung nur des Hintergrunds (elliptisch, Seitenverhaeltnis egal), in der Textzone leiser
+  if (uVig > 0.001) {
+    vec2 vq = (suv - 0.5) * 2.0;
+    float vg = smoothstep(0.45, 1.5, length(vq * vec2(1.0, 0.92)));
+    col = mix(col, uVigColor, vg * vg * uVig * (1.0 - 0.7 * txt));
   }
   return col * uPaper;
 }
@@ -407,7 +454,7 @@ void main() {
   float det = uDetail * (1.0 - 0.75 * txt);
 
 #ifdef CODANI_LIGHT
-  gl_FragColor = vec4(max(lightBackdrop(d, px, txt, det), vec3(0.0)), 1.0);
+  gl_FragColor = vec4(max(lightBackdrop(d, suv, px, txt, det), vec3(0.0)), 1.0);
   return;
 #endif
 

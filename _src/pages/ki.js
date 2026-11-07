@@ -75,7 +75,7 @@ exports.render = (ctx) => {
       ].join('\n'),
     }),
     c.section({
-      id: 'liste', tone: 'tint', width: 'wide',
+      id: 'liste', width: 'wide',
       body: `<div class="ki-angebot">
         <div class="ki-angebot__text" data-reveal>
           ${c.eyebrow('Angebot')}
@@ -84,12 +84,12 @@ exports.render = (ctx) => {
           ${c.list(['Jede Anfrage mit Kanal, Anliegen, Dringlichkeit und Zuständigkeit.', 'Wo es passt, liegt ein Antwortentwurf bereit.', 'Nichts geht verloren, auch wenn jemand in den Ferien ist.'])}
           <p class="sec__foot">${c.more({ href: 'ki/kunden/', label: 'So funktioniert die Liste' })}</p>
         </div>
-        <div class="mk-stage" data-reveal>${c.badge('beispiel')}${c.kiMockListe({ mehr: true })}</div>
+        <div class="mk-stage stage" data-reveal>${c.badge('beispiel')}${c.kiMockListe({ mehr: true })}</div>
       </div>`,
       label: 'Angebot: Anfragen in einer Liste',
     }),
     c.section({
-      id: 'demo', tone: 'soft', width: 'wide',
+      id: 'demo', tone: 'stage', width: 'wide',
       head: { eyebrow: 'Demo', title: 'So arbeitet die KI mit. Probieren Sie es aus.', intro: 'Wählen Sie ein Beispiel. Der Assistent zeigt Schritt für Schritt, was die KI vorbereitet und wo Ihr Team entscheidet.' },
       body: [
         c.demoAssistent({ id: 'demo-ki', szenen: ['email', 'baustelle', 'beleg', 'sonderfall', 'mieter'] }),
@@ -144,7 +144,7 @@ exports.render = (ctx) => {
       head: { eyebrow: 'Programme', title: 'Mit diesen Programmen arbeitet die KI zusammen.', intro: 'Immer unter einer Bedingung: Das Programm muss eine Schnittstelle bieten. Ob und wie gut das bei Ihnen klappt, prüfe ich im KI-Check, bevor Sie etwas bestellen.' },
       body: [
         programme,
-        '<div class="sec__foot ki-datenweg">',
+        '<div class="sec__foot ki-datenweg stage">',
         '<h3 class="t-h3 ki-datenweg__t" data-reveal>So läuft eine Aufgabe durch die Lösung.</h3>',
         c.kiDatenweg(),
         `<p class="sec__foot">${c.more({ href: 'sicherheit/#loesung', label: 'Wo die Lösung läuft und was bei mir liegt' })}</p>`,

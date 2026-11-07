@@ -45,6 +45,8 @@
 .prog__quellen { margin-top: var(--sp-4); }
 .prog + .prog__quellen + .info, .prog + .info { margin-top: var(--sp-5); }
 .ki-datenweg { margin-top: var(--sp-9); }
+.ki-datenweg.stage { padding: clamp(20px, 3.4vw, 48px); }
+.ki-angebot .mk-stage.stage { padding: clamp(14px, 2.6vw, 32px); }
 .ki-datenweg__t { margin: 0 0 var(--sp-6); }
 
 /* Werkzeug-Seiten */
@@ -54,11 +56,11 @@
 
 /* Dokumente: Fragen an eigene Dokumente */
 .frage { max-width: 46rem; }
-.frage__win { display: grid; gap: 12px; padding: clamp(16px, 2.4vw, 28px); border-radius: var(--r-stage); background: var(--bg-soft); }
+.frage__win { display: grid; gap: 12px; }
 .frage__who { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font: 500 0.6875rem/1.4 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .frage__q { justify-self: end; max-width: 30rem; margin: 0; padding: 12px 16px; border-radius: 18px 18px 4px 18px; background: var(--ink); color: #fff; }
 .frage__q .frage__who { color: rgba(255, 255, 255, 0.7); }
-.frage__a { max-width: 34rem; padding: 14px 16px; border-radius: 18px 18px 18px 4px; background: var(--bg); box-shadow: var(--shadow-1); color: var(--ink); }
+.frage__a { max-width: 34rem; padding: 14px 16px; border-radius: 18px 18px 18px 4px; background: var(--bg); box-shadow: 0 0 0 1px var(--frame), var(--shadow-1); color: var(--ink); }
 .frage__a p { margin: 0; }
 .frage__src { display: flex; align-items: center; gap: 8px; margin-top: 10px !important; padding: 6px 10px; border-radius: 10px; background: var(--bg-tint); color: var(--accent); font-size: 0.875rem; font-weight: 550; width: fit-content; }
 .frage__src .ico { width: 18px; height: 18px; }
@@ -87,8 +89,8 @@
   .bilder { grid-auto-flow: column; grid-auto-columns: min(82%, 340px); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--sp-3); -webkit-overflow-scrolling: touch; }
   .bilder__step { scroll-snap-align: start; }
 }
-.bilder__step { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); border-radius: var(--r-card); background: var(--bg); }
-.bilder__step--sie { box-shadow: inset 0 3px 0 var(--ember); }
+.bilder__step { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); border-radius: var(--r-card); background: var(--bg); box-shadow: 0 0 0 1px var(--frame), var(--shadow-1); }
+.bilder__step--sie { box-shadow: inset 0 3px 0 var(--ember), 0 0 0 1px var(--frame), var(--shadow-1); }
 .bilder__bild { margin-bottom: var(--sp-2); }
 .bilder__bild .ph { border-radius: 14px; }
 .bilder__nr { margin: 0; font: 500 0.75rem/1.4 var(--f-mono); letter-spacing: 0.08em; color: var(--muted); }

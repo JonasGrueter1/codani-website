@@ -229,6 +229,11 @@ const GLYPH_FS = /* glsl */ `
 #endif
     if (!(k > 0.003)) discard;
     gl_FragColor = vec4(max(vCol, 0.0), min(k, 1.0));
+#ifdef CODANI_LIGHT
+    // hell (07.11.2026): etwas weniger gesaettigt, die Tinte wird tiefer (Petrol statt Tuerkis) und steht im getoenten
+    // Tunnel (backdrop, Farbwelt dna inner) klar
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(max(vCol.r, max(vCol.g, vCol.b))), 0.3);
+#endif
   }
 `;
 

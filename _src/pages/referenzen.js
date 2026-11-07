@@ -116,7 +116,7 @@ exports.render = (ctx) => {
       <p class="note">Labortests ersetzen keinen echten Kunden. Sie zeigen aber, ob ein Ablauf technisch hält, was diese Website beschreibt.</p>`,
     }),
     c.section({
-      id: 'websites',
+      id: 'websites', tone: 'stage',
       head: { eyebrow: 'Websites', title: 'Musterbeispiele für Websites.', intro: 'Diese Beispiele zeigen Aufbau und Stil. Die Betriebe sind erfunden.' },
       body: [
         c.webMusterKarten(['fahrschule', 'schreinerei-a', 'treuhand']),

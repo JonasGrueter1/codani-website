@@ -104,7 +104,7 @@ exports.render = (ctx) => {
       body: c.webAblauf(ABLAUF.map((s) => ({ ...s, parts: s.parts.map(([k, v]) => [k, t(v)]) }))),
     }),
     c.section({
-      id: 'beispiele', tone: 'soft',
+      id: 'beispiele', tone: 'stage',
       head: { eyebrow: 'Musterbeispiele', title: 'So kann Ihre Website aussehen.', intro: 'Drei Musterbeispiele für Aufbau und Stil. Die Betriebe sind erfunden.' },
       body: [
         c.webGalerie(['fahrschule', 'schreinerei-a', 'treuhand']),

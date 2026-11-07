@@ -127,7 +127,7 @@
 </div>
 </header>
 <main id="inhalt" tabindex="-1">
-<section class="hero hero--split hero--werkzeug">
+<section class="hero hero--split hero--werkzeug hero--show">
 <div class="wrap wrap--wide hero__grid">
 <div class="hero__text"><nav class="crumbs" aria-label="Brotkrumen"><ol><li><a href="../../ki/">KI</a></li><li><span aria-current="page">Dokumente</span></li></ol></nav>
 <p class="t-eyebrow">KI-Werkzeug · Dokumente</p>
@@ -169,7 +169,7 @@
 </div>
 </div>
 </section>
-<section class="sec sec--soft" id="beispiel" aria-labelledby="beispiel-t">
+<section class="sec sec--stage" id="beispiel" aria-labelledby="beispiel-t">
 <div class="wrap wrap--wide">
 <header class="sec__head" data-reveal>
 <p class="t-eyebrow">Beispiel zum Ausprobieren</p>
@@ -177,7 +177,7 @@
 <p class="t-lead">Klicken Sie sich durch. Der Assistent zeigt, was die KI vorbereitet und wo Sie entscheiden.</p>
 </header>
 <div class="demo demo--fix" id="demo-dokumente" data-demo data-texte="{&quot;schritt&quot;:&quot;Schritt {n} von {gesamt}&quot;,&quot;bereit&quot;:&quot;Bereit: {gesamt} Schritte&quot;,&quot;fertig&quot;:&quot;Alle {gesamt} Schritte gezeigt&quot;,&quot;arbeitet&quot;:&quot;Die KI bereitet vor&quot;}">
-<div class="demo__bar"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><p class="demo__title">Demo-Assistent</p></div>
+<div class="demo__bar"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><p class="demo__title">Demo-Assistent</p><span class="demo__live">Zum Ausprobieren</span></div>
 <p class="demo__band"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../../assets/icons.svg#schild"></use></svg><span>Vorführung mit erfundenen Daten, vorbereitete Antworten. Es wird nichts gesendet.</span></p>
 <div class="demo__scene" data-scene="lieferscheine" data-total="4">
 <div class="demo__grid">
@@ -190,7 +190,7 @@
 </div>
 <div class="demo__out">
 <h3 class="demo__h">Was die KI vorbereitet</h3>
-<p class="demo__empty">Klicken Sie auf «Nächster Schritt». Der Assistent zeigt dann, was die KI mit dieser Anfrage macht.</p>
+<div class="demo__empty"><p>Hier erscheint Schritt für Schritt, was die KI mit dieser Anfrage macht. Sie entscheiden am Schluss.</p><button type="button" class="btn btn--sm demo__start" data-act="next">Ersten Schritt zeigen<span class="btn__arrow" aria-hidden="true"></span></button></div>
 <ol class="demo__steps"><li class="demo__step" data-name="Lesen">
 <span class="demo__node" aria-hidden="true">1</span>
 <div class="demo__body">
@@ -257,7 +257,7 @@
 </header>
 <div class="frage" data-reveal>
       <p class="badge">Beispiel mit erfundenen Daten</p>
-      <div class="frage__win">
+      <div class="frage__win stage">
         <p class="frage__q"><span class="frage__who">Frage</span>Bis wann müssen Spesen eingereicht werden?</p>
         <div class="frage__a"><span class="frage__who"><span class="chip chip--ki">KI</span> Antwort</span><p>Laut Spesenreglement, Abschnitt 3, bis zum 5. des Folgemonats.</p>
           <p class="frage__src"><svg class="ico" width="24" height="24" aria-hidden="true" focusable="false"><use href="../../assets/icons.svg#dokument"></use></svg><span>Quelle: Spesenreglement.pdf, Seite 2</span></p>

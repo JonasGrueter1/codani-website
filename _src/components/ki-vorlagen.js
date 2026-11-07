@@ -81,6 +81,7 @@ function kiRechner(ctx, { id = 'rechner', label = 'Zeitersparnis berechnen', per
   return join([
     `<form class="rechner" id="${esc(id)}" data-rechner data-reveal aria-label="${esc(label)}"`,
     ` data-periode="${periode}" data-einmal="${einmal}" data-monat="${betrieb + nutzung.bis}">`,
+    '<div class="rechner__kopf"><p class="badge badge--try">Zum Ausprobieren</p><p class="rechner__tipp">Ändern Sie die Zahlen, das Ergebnis rechnet sofort mit.</p></div>',
     rows,
     `<div class="rechner__felder rechner__felder--satz">${feld('satz', 'Kosten pro Stunde Ihres Teams in CHF (Lohn und Nebenkosten)', satz, 5, 500)}</div>`,
     '<div class="rechner__ergebnis" aria-live="polite">',
@@ -105,7 +106,7 @@ function werkzeugSeite(ctx, d) {
   const sections = [
     c.hero({
       variant: 'split',
-      cls: 'hero--werkzeug',
+      cls: 'hero--werkzeug hero--show',
       crumbs: [{ label: 'KI', href: 'ki/' }, { label: d.crumb }],
       eyebrow: d.eyebrow,
       title: d.title,
@@ -122,7 +123,7 @@ function werkzeugSeite(ctx, d) {
       body: c.beforeAfter({ before: d.vorher, after: d.nachher }),
     }),
     c.section({
-      id: 'beispiel', tone: 'soft', width: 'wide',
+      id: 'beispiel', tone: 'stage', width: 'wide',
       head: { eyebrow: 'Beispiel zum Ausprobieren', title: d.beispielTitel || 'Schritt für Schritt, mit erfundenen Daten.', intro: d.beispielIntro || 'Klicken Sie sich durch. Der Assistent zeigt, was die KI vorbereitet und wo Sie entscheiden.' },
       body: join([
         d.demo ? c.demoAssistent({ id: `demo-${d.key}`, szenen: [d.demo], link: { href: `kontakt/?thema=${d.key}`, label: 'Dieses Beispiel besprechen' } }) : join([c.badge('beispiel'), d.beispiel]),
@@ -193,6 +194,7 @@ function branchenSeite(ctx, d) {
   return join([
     c.hero({
       variant: 'split',
+      cls: 'hero--show',
       crumbs: [{ label: 'KI', href: 'ki/' }, { label: 'Branchen', href: 'branchen/' }, { label: d.crumb }],
       eyebrow: d.eyebrow,
       title: d.title,
@@ -206,7 +208,7 @@ function branchenSeite(ctx, d) {
       body: join([`<p class="t-lead" data-reveal>${d.heute}</p>`, when(d.hilft, () => `<p class="t-lead" data-reveal>${d.hilft}</p>`)]),
     }),
     c.section({
-      id: 'beispiel', tone: 'soft', width: 'wide',
+      id: 'beispiel', tone: 'stage', width: 'wide',
       head: { eyebrow: 'Beispiel in Bildern', title: d.beispielTitel || 'Schritt für Schritt.' },
       body: join([
         c.badge('beispiel'),

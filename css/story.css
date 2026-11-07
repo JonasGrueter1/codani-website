@@ -971,6 +971,10 @@ html[data-theme="hell"] {
 [data-theme="hell"] .on-dark :focus-visible { outline-color: var(--c-signal); }
 [data-theme="hell"] .story :is(.kicker, .eyebrow)::before { box-shadow: none; }
 [data-theme="hell"] .story .link:hover { color: var(--c-signal); }
+/* 07.11.2026: Der Hintergrund ist hell tiefer und getoent (Kapitel 14, "Hintergrund mit Tiefe"). Kicker und Eyebrow
+   in #0a6f86 lagen dort bei 4.1 bis 4.5:1, die Hero-Fakten in #5a6575 bei 3.3:1. Etwas dunkler: 5.5:1 und 5.1:1. */
+[data-theme="hell"] .story :is(.kicker, .eyebrow) { color: var(--c-ice); }
+[data-theme="hell"] .story .hero-facts { color: #3e4a59; }
 
 /* Knoepfe in der Geschichte: wie auf den hellen Seiten (Haupt in Tuerkis, Neben umrandet) */
 [data-theme="hell"] .story.on-dark .btn { background: var(--accent, #0a6f86); border-color: var(--accent, #0a6f86); color: #fff; }

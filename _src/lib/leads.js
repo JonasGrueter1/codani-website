@@ -57,7 +57,9 @@ function forbidden(list, file) {
       .map((w) => w.replace(/['’]s$/, '').replace(/^['’-]+|['’-]+$/g, ''))
       .filter((b) => b.length >= 4 && /^[A-ZÀ-Þ]/.test(b) && !GENERISCH.has(b.toLowerCase()));
     for (const b of tokens(x.firma)) words.add(b);
-    for (const person of String(x.inhaber || '').split(/,| und | & |\//)) {
+    // Klammern zuerst entfernen: Beschreibungen wie "(führt den Betrieb seit ...)" enthalten Kommas und sonst
+    // landen gewöhnliche Wörter aus der Beschreibung als Namen in der Liste.
+    for (const person of String(x.inhaber || '').replace(/\([^)]*\)/g, ' ').split(/,| und | & |\//)) {
       const t = tokens(person);
       for (const b of t.slice(1)) words.add(b);
     }

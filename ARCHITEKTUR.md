@@ -1080,9 +1080,13 @@ nichts", und "diese DNA-Strähne, die da drin ist, im Gehirn, sieht man auch nic
   `cortex` ist sie weg, ohne Fasern, Verbindungen und Lichtflecken bleibt sie. Hell wurden genau diese nahen Punkte
   (ab 5 px) bis 85 % leiser gemacht (Prüfung 2), jetzt sind sie klare Punkte in Petrol.
 - **Code** (`dna-shaders.js`): Zeichen der Helix hell etwas weniger gesättigt (tieferes Petrol vor dem Tunnel).
-- **Schutz der Bühne** (`css/story.css`): `css/site.css` hat seit dem 07.11.2026 eine Klasse `.stage` für die
-  Schaufenster der Unterseiten. Auf der Startseite ist `.stage` die 3D-Bühne; ohne Schutz bekam sie Innenabstand,
-  Rundung, Fläche und Punktraster (Ränder links und rechts, in beiden Themen). `story.css` setzt das zurück.
+- **Kopfzeile hell** (`css/story.css`): Der Off-White-Verlauf hinter der Kopfzeile stand vor dem tieferen Grund als
+  milchiges Band mit Kante. Auf Höhe der Schrift ist er gleich deckend wie vorher (0.96 bis 0.9), darunter läuft er
+  länger und weich aus (am Desktop 64 px statt 40 px unter die Leiste, unter 1024 px 32 px statt 16 px) und klingt zum
+  kühlen Ton der Szene hin ab.
+- Hinweis: Eine Klasse `.stage` in `css/site.css` (Schaufenster der Unterseiten, 07.11.2026) traf kurz auch die 3D-Bühne
+  der Startseite (helle Ränder links und rechts). Sie heisst jetzt `.showcase`; `.stage` ist auf der Startseite allein die
+  Bühne, dort keine allgemeinen Regeln mit diesem Namen anlegen.
 
 ### Seite drumherum (css/story.css, Abschnitt "Hellmodus")
 

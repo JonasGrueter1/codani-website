@@ -84,7 +84,7 @@ exports.render = (ctx) => {
           ${c.list(['Jede Anfrage mit Kanal, Anliegen, Dringlichkeit und Zuständigkeit.', 'Wo es passt, liegt ein Antwortentwurf bereit.', 'Nichts geht verloren, auch wenn jemand in den Ferien ist.'])}
           <p class="sec__foot">${c.more({ href: 'ki/kunden/', label: 'So funktioniert die Liste' })}</p>
         </div>
-        <div class="mk-stage stage" data-reveal>${c.badge('beispiel')}${c.kiMockListe({ mehr: true })}</div>
+        <div class="mk-stage showcase" data-reveal>${c.badge('beispiel')}${c.kiMockListe({ mehr: true })}</div>
       </div>`,
       label: 'Angebot: Anfragen in einer Liste',
     }),
@@ -144,7 +144,7 @@ exports.render = (ctx) => {
       head: { eyebrow: 'Programme', title: 'Mit diesen Programmen arbeitet die KI zusammen.', intro: 'Immer unter einer Bedingung: Das Programm muss eine Schnittstelle bieten. Ob und wie gut das bei Ihnen klappt, prüfe ich im KI-Check, bevor Sie etwas bestellen.' },
       body: [
         programme,
-        '<div class="sec__foot ki-datenweg stage">',
+        '<div class="sec__foot ki-datenweg showcase">',
         '<h3 class="t-h3 ki-datenweg__t" data-reveal>So läuft eine Aufgabe durch die Lösung.</h3>',
         c.kiDatenweg(),
         `<p class="sec__foot">${c.more({ href: 'sicherheit/#loesung', label: 'Wo die Lösung läuft und was bei mir liegt' })}</p>`,

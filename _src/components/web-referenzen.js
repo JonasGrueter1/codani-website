@@ -44,7 +44,7 @@ function refBalken(ctx) {
 function refEintrag(ctx) {
   const row = (k, v, state = 'ok') => `<div class="reintrag__row"><dt>${k}</dt><dd><i class="reintrag__st reintrag__st--${state}" aria-hidden="true"></i>${v}</dd></div>`;
   return join([
-    '<figure class="reintrag stage" data-reveal>',
+    '<figure class="reintrag showcase" data-reveal>',
     ctx.c.badge('beispiel'),
     '<div class="reintrag__win">',
     '<p class="reintrag__bar" aria-hidden="true"><span class="reintrag__dots"><i></i><i></i><i></i></span>Firmenliste, ein Eintrag</p>',

@@ -241,8 +241,8 @@
 .dw { --gap: 48px; position: relative; display: grid; gap: 28px; counter-reset: dw; }
 .dw__step { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: 'icon nr' 'icon t' 'icon s'; gap: 2px 16px; align-content: start; padding: 20px; border-radius: var(--r-card); background: var(--bg); border: 1px solid var(--line); }
 .sec--soft .dw__step { border-color: transparent; }
-.stage .dw__step { border-color: var(--frame); box-shadow: var(--shadow-1); }
-.stage .dw__step--sie { border-color: rgba(161, 75, 12, 0.22); }
+.showcase .dw__step { border-color: var(--frame); box-shadow: var(--shadow-1); }
+.showcase .dw__step--sie { border-color: rgba(161, 75, 12, 0.22); }
 .dw__icon { grid-area: icon; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--bg-tint); color: var(--accent); box-shadow: inset 0 0 0 1.5px rgba(10, 111, 134, 0.35); }
 .dw__nr { grid-area: nr; font: 500 0.75rem/1.4 var(--f-mono); letter-spacing: 0.1em; color: var(--muted); }
 .dw__t { grid-area: t; margin: 0; color: var(--ink); font-weight: 600; font-size: 1.125rem; line-height: 1.35; letter-spacing: -0.01em; }

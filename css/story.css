@@ -143,10 +143,6 @@ body {
 
 /* ------------------------------------------------------------ Buehne (3D) */
 .stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-/* Schutz (07.11.2026): css/site.css hat eine Klasse .stage fuer die Schaufenster der Unterseiten (Innenabstand, Rundung,
-   Flaeche, Punktraster). Hier ist .stage die 3D-Buehne: nichts davon uebernehmen (sonst Raender links und rechts). */
-.stage { padding: 0; border-radius: 0; background: none; box-shadow: none; isolation: auto; }
-.stage::before { content: none; }
 .stage__canvas { width: 100%; height: 100vh; height: 100lvh; }
 .stage__overlay { position: absolute; inset: 0; overflow: hidden; transition: opacity 0.5s; }
 .is-content .stage__overlay { opacity: 0; }
@@ -1008,17 +1004,23 @@ html[data-theme="hell"] {
    "KI", der alte Verlauf hatte auf Hoehe des Texts nur rund 45 % Deckung). Kraeftiger und laenger: deckend bis zur
    Unterkante der Leiste (0.96 -> 0.74), dann rund 40 px weich auslaufend. Ohne backdrop-filter (kostet ueber dem
    Canvas jedes Bild), ohne Zeiger-Ereignisse im Auslauf. */
+/* 07.11.2026: Seit der Hintergrund hell tiefer und getoent ist (Kapitel 14, "Hintergrund mit Tiefe"), stand der kurze
+   Auslauf als milchiges Band mit Kante ueber der Szene. Jetzt auf Hoehe der Schrift gleich deckend wie vorher (oder
+   mehr), darunter ein laengerer, weich auslaufender Verlauf, der zum kuehlen Ton der Szene hin abklingt. */
 [data-theme="hell"] .hdr--dark:not(.is-light)::before {
-  bottom: -16px;
+  bottom: -32px;
   pointer-events: none;
   border-bottom-width: 0; /* sonst wiederholt sich die oberste Zeile des Verlaufs im 1-px-Rand als helle Linie */
-  background: linear-gradient(to bottom, rgba(243, 245, 247, 0.96), rgba(243, 245, 247, 0.88) 40%, rgba(243, 245, 247, 0.62) 80%, rgba(243, 245, 247, 0));
+  background: linear-gradient(to bottom, rgba(243, 245, 247, 0.96), rgba(243, 245, 247, 0.9) 40%, rgba(240, 243, 246, 0.8) 50%,
+    rgba(236, 240, 244, 0.56) 62%, rgba(233, 238, 242, 0.32) 74%, rgba(233, 238, 242, 0.14) 86%, rgba(233, 238, 242, 0.04) 94%, rgba(233, 238, 242, 0));
 }
 /* Desktop mit Navigation: laengerer Auslauf (am Handy steht dort der Kopf des Motivs, nur Logo und Knoepfe oben) */
 @media (min-width: 1024px) {
   [data-theme="hell"] .hdr--dark:not(.is-light)::before {
-    bottom: -40px;
-    background: linear-gradient(to bottom, rgba(243, 245, 247, 0.96), rgba(243, 245, 247, 0.9) 32%, rgba(243, 245, 247, 0.74) 61%, rgba(243, 245, 247, 0.32) 80%, rgba(243, 245, 247, 0));
+    bottom: -64px;
+    background: linear-gradient(to bottom, rgba(243, 245, 247, 0.96), rgba(243, 245, 247, 0.9) 30%, rgba(241, 244, 246, 0.82) 45%,
+      rgba(238, 242, 245, 0.62) 55%, rgba(235, 239, 243, 0.38) 66%, rgba(233, 238, 242, 0.2) 77%, rgba(233, 238, 242, 0.08) 88%,
+      rgba(233, 238, 242, 0.02) 95%, rgba(233, 238, 242, 0));
   }
 }
 [data-theme="hell"].gl[data-beat="outro"] .hdr--dark:not(.is-light)::before,

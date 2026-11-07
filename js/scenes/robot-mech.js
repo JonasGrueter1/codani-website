@@ -214,7 +214,7 @@ diffuseColor.a = ca;
   const Z = V(0, 0, 1);
   for (const e of [lm.eyeL, lm.eyeR]) {
     const m = new THREE.Mesh(eyeGeo, eyeMat);
-    m.position.set(e[0], e[1], e[2] - 0.004 + FACE_STYLE.eyeZ);
+    m.position.set(e[0], e[1], e[2] - 0.004);
     const rest = V(e[0] * 0.2 - e[0], 0.02, 3).normalize();
     m.quaternion.setFromUnitVectors(Z, rest);
     const c = new THREE.Mesh(corneaGeo, corneaMat);

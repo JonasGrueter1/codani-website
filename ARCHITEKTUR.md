@@ -1087,6 +1087,28 @@ nichts", und "diese DNA-Strähne, die da drin ist, im Gehirn, sieht man auch nic
 - Hinweis: Eine Klasse `.stage` in `css/site.css` (Schaufenster der Unterseiten, 07.11.2026) traf kurz auch die 3D-Bühne
   der Startseite (helle Ränder links und rechts). Sie heisst jetzt `.showcase`; `.stage` ist auf der Startseite allein die
   Bühne, dort keine allgemeinen Regeln mit diesem Namen anlegen.
+- **Text hell** (`css/story.css`): Kicker und Eyebrow in `--c-ice` #085a6d statt #0a6f86, Hero-Fakten #3e4a59 statt
+  #5a6575 (vor dem tieferen Grund lagen sie bei 4.1 bis 4.5:1 beziehungsweise 3.3:1).
+
+**Messung (07.11.2026)** (Werkzeuge und Bilder in `S/hellmodus-0711/`, SwiftShader auf einer stark ausgelasteten
+Maschine, Zeiten darum nur grob):
+
+- Dunkel gegen den Stand davor (gleicher Baum, nur die geänderten Dateien alt, `cmp/alt` und `cmp/neu`): alle 53
+  Programme nach Entfernen der hellen `#ifdef`-Blöcke gleich (`shader_cmp.py`), 47 davon sogar im Wortlaut; die 6
+  übrigen (Hintergrund, Rinde, Verbindungen, Fasern, Schwebeteilchen im Gehirn, Code-Zeichen) unterscheiden sich nur in
+  hellen Blöcken. Draw Calls und Dreiecke an sechs Stellen gleich. Bildzeit abwechselnd alt und neu, je 12 s
+  (640 x 400, high): Hero 231/240 gegen 222/222 ms, Büste 462/445 gegen 445/429 ms, Röntgen 1200/1000 gegen 923/1091 ms,
+  Gehirn 1333/1091 gegen 1500/1334 ms, Kabel 2000/2400 gegen 2000/2000 ms, Code 1091/1500 gegen 1091/923 ms (Streuung
+  durch die Last). Dunkle Bilder an acht Stellen (ohne UI und Korn): mittlere Helligkeit und Farbe höchstens 0.3 von 255
+  auseinander, sichtbar nur zeitabhängige Bewegung (`cmp/dunkel-vergleich.txt`).
+- Hell am Handy (`?q=medium&hell`, 640 x 400): beim Start 53 Programme alt und neu, Draw Calls und Dreiecke gleich,
+  Bildzeit im Rahmen der Streuung (Hero 214/240 gegen 240/250 ms, Büste 375/375 gegen 324/353 ms, Röntgen 600/633
+  gegen 522/546 ms, Code 546/429 gegen 571/445 ms).
+- Kontrast der Texte hell (Textausdehnung, ungünstigster 5-%-Wert des Hintergrunds, Text unsichtbar gemacht, ohne den
+  Off-White-Hof der Hero-Schrift): Desktop 1440 x 900 alle Texte mindestens 4.7:1 (Untertitel der Kopfzeile 4.7 bis
+  5.1:1, Kicker 5.6 bis 6.1:1, Hero-Fakten 5.1:1, Fliesstext 9 bis 11:1); Handy (iPhone 13) alle mindestens 6.6:1 ausser
+  der Eyebrow im Hero (3.7:1, dort laufen Linien der Partikel-Büste durch die Zeile; vorher 3.2:1, geschützt durch den
+  Off-White-Hof um jede Glyphe aus Prüfung 2).
 
 ### Seite drumherum (css/story.css, Abschnitt "Hellmodus")
 

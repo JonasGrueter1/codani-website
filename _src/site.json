@@ -41,7 +41,7 @@
         "detail": "Web3Forms gehört zu Web3Creative mit Sitz in Indien und betreibt seine Server in den USA. Laut Anbieter werden die Anfragen weitergeleitet und nicht gespeichert, Server-Protokolle werden alle zwei Monate gelöscht.",
         "endpoint": "https://api.web3forms.com/submit",
         "schluesselFeld": "access_key",
-        "schluessel": "d2e340ec-3d1e-4baf-9f1a-cdb4e59d18e9",
+        "schluessel": "dd4913c8-c41f-42c6-8af5-7f5f14c10377",
         "ausland": "GitHub und Google können Daten in den USA bearbeiten, Web3Forms in den USA und in Indien."
       },
       "alternative": {

@@ -109,12 +109,10 @@ export async function create(ctx) {
 
   /* ------------------------------------------------------------ Objekte */
   const mats = makeMaterials(THREE, U);
-  // Helles Thema (theme.js): Code und Geruest als Tinte auf Hell, etwas kraeftiger als der Standard
-  mats.glyph.userData.themeGain = 2.3;
-  mats.rung.userData.themeGain = 1.8;
-  mats.wire.userData.themeGain = 2.6;
-  mats.band.userData.themeGain = 2.2;
-  mats.streak.userData.themeGain = 1.4;
+  // Helles Thema (08.11.2026, "hell draussen, Abendlicht im Kopf"): das Kapitel Code liegt hell im getoenten Innenraum
+  // (backdrop, Farbwelt dna) bis zum Schnitt. Code und Geruest leuchten wie dunkel: keine Umrechnung (themeKeep), gleiche
+  // Programme wie dunkel. Bloom hell aus lookHell (unten).
+  for (const m of Object.values(mats)) m.userData.themeKeep = true;
 
   const plane = new THREE.PlaneGeometry(1, 1);
   const glyphGeo = new THREE.InstancedBufferGeometry();
@@ -164,6 +162,7 @@ export async function create(ctx) {
     group,
     // Bloom eher ruhig: viele kleine Zeichen, nur Lesekoepfe und Schreibkoepfe sollen leuchten
     look: { bloom: 0.95, bloomRadius: 0.5, fogDensity: 0.03, parallax: 0.08, drift: 0.014, aberration: 0.007, flash: 0, vignette: 0.8 },
+    lookHell: { bloom: 0.8, bloomRadius: 0.5, bloomThreshold: 0.9, exposure: 1.0, aberration: 0, flash: 0, vignette: 0.45, grain: 0.03 },
 
     update(time, dt, local, global, weight = 1) {
       U.uLocal.value = local;

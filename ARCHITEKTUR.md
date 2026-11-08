@@ -639,6 +639,7 @@ Hinterkopf mit Schädelgitter und Kabelbündeln. Der frühere Helm-Roboter und V
 | Datei | Inhalt |
 | --- | --- |
 | `robot.js` | Einstieg (create), Ablauf pro Beat, Look, Hintergrund-Schalter |
+| `robot-face.js` | Gesicht und Figur (Version 5, Gesicht D): Formen auf dem Kontrollnetz, Stil (`FACE_STYLE`: Lider, Fugen, Augapfel, schlanker Rumpf, Aufheller), `?gesicht=alt` |
 | `robot-mesh.js` | `bust.bin` laden (einmal, Promise im Cache), Gesichtsausdruck (Lider, Mundwinkel), Catmull-Clark, Normalen |
 | `robot-layout.js` | Fugen und Öffnungen als Felder (GLSL): Gesichtsplatten, Lidfuge, Hinterkopf-Fenster, Glaskappe, Brustplatte |
 | `robot-materials.js` | Schale (Klarlack, Spaltmass als feine Rinne mit Fase), Muskel-Gel, Innenschale, Glas, Hologramm, Mechanik |
@@ -763,6 +764,46 @@ flacher Bogen weiter aussen hinunter (`0.668 - 0.2 t²` statt `0.672 - 0.33 t^1.
 bildete mit der Maske die Ecken neben dem Mund), geht mit einer Rundung (`lSmin` 0.02) in die Stirnfuge über und ist als
 Plattenfuge flacher (`lSeamK` 0.7). Die Ecken der Gesichtsmaske sind runder (`lFace`: Rundung 0.11 und 0.1 statt 0.08
 und 0.05). Vergleich vorher und nachher: `studio-arbeit/v4/start/1-gesicht-vorher-nachher.png`.
+
+### Version 5: Gesicht D, schlanker und freundlich (08.11.2026)
+
+Rückmeldung Jonas zu den Varianten A bis C vom 07.11.2026 (Ex-Machina-Stil, alle drei zu wenig verändert): "das Gebiss
+immer noch zu mollig", "die Figur soll schon einiges schlanker sein", "die Backen sind eckig", "es soll freundlich
+aussehen, es ist ja für eine Website und nicht einen Terminator-Film". Standard ist seither **Gesicht D** (aus Variante
+B weiterentwickelt), `?gesicht=alt` zeigt zum Vergleich Gesicht und Figur von Version 4 (Shader-Text und Netz dann
+genau wie in Version 4, geprüft gegen Commit 593bf90). Alles in `robot-face.js`, gelesen von `robot-mesh.js`
+(`applyExpression(mesh, amt, face)`, der Worker bekommt das Gesicht als Parameter, weil er die Adresse der Seite nicht
+kennt), `robot-layout.js` (Fugen), `robot-materials.js` (Rumpf, Aufheller), `robot-mech.js` (Augapfel) und
+`particles-shape.js` (Partikel-Büste).
+
+- **Form** (`sculptFace`, auf dem Kontrollnetz nach `softenFace`, also gleich für Schale, Hologramm, Partikel-Büste und
+  Kopfform der Gehirn-Hardware): ganzer Kopf 4 % schmaler, dazu der untere Kopf von den Wangenknochen bis zum Kiefer
+  (auch hinter dem Gesicht, das bildet vorne die Silhouette) und Wangen und Kiefer (vorne weniger als an den Seiten,
+  sonst graue Flecken auf der Wange). Gemessen in der Vorderansicht gegen `?gesicht=alt`: Wangen 9 bis 11 %, untere
+  Wange und Kiefer 14 bis 16 % schmaler. Kinn fein, leicht zulaufend und rund. Runde Wangen (Apfel unter dem Auge),
+  weicher Wangenknochen, nur eine ganz leise Mulde darunter. Feinere, kürzere Nase. Lippen geschlossen (Mundöffnung
+  bis auf 0.002 zu, Ober- und Unterlippe zur Mundlinie gestaucht, Mundlinie nach vorne: vorher hing die Oberlippe als
+  Kante über einer dunklen V-Rinne), Amorbogen, Philtrum.
+  Leises Lächeln (Mundwinkel 0.018 hoch, etwas nach aussen und zurück), Unterlid eine Spur gehoben, Oberlid entspannter
+  (Anheben x 0.8, das Lid deckt den Irisrand knapp), Brauenbogen tritt zurück, die Mulde darunter ist gefüllt und ihre
+  Verdeckung (aAO) aufgehellt. Die Landmarken (Augen, Mundlinie, Ohrmodule) wandern mit.
+- **Fugen:** eine einzige Gesichtsplatte (nur der Maskenrand), keine Stirn- und keine Wangenfuge mehr (sie rahmten das
+  Gesicht wie ein Helmvisier, die Wangenfuge bildete die Spitze am Kiefer), Lidfalte sehr leise (`lSeamK` 0.16).
+  `particles-shape.js` zeichnet im Hero dieselben Linien.
+- **Figur:** Rumpf schlanker über `abSlim` in `DEFORM_PARS` (und in `makeMechMaterial`): ab dem Hals (y -1.2) nach unten
+  bis 10 % schmaler (Schultern, Arme) und bis 4 % flacher (um z -0.3). Nur die gezeichnete Lage ändert sich: Fugen,
+  Öffnungen und Muskel-Gel rechnen weiter in der Ruhelage (`vRest`), darum passen Schulterring, Brustplatte, Gel,
+  Mechanik und Kabelfächer ohne neue Masse. Instanzen (Kolben am Hals) bleiben ungestaucht (Fehler unter 0.01).
+  `particles-shape.js` staucht die Zielpunkte gleich.
+- **Licht:** Aufheller von unten nur im Gesicht (Schale, `FACE_STYLE.fill`, nur Gesicht D): Flächen, die nach unten
+  zeigen (unter den Brauen, an den Nasenflügeln), spiegelten das schwarze Studio und ergaben das dunkle, müde Band
+  zwischen Braue und Lid. Ruhelage-Normale aus den Tangenten, Maske `lFace`, vor allem Augenpartie, unten nur 30 %,
+  mit Verdeckung (Nasenlöcher und Mundwinkel bleiben dunkel); im hellen Thema halb so stark und ohne Spiegelanteil.
+- **Augapfel** etwas heller (0.52 statt 0.42 x Weiss).
+- Kosten: gleiche Zahl Programme und Draw Calls, Dreiecke praktisch gleich; das Formen läuft einmal im Worker (wenige
+  Millisekunden). Werkzeuge und Bilder: `studio-arbeit/gesicht-0711/` (`tools/prev.js` schnelle Vorschau der Schale,
+  `tools/close.sh` Nahaufnahmen, `tools/story.sh` Stellen der Geschichte, `gesicht-D.jpg` Vergleich).
+- Offen: Poster (dunkel und hell) zeigen noch Gesicht und Figur von Version 4.
 
 ### Quellen und Lizenzen (CREDITS)
 
@@ -1090,7 +1131,7 @@ nichts", und "diese DNA-Strähne, die da drin ist, im Gehirn, sieht man auch nic
 - **Text hell** (`css/story.css`): Kicker und Eyebrow in `--c-ice` #085a6d statt #0a6f86, Hero-Fakten #3e4a59 statt
   #5a6575 (vor dem tieferen Grund lagen sie bei 4.1 bis 4.5:1 beziehungsweise 3.3:1).
 
-**Messung (07.11.2026)** (Werkzeuge und Bilder in `S/hellmodus-0711/`, SwiftShader auf einer stark ausgelasteten
+**Messung (07.11.2026)** (Werkzeuge, Protokolle in `belege/` und Collagen in `S/hellmodus-0711/`, SwiftShader auf einer stark ausgelasteten
 Maschine, Zeiten darum nur grob):
 
 - Dunkel gegen den Stand davor (gleicher Baum, nur die geänderten Dateien alt, `cmp/alt` und `cmp/neu`): alle 53
@@ -1100,7 +1141,7 @@ Maschine, Zeiten darum nur grob):
   (640 x 400, high): Hero 231/240 gegen 222/222 ms, Büste 462/445 gegen 445/429 ms, Röntgen 1200/1000 gegen 923/1091 ms,
   Gehirn 1333/1091 gegen 1500/1334 ms, Kabel 2000/2400 gegen 2000/2000 ms, Code 1091/1500 gegen 1091/923 ms (Streuung
   durch die Last). Dunkle Bilder an acht Stellen (ohne UI und Korn): mittlere Helligkeit und Farbe höchstens 0.3 von 255
-  auseinander, sichtbar nur zeitabhängige Bewegung (`cmp/dunkel-vergleich.txt`).
+  auseinander, sichtbar nur zeitabhängige Bewegung (`belege/dunkel-vergleich.txt`).
 - Hell am Handy (`?q=medium&hell`, 640 x 400): beim Start 53 Programme alt und neu, Draw Calls und Dreiecke gleich,
   Bildzeit im Rahmen der Streuung (Hero 214/240 gegen 240/250 ms, Büste 375/375 gegen 324/353 ms, Röntgen 600/633
   gegen 522/546 ms, Code 546/429 gegen 571/445 ms).

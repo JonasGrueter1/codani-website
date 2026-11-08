@@ -1,52 +1,54 @@
-// Szene "robot": Gesichts-Varianten der Android-Bueste (07.11.2026, Rueckmeldung Jonas: das Gesicht hat "noch klar
-// Luft nach oben"). Zur Auswahl ueber die Adresse: ?gesicht=a|b|c. Ohne Parameter bleibt das Gesicht von Version 4.
-//
-//   a  Feinschliff   das bisherige Gesicht, nur korrigiert: Kiefer und Kinn etwas schmaler, Lippen geschlossen und
-//                    geformt, ruhigerer Blick, weniger Traenensack, Wangenfuge ohne Spitze am Kiefer
-//   b  Elegant       weicher, feiner Android (klassisch, eher weiblich): ovales Gesicht, hohe, runde Wangen, schmales
-//                    rundes Kinn, kuerzere feine Nase, volle Lippen, ruhiger Blick; eine einzige Gesichtsplatte
-//   c  Skulptur      neutral, wie eine Statue oder ein Produkt modelliert: ruhige, glatte Wangen, gerade Linie von
-//                    der Stirn zur Nase, klares Kinn, schmale ruhige Lippen, ruhigster Blick; Stirnplatte und
-//                    Gesichtsplatte als zwei saubere Formteile
+// Szene "robot": Gesicht und Figur der Android-Bueste.
+// Standard ist Gesicht D (08.11.2026): Rueckmeldung Jonas zu den Varianten A bis C vom 07.11.: "das Gebiss immer noch
+// zu mollig", "die Figur soll schon einiges schlanker sein", "die Backen sind eckig", "es soll freundlich aussehen, es
+// ist ja fuer eine Website und nicht einen Terminator-Film". D baut auf Variante B auf (eine Gesichtsplatte ohne
+// Querfugen) und geht deutlich weiter:
+//   schlanker   ganzer Kopf etwas schmaler, Wangen und Kiefer rund 12 bis 18 % schmaler, feines, leicht spitz
+//               zulaufendes, rundes Kinn; Rumpf (Schultern, Brust) schlanker ueber abSlim in robot-materials.js
+//   weich       runde Wangen (Apfel unter dem Auge), weicher Wangenknochen, sanfte Mulde darunter, keine Kanten
+//   freundlich  leises Laecheln (Mundwinkel hoch), entspannte Lider, weichere, leicht gehobene Brauen, die dunkle
+//               Mulde zwischen Braue und Lid gefuellt und aufgehellt
+// ?gesicht=alt zeigt zum Vergleich das Gesicht und die Figur von Version 4 (gleicher Shader-Text wie damals).
 //
 // Wirkt wie softenFace (robot-mesh.js) auf das Kontrollnetz vor der Glaettung: Schale, Partikel-Bueste und Kopfform
-// (robot-geometry.js) haben dasselbe Gesicht. Die Landmarken (Augen, Mundlinie) wandern mit, damit Augaepfel und der
-// dunkle Abschluss hinter dem Mund (robot-mech.js) passen. Fugen (robot-layout.js) und Augen (robot-mech.js) lesen
-// FACE_STYLE. Eine Variante pro Seitenaufruf: gleiche Zahl Programme, Draws und Dreiecke wie vorher.
+// (robot-geometry.js) haben dasselbe Gesicht. Die Landmarken (Augen, Mundlinie, Ohrmodule) wandern mit, damit
+// Augaepfel, Ohrmodule und der dunkle Abschluss hinter dem Mund (robot-mech.js) passen. Fugen (robot-layout.js),
+// Rumpf (robot-materials.js) und Augen (robot-mech.js) lesen FACE_STYLE.
 
-/** Variante aus der Adresse der Seite. Im Web Worker steht dort die Adresse des Workers: robot-mesh.js gibt sie mit. */
+/** Gesicht aus der Adresse der Seite: 'alt' (Version 4) oder 'd' (Standard). Im Web Worker steht dort die Adresse des
+    Workers: robot-mesh.js gibt das Gesicht darum mit. */
 export function readFaceVariant() {
   try {
     const s = globalThis.location && globalThis.location.search ? globalThis.location.search : '';
-    const v = (new URLSearchParams(s).get('gesicht') || '').toLowerCase();
-    return v === 'a' || v === 'b' || v === 'c' ? v : '';
+    return (new URLSearchParams(s).get('gesicht') || '').toLowerCase() === 'alt' ? 'alt' : 'd';
   } catch (e) {
-    return '';
+    return 'd';
   }
 }
 export const FACE_VARIANT = readFaceVariant();
 
 /*
- * Stil pro Variante (ausser der Form):
- *   lid      Faktor auf das Anheben des Oberlids (applyExpression): kleiner = ruhiger Blick, Lid deckt den Irisrand
- *   seams    Fugen im Gesicht (robot-layout.js): v4 wie bisher, clean (wie v4 ohne Haken), mask (eine Platte),
- *            visor (Stirnplatte und Gesichtsplatte)
+ * Stil (ausser der Form):
+ *   lid      Faktor auf das Anheben des Oberlids (applyExpression): kleiner = entspannter Blick, Lid deckt den Irisrand
+ *   seams    Fugen im Gesicht (robot-layout.js): v4 wie bisher (Stirn-, Wangen- und Lidfuge), mask (nur die Maske)
  *   lidSeam  Tiefe der Lidfalte (v4 0.45; kleiner: keine "Brille" um die Augen)
  *   sclera   Helligkeit des Augapfels (v4 0.42 x Weiss)
+ *   slim     Rumpf schmaler (robot-materials.js abSlim): Anteil in x an den Schultern, 0 = wie Version 4
+ *   fill     Aufheller von unten nur im Gesicht (robot-materials.js, Schale): [diffus, Spiegelung], 0 = keiner
  */
 const STYLES = {
-  '': { lid: 1, seams: 'v4', lidSeam: 0.45, sclera: 0.42 },
-  a: { lid: 0.85, seams: 'clean', lidSeam: 0.32, sclera: 0.46 },
-  b: { lid: 0.74, seams: 'mask', lidSeam: 0.2, sclera: 0.52 },
-  c: { lid: 0.7, seams: 'visor', lidSeam: 0.28, sclera: 0.46 },
+  alt: { lid: 1, seams: 'v4', lidSeam: 0.45, sclera: 0.42, slim: 0, fill: 0 },
+  d: { lid: 0.8, seams: 'mask', lidSeam: 0.16, sclera: 0.52, slim: 0.1, fill: [0.24, 0.05] },
 };
-export function faceStyle(v) { return STYLES[v] || STYLES['']; }
+export function faceStyle(v) { return STYLES[v] || STYLES.d; }
 export const FACE_STYLE = faceStyle(FACE_VARIANT);
 
 const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 /*
  * Bausteine (symmetrisch, c[0] >= 0 gilt fuer beide Seiten):
+ *   head   ganzer Kopf schmaler (x * (1 - k)), zum Hals hin (y0 -> y1) auslaufend
+ *   band   wie head, aber nur in einem Band der Hoehe (Rampe y0 -> y1 hinein, y2 -> y3 hinaus)
  *   blob   Verschiebung d mit Gauss-Abfall um c (Halbachsen r); d[0] zeigt nach aussen
  *   pinch  zur Mitte hin schmaler (x * (1 - k w))
  *   jaw    Unterkiefer zum Kinn hin schmaler: Rampe in y (y0 -> y1) und |x| (x0 -> x1), k am Kieferwinkel, zf: Rampe in
@@ -56,8 +58,7 @@ const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
  *   seal   Lippen zur Mundlinie hin stauchen (aus der tiefen V-Rinne zwischen den Lippen wird ein feiner Spalt)
  *   ao     offline gerechnete Verdeckung aufhellen, wo eine Mulde gefuellt wird
  */
-// Gemeinsame Bausteine: Lippen (Oberlippe als runde Lippe statt Kante, Amorbogen, Philtrum, Unterlippe in der Mitte
-// voller), Unterlid (weniger Traenensack), mit Staerke k
+// Lippen: geschlossen, Oberlippe als runde Lippe statt Kante, Amorbogen, Philtrum, Unterlippe in der Mitte voller
 const lips = (k, bow = 1) => [
   { op: 'mouth', gap: 0.002 },
   { op: 'seal', up: 0.04, au: 0.75, dn: 0.028, ad: 0.55 },
@@ -71,15 +72,15 @@ const lips = (k, bow = 1) => [
   { op: 'blob', c: [0, -0.657, 0.862], r: [0.085, 0.024, 0.06], d: [0, 0.002, 0.012 * k] },
   { op: 'blob', c: [0.17, -0.652, 0.8], r: [0.05, 0.03, 0.06], d: [0, 0.002, -0.006 * k] },
 ];
+// Unterlid: weniger Traenensack
 const lowerLid = (k) => [{ op: 'blob', c: [0.3, -0.125, 0.665], r: [0.1, 0.04, 0.06], d: [0, 0.003 * k, -0.009 * k] }];
-// Mulde unter der Braue flacher (weniger dunkle, muede Augenhoehle)
+// Mulde unter der Braue flacher und heller (weniger dunkle, muede Augenhoehle)
 const upperLid = (k) => [
   { op: 'blob', c: [0.3, 0.13, 0.8], r: [0.12, 0.05, 0.07], d: [0, 0, 0.009 * k] },
   { op: 'ao', c: [0.3, 0.12, 0.78], r: [0.17, 0.08, 0.12], k: 0.32 * k },
 ];
 // Kinn unten an den Seiten runder (in der Vorderansicht kein flacher Boden)
 const chinRound = (k) => [{ op: 'blob', c: [0.19, -0.97, 0.62], r: [0.08, 0.05, 0.2], d: [-0.008 * k, 0.014 * k, 0] }];
-
 // Nase feiner: Nasenfluegel schmaler, Spitze zierlicher und leicht angehoben, Ruecken schmaler
 const nose = (k) => [
   { op: 'pinch', c: [0.18, -0.4, 0.84], r: [0.1, 0.08, 0.12], k: 0.09 * k },
@@ -88,56 +89,38 @@ const nose = (k) => [
 ];
 
 const VARIANTS = {
-  // a: so nah wie moeglich am bisherigen Gesicht, nur die Fehler behoben
-  a: [
-    { op: 'jaw', y0: -0.3, y1: -0.95, x0: 0.14, x1: 0.52, k: 0.05, zf: [0.66, 0.36] },
-    { op: 'pinch', c: [0, -0.9, 0.72], r: [0.34, 0.15, 0.32], k: 0.07 },
-    { op: 'blob', c: [0, -0.87, 0.82], r: [0.15, 0.09, 0.2], d: [0, -0.003, 0.014] },
-    ...chinRound(0.6),
-    // weicher Wangenknochen (keine Mulde darunter: die wirkte als grauer Fleck auf der Wange)
-    { op: 'blob', c: [0.5, -0.12, 0.64], r: [0.12, 0.08, 0.16], d: [0.005, 0.004, 0.008] },
-    ...lowerLid(0.7),
-    ...upperLid(0.8),
-    ...lips(0.8),
-    { op: 'smooth', c: [0.38, -0.4, 0.6], r: [0.4, 0.6, 0.5], it: 8, k: 0.6 },
-  ],
-  // b: ovales, feines Gesicht: unteres Gesicht insgesamt schmaler (nicht nur das Kinn, sonst wird es spitz), hohe
-  // Wangenknochen, weiche Braue, feine Nase, mandelfoermige Augen, volle Lippen
-  b: [
-    { op: 'jaw', y0: -0.05, y1: -0.75, x0: 0.1, x1: 0.56, k: 0.058, zf: [0.66, 0.36] },
-    { op: 'jaw', y0: -0.45, y1: -0.98, x0: 0.12, x1: 0.5, k: 0.035, zf: [0.66, 0.36] },
-    { op: 'pinch', c: [0, -0.93, 0.72], r: [0.28, 0.14, 0.34], k: 0.05 },
-    { op: 'blob', c: [0, -0.87, 0.82], r: [0.14, 0.08, 0.2], d: [0, 0.002, 0.012] },
-    ...chinRound(1.3),
-    { op: 'blob', c: [0.52, -0.08, 0.63], r: [0.13, 0.08, 0.16], d: [0.006, 0.01, 0.01] },
-    // runde, hohe Wangen unter den Augen (jugendlich, faengt das Licht)
-    { op: 'blob', c: [0.37, -0.22, 0.74], r: [0.11, 0.09, 0.09], d: [0.002, 0.004, 0.012] },
+  d: [
+    // schlanker als Oval (nicht als Dreieck): ganzer Kopf, Wangenknochen und Schlaefen, dann Wangen und Kiefer (vorne
+    // weniger als an den Seiten), Kinn fein und rund
+    { op: 'head', y0: -1.3, y1: -1.0, k: 0.04 },
+    // unterer Kopf von den Wangenknochen bis zum Kiefer, auch hinter dem Gesicht (bildet vorne die Silhouette)
+    { op: 'band', y0: 0.25, y1: -0.15, y2: -0.95, y3: -1.25, k: 0.065 },
+    { op: 'jaw', y0: 0.15, y1: -0.35, x0: 0.3, x1: 0.66, k: 0.03, zf: [0.7, 0.3], zk: 0.2 },
+    { op: 'jaw', y0: -0.1, y1: -0.82, x0: 0.1, x1: 0.56, k: 0.045, zf: [0.85, 0.35], zk: 0.45 },
+    { op: 'jaw', y0: -0.45, y1: -1.0, x0: 0.12, x1: 0.5, k: 0.03, zf: [0.75, 0.35], zk: 0.3 },
+    { op: 'pinch', c: [0, -0.93, 0.72], r: [0.28, 0.14, 0.34], k: 0.08 },
+    { op: 'blob', c: [0, -0.88, 0.82], r: [0.13, 0.08, 0.2], d: [0, 0, 0.012] },
+    ...chinRound(1.4),
+    // runde, weiche Wangen: voller Apfel unter dem Auge (leicht gehoben wie beim Laecheln), weicher Wangenknochen,
+    // darunter nur eine ganz leise Mulde
+    { op: 'blob', c: [0.36, -0.25, 0.74], r: [0.13, 0.11, 0.1], d: [0.002, 0.012, 0.018] },
+    { op: 'blob', c: [0.52, -0.09, 0.62], r: [0.13, 0.08, 0.16], d: [0.004, 0.008, 0.008] },
+    { op: 'blob', c: [0.46, -0.52, 0.6], r: [0.15, 0.15, 0.2], d: [-0.002, 0, -0.003] },
     ...nose(1),
-    // Nase kuerzer: Spitze hoeher und etwas zurueck
     { op: 'blob', c: [0, -0.3, 0.98], r: [0.09, 0.08, 0.08], d: [0, 0.012, -0.012] },
-    { op: 'blob', c: [0.43, -0.01, 0.55], r: [0.05, 0.045, 0.07], d: [0.006, 0.008, 0] },
+    // Augen: aeusserer Lidwinkel leicht hoeher (offener, freundlicher Blick), Unterlid eine Spur gehoben (laechelnde
+    // Augen). Brauen weicher: der Brauenbogen tritt zurueck, die Mulde darunter wird gefuellt. So zeigt die Flaeche
+    // zwischen Braue und Lid nach vorne statt nach unten in das dunkle Studio (das dunkle, muede Band)
+    { op: 'blob', c: [0.43, -0.01, 0.55], r: [0.05, 0.045, 0.07], d: [0.004, 0.008, 0] },
     ...lowerLid(1),
-    ...upperLid(1.5),
-    ...lips(1.2, 1.2),
-    { op: 'smooth', c: [0.38, -0.4, 0.6], r: [0.4, 0.6, 0.5], it: 10, k: 0.7 },
-  ],
-  // c: neutral wie eine Skulptur: ruhige, fast ebene Wangen, klares Kinn nach vorne, gerade Nase, schmale ruhige
-  // Lippen, ruhiger Blick
-  c: [
-    { op: 'jaw', y0: -0.3, y1: -0.95, x0: 0.14, x1: 0.52, k: 0.065, zf: [0.66, 0.36] },
-    { op: 'pinch', c: [0, -0.9, 0.72], r: [0.34, 0.15, 0.32], k: 0.05 },
-    { op: 'blob', c: [0, -0.89, 0.82], r: [0.17, 0.08, 0.2], d: [0, -0.008, 0.03] },
-    ...chinRound(0.4),
-    { op: 'blob', c: [0.53, -0.15, 0.62], r: [0.13, 0.09, 0.16], d: [0.008, 0.004, 0.012] },
-    // gerade Linie von der Stirn zur Nase wie bei einer Statue (Nasenwurzel gefuellt)
-    { op: 'blob', c: [0, 0.04, 0.87], r: [0.07, 0.07, 0.07], d: [0, 0, 0.016] },
-    { op: 'blob', c: [0, -0.12, 0.91], r: [0.05, 0.12, 0.08], d: [0, 0, 0.006] },
-    ...nose(0.5),
-    ...lowerLid(1),
-    ...upperLid(1.1),
-    ...lips(0.8, 0.3),
-    { op: 'blob', c: [0, -0.657, 0.875], r: [0.09, 0.024, 0.06], d: [0, 0.003, -0.006] },
-    { op: 'smooth', c: [0.38, -0.4, 0.6], r: [0.42, 0.62, 0.5], it: 18, k: 0.8 },
+    { op: 'blob', c: [0.3, -0.09, 0.69], r: [0.1, 0.03, 0.05], d: [0, 0.004, 0.002] },
+    { op: 'blob', c: [0.27, 0.25, 0.92], r: [0.2, 0.06, 0.08], d: [0, 0.003, -0.012] },
+    ...upperLid(2.2),
+    ...lips(1.15, 1.1),
+    // leises Laecheln: Mundwinkel hoch, etwas nach aussen und zurueck
+    { op: 'blob', c: [0.205, -0.612, 0.775], r: [0.045, 0.032, 0.06], d: [0.005, 0.018, -0.006] },
+    { op: 'blob', c: [0.15, -0.6, 0.83], r: [0.06, 0.03, 0.06], d: [0, 0.006, 0] },
+    { op: 'smooth', c: [0.38, -0.4, 0.6], r: [0.42, 0.62, 0.5], it: 12, k: 0.7 },
   ],
 };
 
@@ -152,6 +135,7 @@ export function sculptFace(mesh, v) {
     if (lm.eyeL) marks.push(lm.eyeL);
     if (lm.eyeR) marks.push(lm.eyeR);
     if (lm.mouthLoop) for (const p of lm.mouthLoop) marks.push(p);
+    if (lm.ears) for (const e of lm.ears) marks.push(e.c);
   }
   const each = (fn) => {
     const o = [0, 0, 0];
@@ -184,11 +168,18 @@ export function sculptFace(mesh, v) {
         p[0] *= 1 - o.k * w;
         return true;
       });
+    } else if (o.op === 'head' || o.op === 'band') {
+      each((p) => {
+        const t = ss(o.y0, o.y1, p[1]) * (o.op === 'band' ? 1 - ss(o.y2, o.y3, p[1]) : 1);
+        if (!t) return false;
+        p[0] *= 1 - o.k * t;
+        return true;
+      });
     } else if (o.op === 'jaw') {
       each((p) => {
         if (p[2] < -0.3) return false;
-        // zf: nur die Seiten des Kiefers (die Vorderseite der Wange bleibt, wie sie zum Licht steht; sonst grauer Fleck)
-        const zf = o.zf ? ss(o.zf[0], o.zf[1], p[2]) : 1;
+        // zf: vorne weniger (zk: Anteil vorne), die Vorderseite der Wange bleibt eher, wie sie zum Licht steht
+        const zf = o.zf ? (o.zk || 0) + (1 - (o.zk || 0)) * ss(o.zf[0], o.zf[1], p[2]) : 1;
         const t = ss(o.y0, o.y1, p[1]) * ss(o.x0, o.x1, Math.abs(p[0])) * (1 - 0.5 * ss(-0.05, -0.3, p[2])) * zf;
         if (!t) return false;
         p[0] *= 1 - o.k * t;

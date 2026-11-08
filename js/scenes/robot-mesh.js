@@ -25,10 +25,10 @@ export function bustRaw() {
  *   Oberlid   dreht um die Augenmitte nach oben (Lidrand von etwa einem Drittel der Iris auf ihren oberen Rand)
  *   Unterlid  minimal angehoben (leichte Spannung, wacher Blick)
  *   Mund      Mundwinkel eine Spur angehoben und etwas eingezogen (neutral statt herabhaengend)
- * face: Gesichts-Variante (robot-face.js, ?gesicht=a|b|c), leer = Version 4. Der Worker kennt die Adresse der Seite
+ * face: Gesicht (robot-face.js): 'd' Standard, 'alt' Version 4 (?gesicht=alt). Der Worker kennt die Adresse der Seite
  * nicht, darum als Parameter.
  */
-export function applyExpression(mesh, amt = 1, face = '') {
+export function applyExpression(mesh, amt = 1, face = 'd') {
   const { pos, nV, lm } = mesh;
   if (!lm || !lm.eyeL || !lm.eyeR) return mesh;
   const lidK = faceStyle(face).lid;

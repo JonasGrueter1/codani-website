@@ -1,7 +1,7 @@
 // Szene "robot": Glaettung der Bueste im Hintergrund (Web Worker, ES-Modul). Catmull-Clark dauert auf Handys einige
 // hundert Millisekunden; im Worker laeuft der Preloader dabei fluessig weiter. Gleiche Funktionen wie im Hauptthread
 // (robot-mesh.js), die Ergebnisse kommen als Transferables zurueck. Faellt der Worker aus, rechnet robot-mesh.js selbst.
-//   { op: 'l1', buf, face }  Bueste lesen (Datei holt der Hauptthread), Gesichtsausdruck (face: Variante, robot-face.js),
+//   { op: 'l1', buf, face }  Bueste lesen (Datei holt der Hauptthread), Gesichtsausdruck (face: Gesicht, robot-face.js),
 //                       eine Stufe Catmull-Clark, Normalen
 //   { op: 'cc', mesh }  eine weitere Stufe Catmull-Clark und Normalen (Stufe high)
 import { parseBust, applyExpression, catmullClark, computeNormals } from './robot-mesh.js';
@@ -16,7 +16,7 @@ self.onmessage = async (ev) => {
     const { op } = ev.data;
     let m;
     if (op === 'l1') {
-      m = catmullClark(applyExpression(parseBust(ev.data.buf), 1, ev.data.face || ''));
+      m = catmullClark(applyExpression(parseBust(ev.data.buf), 1, ev.data.face || 'd'));
     } else {
       m = catmullClark(ev.data.mesh);
     }

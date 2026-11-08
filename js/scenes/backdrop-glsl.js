@@ -90,6 +90,12 @@ uniform float uScrimA;
 uniform float uPaper;  // Helligkeit des Papiers im hellen Thema (Lichtweg unten, nur mit CODANI_LIGHT, Kapitel 14)
 uniform float uVig;      // hell (07.11.2026): Randabschattung nur des Hintergrunds (Tiefe statt leerer Flaeche)
 uniform vec3 uVigColor;  // Ton am Rand (kuehles Blaugrau, im Gehirn tiefer)
+uniform float uRings;    // hell (08.11.2026): zwei grosse, unscharfe Glasringe (Echo des Helix-Logos)
+uniform float uRingX;    // Versatz der Ringe im Bild (Anteil, + weg vom Text)
+uniform vec3 uRingA;
+uniform vec3 uRingB;
+uniform float uCalm;     // hell: Grund hinter dem Text heller und ruhiger
+uniform vec3 uCalmColor;
 #endif
 
 varying vec3 vDir;
@@ -185,7 +191,43 @@ vec3 washMix(vec3 col, vec3 g, float k) {
 // Randabschattung nur des Hintergrunds in kuehlem Blaugrau (uVig, uVigColor). Im Gehirn und in der Helix tragen die
 // Farbwelten selbst einen tieferen, getoenten Raum (config.js). Linien (Raster, Pakete, Code) in tiefem Tuerkis.
 // In der Textzone (txt) treten Farbfelder, Muster und Randabschattung zurueck. Gleiche Rausch-Zugriffe wie bisher.
-vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det) {
+// Zwei grosse, unscharfe Glasringe um das Gegenlicht (hell, 08.11.2026): geneigte Ellipsen, ineinander verschraenkt wie
+// die zwei Straenge des Helix-Logos (Tuerkis und Ember), auf der Seite weg vom Text (uWashSide), drehen sehr langsam.
+// Weicher Hof (ausser Schaerfe) und ein feinerer, hellerer Kern (Glaskante). Keine Rauschzugriffe.
+vec3 glassRings(vec3 col, vec3 d, float k) {
+  vec3 gw = uGlowDir;
+  float fr = dot(d, gw);
+  if (fr <= 0.0) return col;
+  vec3 r1 = normalize(cross(gw, vec3(0.0, 1.0, 0.0)) + vec3(1e-5, 0.0, 0.0));
+  vec3 r2 = cross(r1, gw);
+  vec3 q = d - gw * fr;
+  vec2 p = vec2(dot(q, r1) * uWashSide, dot(q, r2)) - vec2(uRingX, 0.0);
+  float T = uTime * 0.035;
+  float m = smoothstep(0.0, 0.5, fr);
+  // Ring A (Tuerkis)
+  float aa = 0.62 + 0.06 * sin(T);
+  vec2 qa = p - vec2(0.16, 0.03);
+  qa = vec2(cos(aa) * qa.x - sin(aa) * qa.y, sin(aa) * qa.x + cos(aa) * qa.y) / vec2(1.0, 0.46);
+  float da = (length(qa) - 0.29) / 0.018;
+  float ca = (length(qa) - 0.29) / 0.0045;
+  // Ring B (Ember), gegenlaeufig geneigt und versetzt
+  float ab = -0.5 + 0.06 * sin(T * 1.3 + 2.0);
+  vec2 qb = p - vec2(0.24, -0.02);
+  qb = vec2(cos(ab) * qb.x - sin(ab) * qb.y, sin(ab) * qb.x + cos(ab) * qb.y) / vec2(1.0, 0.5);
+  float db = (length(qb) - 0.25) / 0.018;
+  float cb = (length(qb) - 0.25) / 0.0045;
+  float ha = exp(-da * da) * 0.5 + exp(-ca * ca) * 0.5;
+  float hb = exp(-db * db) * 0.5 + exp(-cb * cb) * 0.5;
+  // Glaskante: innen ein leiser Schatten neben dem Licht (Brechung), damit der Ring auch auf hellem Grund steht
+  float sa = (length(qa) - 0.29 + 0.016) / 0.007;
+  float sb = (length(qb) - 0.25 + 0.016) / 0.007;
+  col *= 1.0 - (exp(-sa * sa) + exp(-sb * sb) * 0.85) * 0.16 * k * m;
+  col = mix(col, uRingA, clamp(ha * k * m, 0.0, 1.0));
+  col = mix(col, uRingB, clamp(hb * k * m * 0.85, 0.0, 1.0));
+  return col;
+}
+
+vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det, float txtZone) {
   float e = d.y - uHorizon;
   float cl = dot(d, uGlowDir);
   float lit = max(cl, 0.0);
@@ -200,10 +242,10 @@ vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det) {
 
   // Hohlkehle: am Horizont hell, nach oben und unten tiefer
   float ae = abs(e);
-  vec3 col = mix(uMid, uBase, pow(smoothstep(0.0, 0.7, ae), 0.7));
+  vec3 col = mix(uMid, uBase, pow(smoothstep(0.0, 0.42, ae), 0.75));
   col *= e < 0.0 ? 1.0 - 0.06 * smoothstep(0.0, 0.6, -e) : 1.0;
   float band = exp(-e * e * 30.0);
-  col = mix(col, uHi, band * uHorizonGlow * 0.5 * (0.35 + 0.65 * side2));
+  col = mix(col, uHi, band * uHorizonGlow * 0.4 * (0.35 + 0.65 * side2));
   // grosses, weiches Farbfeld (kuehler Gegenpol zum Gegenlicht)
   col = mix(col, uAccent, pow(max(dot(d, uAccentDir), 0.0), 2.0) * 0.9 * calm);
 
@@ -228,9 +270,10 @@ vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det) {
     float rl = max(dot(r, uGlowDir), 0.0);
     float fres = 0.05 + 0.95 * pow(1.0 - abs(d.y), 5.0);
     vec3 fl = mix(uMid, uBase, 0.75) * 0.97;
-    fl *= 1.0 - 0.14 * smoothstep(0.05, 0.6, -d.y);  // nah an der Kamera etwas tiefer (Licht faellt ab)
+    fl *= 1.0 - 0.2 * smoothstep(0.04, 0.6, -d.y);  // nah an der Kamera tiefer (Licht faellt ab, Boden liest sich als Ebene)
     fl = mix(fl, uHi, (pow(rl, 20.0) * 0.5 + pow(rl, 4.0) * 0.2) * uGlow * uFloorShine * (0.3 + 0.7 * fres));
     if (uWash > 0.001) fl = washMix(fl, washG(r), uWash * 0.35 * uFloorShine);
+    if (uRings > 0.001) fl = glassRings(fl, r, uRings * 0.22 * uFloorShine * (0.3 + 0.7 * fres)); // Spiegelung
     vec2 pq = P.xz - uPoolAt.xz;
     float pq2 = dot(pq, pq);
     float pool = (exp(-pq2 * 0.09) * 0.16 + exp(-pq2 * 0.5) * 0.14) * uPool;
@@ -279,6 +322,7 @@ vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det) {
     col = mix(col, uHi, exp(-ek * ek) * uFloor * uHorizonGlow * 0.5 * (0.35 + 0.65 * side2));
   }
   float sky = 1.0 - floorMask;
+  if (uRings > 0.001) col = glassRings(col, d, uRings * 0.8 * sky * (1.0 - 0.8 * txtZone));
 
   // Luft: weiche helle Schwaden und etwas tiefere Luecken (Tiefe im Raum)
   float dens = 0.0;
@@ -311,7 +355,7 @@ vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det) {
     float sr = nz(vec3(pc * uRayFreq, uTime * 0.03)).x;
     float streak = smoothstep(0.45, 0.9, sr);
     float fall = exp(-ang * 2.1);
-    col = mix(col, uRayColor, clamp(streak * fall * uRays * 0.34 * det * sky, 0.0, 1.0));
+    col = mix(col, uRayColor, clamp(streak * fall * uRays * 0.5 * det * sky, 0.0, 1.0));
   }
 
   // Gehirn und Helix: Schwaden in den Farben des Innenraums, Raender heller (wie Licht im Gewebe)
@@ -433,8 +477,10 @@ vec3 lightBackdrop(vec3 d, vec2 suv, float px, float txt, float det) {
   if (uVig > 0.001) {
     vec2 vq = (suv - 0.5) * 2.0;
     float vg = smoothstep(0.45, 1.5, length(vq * vec2(1.0, 0.92)));
-    col = mix(col, uVigColor, vg * vg * uVig * (1.0 - 0.7 * txt));
+    col = mix(col, uVigColor, vg * vg * uVig * (1.0 - 0.85 * txtZone));
   }
+  // Hinter dem Text: Grund heller und ruhiger (Lesbarkeit), nur der Hintergrund, das Motiv bleibt
+  if (uCalm > 0.001) col = mix(col, uCalmColor, txtZone * uCalm);
   return col * uPaper;
 }
 #endif
@@ -454,7 +500,14 @@ void main() {
   float det = uDetail * (1.0 - 0.75 * txt);
 
 #ifdef CODANI_LIGHT
-  gl_FragColor = vec4(max(lightBackdrop(d, suv, px, txt, det), vec3(0.0)), 1.0);
+  // Textzone hell: Form wie txt, aber volle Staerke, sobald ein Panel steht (txt haengt an der Scrim-Staerke)
+  float txtZone = 0.0;
+  if (uScrimA > 0.001) {
+    vec2 qz = (suv - uScrimRect.xy) / max(uScrimRect.zw, vec2(1e-3));
+    float dz = length(max(abs(qz) - vec2(0.5), vec2(0.0)));
+    txtZone = clamp(uScrimA * 6.0, 0.0, 1.0) * (1.0 - smoothstep(0.0, 0.9, dz));
+  }
+  gl_FragColor = vec4(max(lightBackdrop(d, suv, px, txt, det, txtZone), vec3(0.0)), 1.0);
   return;
 #endif
 

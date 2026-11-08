@@ -91,20 +91,10 @@ export function create(ctx) {
     uGlow: { value: glowVals },
   };
   const mats = makeMaterials(THREE, U, palette);
-  // Helles Thema (theme.js): dunkle Linien und Punkte auf Hell. Gleicher Faktor fuer Materialien mit gleichem Shader
-  // (cortex und dust, edges und fibers), sonst entstuenden zusaetzliche Programme. Die weichen Lichtflecken (glows)
-  // bleiben Licht (hellen auf Hell nur leise auf).
-  mats.cortex.userData.themeGain = 4.0; // 07.11.2026: 3.2 -> 4.0 (Rinde vor dem getoenten Innenraum)
-  mats.dust.userData.themeGain = 4.0;
-  mats.neurons.userData.themeGain = 2.6;
-  mats.edges.userData.themeGain = 4.5;
-  mats.fibers.userData.themeGain = 4.5;
-  mats.glows.userData.themeKeep = true;
-  // Hell (07.11.2026, Jonas: "Wenn man ins Gehirn zoomt, ... sieht man nichts"): Verbindungen und Faserbahnen breiter,
-  // damit die Tinte vor dem getoenten Innenraum (backdrop, Farbwelt brain) klar steht. Nur Uniform-Werte (setTheme),
-  // dunkel bleiben sie genau wie bisher.
-  const WIDTH = { edges: mats.edges.uniforms.uWidth.value, fibers: mats.fibers.uniforms.uWidth.value };
-  const WIDTH_HELL = { edges: 1.5, fibers: 1.6 };
+  // Helles Thema (08.11.2026, "hell draussen, Abendlicht im Kopf"): Im Kopf ist auch das helle Thema ein getoenter
+  // Innenraum (backdrop, Farbwelt brain). Das Gehirn leuchtet dort wie im dunklen Thema: keine Umrechnung in Tinte
+  // (themeKeep, theme.js), gleiche Programme wie dunkel. Bloom und Vignette hell aus lookHell (unten).
+  for (const m of Object.values(mats)) m.userData.themeKeep = true;
   // Weniger Punkte (Handy): etwas groesser und heller, damit die Rinde gleich dicht wirkt
   const comp = 1 + 0.6 * (1 - Math.min(1, q));
   mats.cortex.uniforms.uSize.value *= comp;
@@ -210,10 +200,15 @@ export function create(ctx) {
   // Integration: im Hochformat (Handy) liegt der Text ueber dem dichten Netz, darum etwas weniger Glow
   if (ctx.isMobile) { look.bloom = 0.72; look.exposure = 0.94; }
   const baseBloom = look.bloom; const baseExposure = look.exposure;
+  // Hell (08.11.2026): Abendlicht im Kopf, das Gehirn leuchtet wie dunkel. Bloom nur ueber den Lichtkernen (Schwelle
+  // ueber dem Innenraum), leichte Vignette, keine Aberration. Pro Bild wie look (beim Eintauchen ruhiger).
+  const lookHell = { bloom: ctx.isMobile ? 0.62 : 0.75, bloomRadius: 0.55, bloomThreshold: 0.9, exposure: 1.0, vignette: 0.4, grain: 0.03, aberration: 0 };
+  const baseBloomHell = lookHell.bloom;
 
   const api = {
     group,
     look,
+    lookHell,
     update(time, dt, localP, global, weight = 1) {
       const zm = director.beat('zoom');
       const br = director.beat('brain');
@@ -240,6 +235,9 @@ export function create(ctx) {
       const cabOn = smoothstep(0.0, 0.2, director.beat('cables').p);
       look.aberration = 0.006 * (1 - cabOn);
       look.vignette = 0.85 - 0.4 * cabOn;
+      lookHell.bloom = baseBloomHell * (1 - 0.45 * dive);
+      lookHell.bloomThreshold = 0.9 + 0.3 * dive;
+      lookHell.vignette = 0.4 - 0.2 * cabOn;
       U.uInside.value = 1 - outside;
       U.uFog.value = ctx.scene.fog ? ctx.scene.fog.density : 0.03;
       U.uAspect.value = ctx.size.width / Math.max(1, ctx.size.height);
@@ -288,11 +286,6 @@ export function create(ctx) {
       glowVals[11].set(cSig.r * hz, cSig.g * hz, cSig.b * hz, 0);
     },
     setActive() {},
-    setTheme(light) {
-      mats.edges.uniforms.uWidth.value = WIDTH.edges * (light ? WIDTH_HELL.edges : 1);
-      mats.fibers.uniforms.uWidth.value = WIDTH.fibers * (light ? WIDTH_HELL.fibers : 1);
-      if (hw.setTheme) hw.setTheme(light);
-    },
     dispose() {
       hw.dispose();
       geos.forEach((g) => g.dispose());

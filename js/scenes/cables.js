@@ -82,18 +82,14 @@ export function create(ctx) {
     uMotes: { value: 0 },
     uMoteCol: { value: palette.signal.clone().lerp(palette.ice, 0.4).multiplyScalar(0.9) },
   };
-  // Helles Thema (Kapitel 14): der Knoten-Shader hat einen eigenen hellen Weg (weisses Glas, Tinte), die additiven
-  // Materialien rechnet theme.js um (Faktoren unten)
-  if (ctx.themeUniforms) Object.assign(U, ctx.themeUniforms);
   for (let i = 0; i < count; i++) U.uCab2.value[i].w = curves[i].length;
 
   /* ------------------------------------------------------------ Objekte */
   const mats = makeMaterials(THREE, U);
-  mats.node.userData.themeDefine = true; // eigener heller Weg im Knoten-Shader (#ifdef CODANI_LIGHT)
-  mats.fibre.userData.themeGain = 6.5;
-  mats.ring.userData.themeGain = 2.0;
-  mats.tip.userData.themeGain = 1.6;
-  mats.mote.userData.themeGain = 0.4; // Pruefung 1: Schwebeteilchen als kaum sichtbarer Hauch (vorher grauer Staub)
+  // Helles Thema (08.11.2026, "hell draussen, Abendlicht im Kopf"): die Kabel-Szene liegt hell im getoenten Innenraum
+  // (backdrop, Farbwelt cables). Fasern, Impulse und Knoten leuchten wie dunkel: keine Umrechnung (themeKeep), gleiche
+  // Programme wie dunkel. Bloom hell aus lookHell (unten).
+  for (const m of Object.values(mats)) m.userData.themeKeep = true;
   const fibreGeo = buildFibreGeometry(THREE, curves, strands);
   const ringGeo = buildRingGeometry(THREE, count, RING_SEG[quality] ?? RING_SEG.high);
   const nodeGeo = buildNodeGeometry(THREE, curves);
@@ -280,6 +276,7 @@ export function create(ctx) {
     group,
     // Keine chromatische Aberration: die Knoten am Bildrand (E-Mail, Dokumente) sind Links und sollen scharf sein
     look: { bloom: 1.0, bloomRadius: 0.4, parallax: 0.12, drift: 0.018, fogDensity: 0.026, aberration: 0, vignette: 0.45 },
+    lookHell: { bloom: 0.8, bloomRadius: 0.4, bloomThreshold: 0.9, exposure: 1.0, aberration: 0, vignette: 0.3, grain: 0.03 },
 
     update(time, dt, local, global, weight = 1) {
       const u = timeline(global);

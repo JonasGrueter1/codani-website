@@ -3,8 +3,10 @@
 // Gesichtsplatten, Lidfalten und Plattenkanten, helle Punkte in den Pupillen (Art "eye", leuchtet am staerksten),
 // Sensormodule, Hals-Mechanik und das Kabelbuendel im Nacken.
 // Die Bueste kommt aus robot-mesh.js (einmal geladen und geglaettet, top-level await), sampleRobot bleibt synchron.
+// Gesicht und Figur folgen robot-face.js (Standard D: eine Gesichtsplatte, schlankerer Rumpf; ?gesicht=alt Version 4).
 import { bustLevel1 } from './robot-mesh.js';
 import { LAYOUT } from './robot-layout.js';
+import { FACE_STYLE } from './robot-face.js';
 
 // cable (1.25) zaehlt im Shader als Linie, fliesst im Hero aber langsam nach hinten weg (Kabel aus dem Hinterkopf)
 export const KIND = Object.freeze({ surface: 0, line: 1, cable: 1.25, eye: 2, dust: 3, far: 4 });
@@ -34,7 +36,9 @@ const segD = (px, py, ax, ay, bx, by) => {
   const h = clamp(((px - ax) * vx + (py - ay) * vy) / (vx * vx + vy * vy), 0, 1);
   return Math.hypot(px - ax - vx * h, py - ay - vy * h);
 };
-// Gesichtsplatten wie robot-layout.js lFaceSeams: Stirnbogen und seitliche Wangenfuge (Version 4: flacher Bogen)
+// Gesichtsplatten wie robot-layout.js lFaceSeams: Stirnbogen und seitliche Wangenfuge (Version 4: flacher Bogen).
+// Gesicht D (Standard, robot-face.js) hat eine einzige Gesichtsplatte ohne diese Fugen: dann nur Maske und Lidfalte.
+const V4_SEAMS = FACE_STYLE.seams === 'v4';
 const faceSeams = (x, y) => {
   const fh = Math.abs(y - (0.262 - 0.11 * x * x));
   const t = clamp(-y / 0.95, 0, 1);
@@ -63,7 +67,7 @@ function headLine(px, y, z) {
   const face = lFace(x, y, z);
   if (y > -1.15 && y > -0.75 - 0.6 * Math.max(z, 0)) d = Math.min(d, Math.abs(face));
   if (z > 0.12 && face < 0.05) {
-    d = Math.min(d, Math.max(faceSeams(x, y), face));
+    if (V4_SEAMS) d = Math.min(d, Math.max(faceSeams(x, y), face));
     const ex = (x - 0.3) / 0.15; const ey = (y + 0.012) / 0.078;
     if (y > 0.0) d = Math.min(d, Math.abs(Math.hypot(ex, ey) - 1) * 0.08);
   }
@@ -137,8 +141,14 @@ export function sampleRobot(THREE, A, count, rnd) {
     vis: new Float32Array(count), order: new Float32Array(count), hw: new Float32Array(count),
   };
   let n = 0;
+  // Gesicht D: Rumpf schlanker wie robot-materials.js abSlim (ab dem Hals nach unten schmaler und etwas flacher)
+  const slim = FACE_STYLE.slim;
   const put = (p, nr, kind, hw) => {
     if (n >= count) return;
+    if (slim > 0 && p[1] < -1.2) {
+      const k = slim * smoothstep(-1.2, -2.05, p[1]);
+      p = [p[0] * (1 - k), p[1], -0.3 + (p[2] + 0.3) * (1 - 0.4 * k)];
+    }
     out.pos.set(p, n * 3); out.nrm.set(nr, n * 3);
     out.kind[n] = kind;
     out.vis[n] = smoothstep(-3.25, -2.35, p[1]);

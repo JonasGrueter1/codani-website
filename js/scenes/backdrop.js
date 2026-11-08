@@ -37,14 +37,16 @@ const BASE = {
   horizon: 0, horizonGlow: 0, glow: 0, glowSize: 1, fog: 0, fogScale: 1, fogSpeed: 0.004, rays: 0, rayFreq: 6,
   aurora: 0, stars: 0, dust: 0, floor: 0, floorY: -3.6, floorGrid: 0, floorShine: 1, grid: 0, streaks: 0, bokeh: 0,
   code: 0, wash: 0, pool: 0, detail: 1,
-  vig: 0, vigColor: 0x000000, // nur hell: Randabschattung des Hintergrunds (Kapitel 14)
+  // nur hell (Kapitel 14): Randabschattung, Glasringe, ruhiger Grund hinter dem Text, Abendlicht im Kopf
+  vig: 0, vigColor: 0x000000, rings: 0, ringX: 0, ringA: 0x000000, ringB: 0x000000, calm: 0, calmColor: 0xe4eaee, dusk: 0,
 };
 const COLORS = ['base', 'mid', 'hi', 'accent', 'fogColor', 'rayColor', 'starColor', 'gridColor', 'streakColor',
-  'bokehColor', 'codeColor', 'auroraA', 'auroraB', 'auroraEdge', 'washA', 'washB', 'washC', 'vigColor'];
+  'bokehColor', 'codeColor', 'auroraA', 'auroraB', 'auroraEdge', 'washA', 'washB', 'washC', 'vigColor', 'ringA', 'ringB',
+  'calmColor'];
 const POINTS = ['glowAt', 'rayAt', 'accentAt'];
 const NUMS = ['horizon', 'horizonGlow', 'glow', 'glowSize', 'fog', 'fogScale', 'fogSpeed', 'rays', 'rayFreq', 'aurora',
   'stars', 'dust', 'floor', 'floorY', 'floorGrid', 'floorShine', 'grid', 'streaks', 'bokeh', 'code', 'wash', 'pool', 'detail',
-  'shiftX', 'shiftY', 'vig'];
+  'shiftX', 'shiftY', 'vig', 'rings', 'ringX', 'calm', 'dusk'];
 const N = Object.fromEntries(NUMS.map((k, i) => [k, i]));
 
 export function create(ctx) {
@@ -137,7 +139,10 @@ export function create(ctx) {
     uDetail: { value: 1 },
     uScrimRect: { value: new THREE.Vector4(0.25, 0.5, 0.2, 0.2) }, uScrimA: { value: 0 },
     uPaper: { value: PAPER_GAIN },
-    uVig: { value: 0 }, uVigColor: { value: C.vigColor }, // nur hell (#ifdef CODANI_LIGHT im Shader)
+    // nur hell (#ifdef CODANI_LIGHT im Shader)
+    uVig: { value: 0 }, uVigColor: { value: C.vigColor },
+    uRings: { value: 0 }, uRingX: { value: 0 }, uRingA: { value: C.ringA }, uRingB: { value: C.ringB },
+    uCalm: { value: 0 }, uCalmColor: { value: C.calmColor },
   };
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3));
@@ -161,6 +166,14 @@ export function create(ctx) {
 
   /* ------------------------------------------------------------ Zustand */
   const fogRot = { a: 0, b: 0 };
+  // html.hell-abend nur bei Aenderung setzen (kein DOM-Zugriff pro Bild)
+  let dusk = false;
+  const root = typeof document !== 'undefined' ? document.documentElement : null;
+  const setDusk = (on) => {
+    if (on === dusk) return;
+    dusk = on;
+    if (root) root.classList.toggle('hell-abend', on);
+  };
   const washSide = { v: 1, target: 1 };
   const _right = v3();
   const _up = v3();
@@ -227,10 +240,8 @@ export function create(ctx) {
       P.outro.mul[N.glow] = 0.55 + 0.45 * sun;
       P.outro.mul[N.rays] = 0.3 + 0.7 * sun;
       if (presets === presetsHell) {
-        // Hell: beim Flug in den Kopf wird das Studio zum getoenten Innenraum (Gehirn, Hardware und Linien stehen
-        // klar davor), im Tunnel der Helix ebenso; am Website-Geruest wieder hell
-        setInner(PH.zoom, smoothstep(0.52, 0.9, zm.p));
-        setInner(PH.dna, smoothstep(0.2, 0.34, dn.p) * (1 - smoothstep(0.56, 0.74, dn.p)));
+        // Hell: beim Flug in den Kopf wird das Studio zum Abendlicht des Gehirns (brain, cables und dna sind es ganz)
+        setInner(PH.zoom, smoothstep(0.45, 0.75, zm.p));
       }
 
       /* Mischen */
@@ -303,6 +314,11 @@ export function create(ctx) {
       U.uPool.value = m[N.pool];
       U.uDetail.value = m[N.detail];
       U.uVig.value = m[N.vig];
+      U.uRings.value = m[N.rings];
+      U.uRingX.value = m[N.ringX];
+      U.uCalm.value = m[N.calm];
+      // Hell: Abendlicht im Kopf. Kopfzeile und Text-Karten richten sich danach (css/story.css, html.hell-abend)
+      if (presets === presetsHell) setDusk(m[N.dusk] > 0.5);
 
       const sc = director.scrim;
       // Lichtflaechen auf die Seite weg vom Text (gedaempft, damit sie beim Wechsel der Textseite wandern statt springen)
@@ -325,6 +341,7 @@ export function create(ctx) {
     // Thema: Farbwelten wechseln (den Lichtweg im Shader schaltet das Define CODANI_LIGHT, gesetzt von theme.js)
     setTheme(light) {
       presets = light ? presetsHell : presetsDark;
+      if (!light) setDusk(false);
     },
     dispose() {
       geo.dispose();

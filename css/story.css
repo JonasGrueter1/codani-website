@@ -1066,6 +1066,27 @@ html[data-theme="hell"] {
    text-shadow ab). */
 [data-theme="hell"] .chapter--intro .display { filter: drop-shadow(0 0 1.5px rgba(243, 245, 247, 0.95)) drop-shadow(0 0 6px rgba(243, 245, 247, 0.9)); }
 [data-theme="hell"] .chapter--intro :is(.eyebrow, .hero-facts) { text-shadow: 0 0 1px #f3f5f7, 0 0 2px #f3f5f7, 0 0 4px #f3f5f7, 0 0 8px #f3f5f7, 0 0 14px rgba(243, 245, 247, 0.9); }
+/* Abendlicht im Kopf (08.11.2026, Kapitel 14): Von der Mitte des Kapitels zoom bis zum Schnitt ist auch das helle
+   Thema ein getoenter, tiefer Innenraum (backdrop.js setzt dann html.hell-abend). Die Seite bleibt hell: die
+   Kopfzeile wird dort eine feste, helle Leiste (ein heller Verlauf ueber dem tiefen Bild wirkte wie Nebel), die Texte
+   von Verbindung und Websites stehen am Desktop auf einer hellen Karte wie im Ausklang (deckend genug fuer AA, ohne
+   backdrop-filter ueber dem Canvas). Im Hochformat hat der Text ohnehin seine eigene helle Flaeche. */
+[data-theme="hell"].gl.hell-abend .hdr--dark:not(.is-light)::before {
+  bottom: 0;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(11, 18, 32, 0.1);
+  background: rgba(243, 245, 247, 0.92);
+}
+@media (min-width: 761px) and (min-aspect-ratio: 17/20) {
+  [data-theme="hell"].gl :is(.chapter[data-scene="cables"], .chapter[data-scene="dna"]) .chapter__text {
+    padding: clamp(24px, 2.4vw, 36px);
+    border: 1px solid rgba(11, 18, 32, 0.08);
+    border-radius: 22px;
+    background: rgba(243, 245, 247, 0.93);
+    box-shadow: 0 30px 80px rgba(4, 12, 20, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  [data-theme="hell"].gl :is(.chapter[data-scene="cables"], .chapter[data-scene="dna"]) .chapter__text::before { display: none; }
+}
 [data-theme="hell"] .chapter--outro .chapter__text {
   border-color: rgba(11, 18, 32, 0.08);
   background: rgba(255, 255, 255, 0.68);

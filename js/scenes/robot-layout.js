@@ -12,8 +12,8 @@
 //   (Schaedelgitter, Kabel, oben eine klare Glaskappe, die die Kopfform haelt),
 //   Hals rundum (Kopfwender, Kehlkopf, Wirbel), Schlitz zwischen den Schulterblaettern (dort tauchen die Kabel ein).
 //   Muskel offen: Rumpf vorne ausserhalb der Platten, Schulterring.
-// Gesichts-Varianten (?gesicht=a|b|c, robot-face.js): andere Fugen im Gesicht (faceSeamsGLSL), ohne Parameter wie
-// Version 4 (gleicher Shader-Text).
+// Fugen im Gesicht je nach Gesicht (robot-face.js, faceSeamsGLSL): Standard D eine Gesichtsplatte, ?gesicht=alt wie
+// Version 4 (gleicher Shader-Text wie damals).
 import { FACE_STYLE } from './robot-face.js';
 
 export const LAYOUT = {
@@ -32,21 +32,9 @@ export const LAYOUT = {
   pecR: 1.16,
 };
 
-/* Fugen im Gesicht je Variante. v4: Text wie bisher (Stirnfuge, Wangenfuge als Linie in der Vorderansicht, Lidfuge).
-   clean (a): Wangenfuge als Winkel um die Hochachse, folgt der Wange in jeder Ansicht und biegt unten nach hinten ab,
-     trifft die Kieferlinie fast senkrecht (vorher lief sie flach in die Kieferlinie und bildete die Spitze am Kiefer).
-   mask (b): nur die Maske (Haaransatz, Seite, Kiefer) und eine sehr leise Lidfalte: eine ruhige Gesichtsplatte.
-   visor (c): Stirnplatte und Gesichtsplatte, Stirnfuge etwas hoeher (Gesicht wirkt laenger), keine Wangenfuge. */
-function faceSeamFnsGLSL(st) {
-  if (st.seams !== 'clean') return '';
-  return `
-float lCheekA(vec3 q) {
-  float th = atan(q.x, q.z);
-  float thc = 0.97 + 0.08 * smoothstep(0.15, -0.45, q.y) + 0.42 * smoothstep(-0.42, -0.9, q.y);
-  float c = abs(th - thc) * length(q.xz);
-  return lSmin(abs(q.y - (0.262 - 0.11 * q.x * q.x)), max(c, q.y - 0.2), 0.03);
-}`;
-}
+/* Fugen im Gesicht. v4 (?gesicht=alt): Text wie in Version 4 (Stirnfuge, Wangenfuge als Linie in der Vorderansicht,
+   Lidfuge). mask (Gesicht D): nur die Maske (Haaransatz, Seite, Kiefer) und eine sehr leise Lidfalte, eine ruhige
+   Gesichtsplatte ohne Querfugen (vorher rahmten Stirn- und Wangenfuge das Gesicht wie ein Helmvisier). */
 function faceSeamsGLSL(st) {
   if (st.seams === 'v4') {
     return `    // Platten im Gesicht und Lidfuge
@@ -60,17 +48,9 @@ function faceSeamsGLSL(st) {
   }
   const lid = `      float dl = lLid(q.xy);
       if (dl < d) { d = dl; lSeamK = ${st.lidSeam.toFixed(3)}; }`;
-  let plates = '';
-  if (st.seams === 'clean') {
-    plates = `      float dc = max(lCheekA(q), face);
-      if (dc < d) { d = dc; lSeamK = 0.7; }`;
-  } else if (st.seams === 'visor') {
-    plates = `      float dc = max(abs(q.y - (0.3 - 0.13 * q.x * q.x)), face);
-      if (dc < d) { d = dc; lSeamK = 0.75; }`;
-  }
-  return `    // Gesichts-Variante (${st.seams}): Platten im Gesicht und Lidfuge
+  return `    // Gesicht D: eine Gesichtsplatte, nur die leise Lidfalte
     if (q.z > 0.12 && face < 0.05) {
-${plates ? plates + '\n' : ''}${lid}
+${lid}
     }`;
 }
 
@@ -116,7 +96,7 @@ float lFaceSeams(vec2 p) {
   float t = clamp(-p.y / 0.95, 0.0, 1.0);
   float ck = max(abs(p.x - (0.668 - 0.2 * t * t)), p.y - 0.2);
   return lSmin(fh, ck, 0.02);
-}${faceSeamFnsGLSL(FACE_STYLE)}
+}
 // Lidfuge: oberer Bogen knapp ueber dem Auge (Lidfalte)
 float lLid(vec2 p) {
   vec2 r = vec2(0.15, 0.078);

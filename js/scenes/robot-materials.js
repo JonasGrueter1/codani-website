@@ -3,20 +3,28 @@
 // Alle Teile der Bueste teilen dieselbe Verformung im Vertex-Shader: Kopf dreht ueber aHead (0..1) mit uHeadMat,
 // Brustkorb und Schultern atmen ueber uBreath. Die Fugen und Oeffnungen kommen aus robot-layout.js (Ruhelage-Koordinaten).
 import { LAYOUT_GLSL } from './robot-layout.js';
+import { FACE_STYLE } from './robot-face.js';
 
 /* ---------------------------------------------------------------- Vertex-Teile */
 export const DEFORM_PARS = /* glsl */ `
 attribute float aHead;
 uniform mat4 uHeadMat;
 uniform float uBreath;
-vec3 abBreath(vec3 p, vec3 n) {
+${FACE_STYLE.slim > 0 ? `// Gesicht D (robot-face.js): Rumpf schlanker. Ab dem Hals (y -1.2) nach unten schmaler (Schultern und Arme bis
+// ${(FACE_STYLE.slim * 100).toFixed(1)} % in x) und etwas flacher (um z -0.3). Nur die gezeichnete Lage: Fugen, Oeffnungen und Muskel-Gel rechnen
+// weiter mit der Ruhelage (vRest), alle Teile der Bueste (Schale, Gel, Mechanik, Kabel) nehmen dieselbe Verformung.
+vec3 abSlim(vec3 p) {
+  float k = ${FACE_STYLE.slim.toFixed(4)} * smoothstep(-1.2, -2.05, p.y);
+  return vec3(p.x * (1.0 - k), p.y, -0.3 + (p.z + 0.3) * (1.0 - 0.4 * k));
+}
+` : ''}vec3 abBreath(vec3 p, vec3 n) {
   float ax = abs(p.x);
   float chest = smoothstep(-1.55, -2.2, p.y) * smoothstep(-3.7, -2.7, p.y) * smoothstep(-0.7, 0.25, p.z) * (1.0 - smoothstep(1.05, 1.35, ax));
   float sh = smoothstep(-1.25, -1.75, p.y) * smoothstep(0.45, 1.1, ax);
   return n * (chest * 0.011 * uBreath) + vec3(0.0, uBreath * (0.007 * sh + 0.004 * chest), 0.0);
 }
 vec3 abDeform(vec3 p, vec3 n, float w) {
-  vec3 t = p + abBreath(p, n);
+  vec3 t = ${FACE_STYLE.slim > 0 ? 'abSlim(p + abBreath(p, n))' : 'p + abBreath(p, n)'};
   return mix(t, (uHeadMat * vec4(t, 1.0)).xyz, w);
 }
 vec3 abDeformDir(vec3 d, float w) { return mix(d, mat3(uHeadMat) * d, w); }
@@ -168,7 +176,23 @@ reflectedLight.directDiffuse *= 0.22 + 0.78 * pow(1.0 - clamp(dot(normal, normal
 #ifdef USE_CLEARCOAT
   clearcoatSpecularIndirect *= mix(1.0, ao, 0.75);
 #endif
-}`)
+${FACE_STYLE.fill ? `  // Gesicht D: Aufheller von unten nur im Gesicht, wie ein Reflektor beim Portrait. Flaechen, die nach unten zeigen
+  // (unter den Brauen, an den Nasenfluegeln, ueber der Oberlippe), spiegeln sonst das schwarze Studio: das dunkle,
+  // muede Band zwischen Braue und Lid. Ruhelage-Normale aus den Tangenten, Maske des Gesichts aus robot-layout.js.
+  if (gl_FrontFacing) {
+    vec3 abNR = normalize(cross(t1, t2));
+    float abFm = (1.0 - smoothstep(-0.03, 0.03, lFace(vec3(abs(rp.x), rp.y, rp.z)))) * smoothstep(0.2, 0.45, rp.z);
+    // vor allem Augenpartie, unten (Nase, Mund) nur leise, Nasenloecher und Mundwinkel bleiben dunkel (Verdeckung)
+    float abDn = smoothstep(0.15, -0.55, abNR.y) * (0.4 + 0.6 * max(abNR.z, 0.0)) * abFm * ao
+      * mix(0.3, 1.0, smoothstep(-0.3, -0.05, rp.y));
+#ifdef CODANI_LIGHT
+    reflectedLight.indirectDiffuse += diffuseColor.rgb * ${(FACE_STYLE.fill[0] * 0.5).toFixed(3)} * abDn;
+#else
+    reflectedLight.indirectDiffuse += diffuseColor.rgb * ${FACE_STYLE.fill[0].toFixed(3)} * abDn;
+    reflectedLight.indirectSpecular += vec3(${FACE_STYLE.fill[1].toFixed(3)}) * abDn;
+#endif
+  }
+` : ''}}`)
       .replace('#include <opaque_fragment>', `float abFall = smoothstep(uFall.x, uFall.y, rp.y);
 // Rinne der Fuge: dunkles Grau (Innenkante im Schatten), kein reines Schwarz
 outgoingLight *= 1.0 - 0.8 * abGap;
@@ -614,7 +638,13 @@ ${DEFORM_PARS}
 attribute vec2 aUv2; uniform vec2 uRes;
 varying vec3 vRest; varying vec2 vU;`)
       .replace('#include <beginnormal_vertex>', `vec3 objectNormal = normalize(abDeformDir(normal, aHead));`)
-      .replace('#include <begin_vertex>', `vec3 transformed = mix(position, (uHeadMat * vec4(position, 1.0)).xyz, aHead);
+      .replace('#include <begin_vertex>', `${FACE_STYLE.slim > 0 ? `// Gesicht D: Rumpf schlanker wie die Schale (abSlim); Instanzen (Kolben am Hals) liegen in eigenen Koordinaten
+#ifdef USE_INSTANCING
+vec3 abSp = position;
+#else
+vec3 abSp = abSlim(position);
+#endif
+vec3 transformed = mix(abSp, (uHeadMat * vec4(abSp, 1.0)).xyz, aHead);` : 'vec3 transformed = mix(position, (uHeadMat * vec4(position, 1.0)).xyz, aHead);'}
 vRest = position; vU = aUv2;
 ${thin ? `{
   // Mindestbreite duenner Kabel: um etwa einen halben Bildpunkt aufweiten (kein Moire, kein Flimmern in Bewegung)

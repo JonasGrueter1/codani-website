@@ -155,96 +155,102 @@ export const BACKDROPS = Object.freeze({
 });
 
 // Helles Thema (Kapitel 14 in ARCHITEKTUR.md): eigene Farbwelten mit denselben Schluesseln und derselben Dynamik
-// (backdrop.js), aber anders gelesen (Lichtweg im Shader, CODANI_LIGHT): helles Studio wie ein Produktfoto.
-//   base / mid   Hohlkehle oben (kuehl, tiefer) und am Horizont (hell), hi = Licht hinter dem Motiv (Weiss)
-//   accent       grosses, weiches Farbfeld aus accentAt, washA/B/C Farbfelder um das Gegenlicht (Softbox Tuerkis,
-//                oben Blau, unten ein Hauch Ember), wandern mit der Kamera
-//   gridColor, streakColor, codeColor, rayColor   Linien, Pakete, Code-Zeichen in tiefem Tuerkis bis Tinte
-//   pool         weicher Kontaktschatten auf dem Boden unter dem Motiv (statt Lichtkegel), floorGrid Punktraster
-//   bokeh        ruhige Lichtscheiben (Tiefe), dust + starColor feine Schwebeteilchen in Tinte
-//   vig, vigColor  Randabschattung nur des Hintergrunds (hell), Ton am Rand
-//   inner        Innenraum der Farbwelt: zoom beim Flug in den Kopf (zoom@0.52 bis 0.9), dna im Tunnel der Helix
-//                (dna@0.2 bis 0.74), backdrop.js mischt dorthin (nur hell)
-// Die Punkte (glowAt, rayAt, accentAt) und Formen (floorY, glowSize, ...) bleiben wie im dunklen Thema, fehlende
-// Schluessel kommen aus der dunklen Farbwelt desselben Beats.
-// 07.11.2026 (Rueckmeldung Jonas: "Der Hellmodus ist weiss, kein Hintergrund, nichts", im Gehirn "sieht man nichts"):
-// kein Papier mehr, sondern ein gestaltetes Studio mit Tiefe. Kuehler Verlauf, sichtbare Farbfelder, Boden mit
-// Schatten und Punktraster, Randabschattung. Im Kopf, im Gehirn und im Tunnel der Helix ein getoenter, tieferer
-// Innenraum (Blaugrau bis Petrol), davor stehen Tinte, Hardware und Code klar. Die Schale der Bueste bleibt weiss vor
-// einem deutlich tieferen Grund. Den Text schuetzen Scrim und Panel-Verlauf weiter mit Off-White.
+// (backdrop.js), aber anders gelesen (Lichtweg im Shader, CODANI_LIGHT). Zweite Runde 08.11.2026: "hell draussen,
+// Abendlicht im Kopf".
+//   Draussen (intro, robot, zoom bis zum Flug in den Kopf, outro): Studio-Hohlkehle in Blaugrau mit deutlicher Farbe
+//   (Tuerkis, Blau, Flieder, ein Ember-Akzent), heller Horizont, Boden mit Spiegelung, Kontaktschatten und Punktraster,
+//   Lichtbahnen, zwei grosse, unscharfe Glasringe (Echo des Helix-Logos), Lichtscheiben, Schwebeteilchen. Hinter dem
+//   Text wird der Grund ruhiger und heller (calm).
+//   Drinnen (zoom ab zoom@0.45 ueber `inner`, brain, cables, dna bis zum Schnitt): Abendlicht, tiefes Petrol bis
+//   Schiefer-Blau mit etwas Flieder (Helligkeit rund 20 bis 40 %). Gehirn, Kabel und Code leuchten dort wie im dunklen
+//   Thema (brain.js, cables.js, dna.js: themeKeep), Linien, Raster und Code-Regen des Hintergrunds sind hell.
+// Schluessel (wie dunkel, hell gelesen):
+//   base / mid   Hohlkehle oben (tiefer) und am Horizont (hell), hi = Licht hinter dem Motiv
+//   accent       grosses, weiches Farbfeld aus accentAt, washA/B/C Farbfelder um das Gegenlicht (Softbox und Felder)
+//   gridColor, streakColor, codeColor, rayColor   Linien, Pakete, Code-Zeichen, Lichtbahnen
+//   pool, floorGrid, floorShine   Kontaktschatten, Punktraster und Spiegelung des Bodens
+//   bokeh/bokehColor Lichtscheiben, dust + starColor Schwebeteilchen (draussen Tinte, drinnen hell)
+// Nur hell:
+//   vig, vigColor  Randabschattung nur des Hintergrunds
+//   rings, ringA, ringB  zwei grosse, unscharfe Glasringe (Tuerkis und Ember) um das Gegenlicht, ringX Versatz
+//   calm, calmColor      Grund hinter dem Text heller und ruhiger (Lesbarkeit)
+//   dusk           0 draussen, 1 drinnen (backdrop.js setzt damit html.hell-abend fuer Kopfzeile und Text-Karten)
+//   inner          Innenraum der Farbwelt zoom: mischt von zoom@0.45 bis 0.75 zu diesen Werten (nur hell)
+// Die Punkte (glowAt, rayAt, accentAt) und Formen (floorY, glowSize, ...) bleiben wie im dunklen Thema.
+const DUSK_BRAIN = {
+  base: 0x394451, mid: 0x4f6274, hi: 0x8eaec1, accent: 0x57557b, fogColor: 0x445665,
+  auroraA: 0x48657a, auroraB: 0x635a8c, auroraEdge: 0x73bdc7, bokehColor: 0xffffff, starColor: 0xcee5ed,
+  gridColor: 0x80c7d7, washA: 0x447381, washB: 0x565381, washC: 0x447381, vigColor: 0x2b3137,
+  ringA: 0x5f8fa3, ringB: 0x8a7a8c,
+};
 export const BACKDROPS_HELL = Object.freeze({
   intro: {
-    base: 0xa9b7c2, mid: 0xd4dce1, hi: 0xffffff, accent: 0xb2cdd4, fogColor: 0xd5dde2,
-    rayColor: 0xffffff, gridColor: 0x3f6b80, starColor: 0x1d3a4a, bokehColor: 0xf2fbfd,
-    washA: 0x8fc8d4, washB: 0xb6c1ee, washC: 0xf7cfac,
-    horizonGlow: 0.45, glow: 0.7, fog: 0.5, rays: 0.5, stars: 0, dust: 0.35, bokeh: 0.25, wash: 0.85,
-    floor: 0.8, floorY: -3.5, floorGrid: 1.0, floorShine: 1.0, pool: 0.8, vig: 0.8, vigColor: 0x95a3ae,
+    base: 0x8a9db1, mid: 0xcdd6de, hi: 0xffffff, accent: 0x9cc2cc, fogColor: 0xc9d3dc,
+    rayColor: 0xffffff, gridColor: 0x2f5b70, starColor: 0x1d3a4a, bokehColor: 0xffffff,
+    washA: 0x6cb8c7, washB: 0x9a95d0, washC: 0xf0b386, ringA: 0xd4f6fb, ringB: 0xffe3c8,
+    horizonGlow: 0.7, glow: 0.75, fog: 0.5, rays: 0.7, stars: 0, dust: 0.35, bokeh: 0.5, wash: 1.0,
+    floor: 0.85, floorY: -3.5, floorGrid: 1.0, floorShine: 1.3, pool: 0.9, vig: 0.95, vigColor: 0x67798c,
+    rings: 1.0, calm: 0.4, calmColor: 0xe4eaee, dusk: 0,
   },
   robot: {
-    base: 0xa3b1bc, mid: 0xc9d1d7, hi: 0xffffff, accent: 0xb3c5d2, fogColor: 0xcdd5db,
-    rayColor: 0xffffff, gridColor: 0x3f6b80, starColor: 0x1d3a4a, bokehColor: 0xf2fbfd,
-    washA: 0x7fbfcf, washB: 0x9eaae0, washC: 0xf0c09a,
-    horizonGlow: 0.45, glow: 0.5, fog: 0.35, rays: 0.35, dust: 0.4, bokeh: 0.15, wash: 1.0,
-    floor: 0.9, floorShine: 1.0, floorGrid: 1.0, pool: 1.0, vig: 0.85, vigColor: 0x8e9ca7,
+    base: 0x8297ad, mid: 0xc3cfd9, hi: 0xffffff, accent: 0xa4b9ce, fogColor: 0xc2ccd5,
+    rayColor: 0xffffff, gridColor: 0x2f5b70, starColor: 0x1d3a4a, bokehColor: 0xffffff,
+    washA: 0x66b3c4, washB: 0x9590cc, washC: 0xeaa87f, ringA: 0xd4f6fb, ringB: 0xffe3c8,
+    horizonGlow: 0.7, glow: 0.55, fog: 0.35, rays: 0.6, dust: 0.35, bokeh: 0.45, wash: 1.0,
+    floor: 0.9, floorShine: 1.3, floorGrid: 1.0, pool: 1.0, vig: 1.0, vigColor: 0x627588,
+    rings: 1.0, calm: 0.35, calmColor: 0xe2e8ed, dusk: 0,
   },
   zoom: {
-    base: 0xa3b1bc, mid: 0xc9d1d7, hi: 0xffffff, accent: 0xa9c6d0, fogColor: 0xcdd5db,
-    rayColor: 0xffffff, gridColor: 0x0a6f86, starColor: 0x1d3a4a, bokehColor: 0xeef6f8,
-    washA: 0x8cc6d3, washB: 0xa8b3e2, washC: 0xb8b0dc,
-    horizonGlow: 0.45, glow: 0.6, fog: 0.35, rays: 0.25, grid: 0.12, dust: 0.4, bokeh: 0.1, wash: 0.8,
-    floor: 0.7, floorShine: 1.0, floorGrid: 1.0, pool: 0.7, vig: 0.85, vigColor: 0x8e9ca7,
-    // Flug in den Kopf: Studio wird zum Innenraum wie im Kapitel brain
+    base: 0x7f95ad, mid: 0xc2ced9, hi: 0xffffff, accent: 0x93bdca, fogColor: 0xc0cbd4,
+    rayColor: 0xffffff, gridColor: 0x0a5f74, starColor: 0x1d3a4a, bokehColor: 0xffffff,
+    washA: 0x63b2c5, washB: 0x8e8ccb, washC: 0xa494cd, ringA: 0xd4f6fb, ringB: 0xffe3c8,
+    horizonGlow: 0.65, glow: 0.6, fog: 0.35, rays: 0.4, grid: 0.12, dust: 0.35, bokeh: 0.35, wash: 1.0,
+    floor: 0.75, floorShine: 1.3, floorGrid: 1.0, pool: 0.75, vig: 1.0, vigColor: 0x627588,
+    rings: 1.0, calm: 0.35, calmColor: 0xe2e8ed, dusk: 0,
+    // Flug in den Kopf: das Studio wird zum Abendlicht des Gehirns
     inner: {
-      base: 0x738794, mid: 0x9caeba, hi: 0xcfdadf, accent: 0x80a0af, fogColor: 0x95a8b4, vigColor: 0x5a6c79,
-      washA: 0x8fb7c3, washB: 0x8e93ba, washC: 0x8fa9b8, gridColor: 0x0b3a4a,
-      floor: 0.15, wash: 0.6, bokeh: 0.55, dust: 0.7, vig: 0.85, glow: 0.8, fog: 0.6,
+      ...DUSK_BRAIN, rayColor: 0x8eaec1,
+      floor: 0.0, wash: 0.7, bokeh: 0.4, dust: 0.8, vig: 0.9, glow: 0.8, fog: 0.6, grid: 0.18, rings: 0.0,
+      calm: 0.0, dusk: 1, rays: 0.2,
     },
   },
   brain: {
-    base: 0x738794, mid: 0x9caeba, hi: 0xcfdadf, accent: 0x80a0af, fogColor: 0x95a8b4,
-    auroraA: 0x80a0af, auroraB: 0x8e93ba, auroraEdge: 0xbfdadd, bokehColor: 0xeef6f8, starColor: 0x13283a,
-    washA: 0x000000, washB: 0x8e93ba, washC: 0x8fb7c3, wash: 0.6,
-    horizonGlow: 0.25, glow: 0.85, fog: 0.75, aurora: 1.0, dust: 0.7, bokeh: 0.6, vig: 0.9, vigColor: 0x5a6c79,
+    ...DUSK_BRAIN,
+    horizonGlow: 0.25, glow: 0.85, fog: 0.75, aurora: 1.0, dust: 0.8, bokeh: 0.4, wash: 0.6,
+    vig: 0.9, rings: 0, calm: 0, dusk: 1,
   },
   cables: {
-    base: 0xb2bfca, mid: 0xd5dde2, hi: 0xffffff, accent: 0xb1bfda, fogColor: 0xd5dce2,
-    streakColor: 0x0a6f86, gridColor: 0x4f7389, bokehColor: 0xf4fafc, starColor: 0x1d3a4a,
-    horizonGlow: 0.5, glow: 0.7, fog: 0.3, streaks: 0.7, bokeh: 0.35, stars: 0, dust: 0.45,
-    floor: 0.85, floorShine: 0.8, washA: 0x000000, washB: 0xb0b3e6, washC: 0xa0bfe2, wash: 0.8,
-    vig: 0.75, vigColor: 0x98a8b5,
+    base: 0x364151, mid: 0x495d71, hi: 0x8eaec1, accent: 0x445980, fogColor: 0x445668,
+    streakColor: 0x99faff, gridColor: 0x73afc8, bokehColor: 0xffffff, starColor: 0xcee5ed,
+    washA: 0x000000, washB: 0x555480, washC: 0x43668f, vigColor: 0x292e36, ringA: 0x5f8fa3, ringB: 0x8a7a8c,
+    horizonGlow: 0.5, glow: 0.7, fog: 0.3, streaks: 0.8, bokeh: 0.3, stars: 0, dust: 0.6,
+    floor: 0.85, floorShine: 0.8, wash: 0.7, vig: 0.85, rings: 0, calm: 0, dusk: 1,
   },
   dna: {
-    base: 0xaec4c0, mid: 0xd3dfdd, hi: 0xffffff, accent: 0xa5ccc4, fogColor: 0xd0dcda,
-    codeColor: 0x0a6f86, bokehColor: 0xf2fbfa, starColor: 0x163a3a,
-    washA: 0x88c9ba, washB: 0xa9b4e2, washC: 0x96c8c8,
-    horizonGlow: 0.35, glow: 0.8, fog: 0.3, code: 0.06, dust: 0.35, bokeh: 0.2, stars: 0, wash: 0.7,
-    vig: 0.6, vigColor: 0x95aba9,
-    // Tunnel der Helix: getoenter Innenraum in Petrol, die Code-Zeichen in Tinte stehen klar davor
-    inner: {
-      base: 0x7e9a98, mid: 0xb0c6c4, hi: 0xdbe8e6, accent: 0x8fb0ad, fogColor: 0xa9bfbd, vigColor: 0x5f7977,
-      washA: 0x9cc7be, washB: 0x9aa6cf, washC: 0x9cc4c4, codeColor: 0x07323a,
-      bokeh: 0.5, dust: 0.6, vig: 0.85,
-    },
+    base: 0x2f4143, mid: 0x405c60, hi: 0x73aea5, accent: 0x395858, fogColor: 0x3c5255,
+    codeColor: 0x8fdfcd, bokehColor: 0xffffff, starColor: 0xcff0e8, gridColor: 0x8fdfcd,
+    washA: 0x448a7f, washB: 0x4b5a86, washC: 0x427c7d, vigColor: 0x262f31, ringA: 0x5f8fa3, ringB: 0x8a7a8c,
+    horizonGlow: 0.35, glow: 0.8, fog: 0.3, code: 0.08, dust: 0.5, bokeh: 0.2, stars: 0, wash: 0.7,
+    vig: 0.85, rings: 0, calm: 0, dusk: 1,
   },
   outro: {
-    base: 0xb6b1b1, mid: 0xddd5ce, hi: 0xfffaf4, accent: 0xb5bfd4, fogColor: 0xd6d0cb,
-    rayColor: 0xfff6ea, gridColor: 0x6b6460, starColor: 0x2a2a2e, bokehColor: 0xfffaf2,
-    washA: 0xffcfa2, washB: 0xb0bcd6, washC: 0xe0b4aa,
-    horizonGlow: 0.6, glow: 0.45, fog: 0.3, rays: 0.5, dust: 0.3, bokeh: 0.15, wash: 0.85,
-    floor: 0.85, floorShine: 1.0, floorGrid: 1.0, pool: 0.85, vig: 0.75, vigColor: 0x9f9995,
+    base: 0xa1999a, mid: 0xe3d6cc, hi: 0xfffaf4, accent: 0xbbc2d5, fogColor: 0xd2c9c3,
+    rayColor: 0xfff6ea, gridColor: 0x5e5450, starColor: 0x2a2a2e, bokehColor: 0xfffaf2,
+    washA: 0xeca878, washB: 0x9aa6cc, washC: 0xd4978a, ringA: 0xffe3c8, ringB: 0xd4f6fb,
+    horizonGlow: 0.75, glow: 0.45, fog: 0.3, rays: 0.6, dust: 0.3, bokeh: 0.35, wash: 1.0,
+    floor: 0.85, floorShine: 1.3, floorGrid: 1.0, pool: 0.85, vig: 0.95, vigColor: 0x7c7172,
+    rings: 1.0, ringX: -0.22, calm: 0.35, calmColor: 0xece6e0, dusk: 0,
   },
   inhalt: {
     base: 0xdfe5ea, mid: 0xeef2f5, hi: 0xffffff, accent: 0xe4eaee, fogColor: 0xeaeef1,
-    horizonGlow: 0.2, glow: 0.3, detail: 0.1, vig: 0.2, vigColor: 0xd2dae0,
+    horizonGlow: 0.2, glow: 0.3, detail: 0.1, vig: 0.2, vigColor: 0xd2dae0, rings: 0, calm: 0, dusk: 0,
   },
 });
-// Hell am Handy (ctx.isMobile, Pruefung 2): einzelne Werte, die BACKDROPS_HELL ueberschreiben. Hinter der Bueste
-// (robot, outro) weniger weisses Gegenlicht, sonst stand die weisse Schale (ohne Klarlack, Stufe medium) gleich hell
-// wie das Studio. Kabel-Kapitel: Lichtflaeche leiser (oben lag ein grau-lila Dunstband).
+// Hell am Handy (ctx.isMobile): einzelne Werte, die BACKDROPS_HELL ueberschreiben. Hinter der Bueste (robot, outro)
+// weniger weisses Gegenlicht, sonst stand die weisse Schale (ohne Klarlack, Stufe medium) gleich hell wie das Studio.
 export const BACKDROPS_HELL_M = Object.freeze({
-  robot: { glow: 0.4 },
-  outro: { glow: 0.34 },
-  cables: { wash: 0.45 },
+  robot: { glow: 0.42 },
+  outro: { glow: 0.36 },
 });
 // Helligkeit des Papiers im hellen Thema (linear vor der neutralen Tonwertkurve): 1.0 waere #f0f0f0 auf dem Schirm,
 // mit diesem Faktor landet das Off-White bei rund #f2f4f6. Gilt auch fuer die Nebelfarbe (Objekte laufen ins Papier).

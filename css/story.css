@@ -974,7 +974,21 @@ html[data-theme="hell"] {
 /* 07.11.2026: Der Hintergrund ist hell tiefer und getoent (Kapitel 14, "Hintergrund mit Tiefe"). Kicker und Eyebrow
    in #0a6f86 lagen dort bei 4.1 bis 4.5:1, die Hero-Fakten in #5a6575 bei 3.3:1. Etwas dunkler: 5.5:1 und 5.1:1. */
 [data-theme="hell"] .story :is(.kicker, .eyebrow) { color: var(--c-ice); }
-[data-theme="hell"] .story .hero-facts { color: #3e4a59; }
+/* 08.11.2026 (zweite Runde, Studio mit Farbe und Glasringen): Hero-Fakten, Hinweis "Scrollen" am rechten Rand und
+   Untertitel der Kopfzeile noch etwas dunkler (gemessen 4.5, 4.2 und 4.6:1, jetzt rund 6:1) */
+[data-theme="hell"] .story .hero-facts { color: #2f3a48; }
+[data-theme="hell"].gl .scroll-cue { color: var(--c-text); }
+[data-theme="hell"] .story .story-tags { color: #064858; }
+/* Hochformat: die Eyebrow im Hero kreuzt die Schulterlinien der Partikel-Bueste (gemessen ohne Hof 3.0:1). Eine
+   leise helle Unterlage traegt sie (wie die Pillen im Kapitel Verbindung). */
+@media (max-width: 760px), (max-aspect-ratio: 17/20) {
+  [data-theme="hell"].gl .chapter--intro .eyebrow {
+    width: fit-content;
+    border-radius: 6px;
+    background: rgba(243, 245, 247, 0.86);
+    box-shadow: 0 0 0 5px rgba(243, 245, 247, 0.86);
+  }
+}
 
 /* Knoepfe in der Geschichte: wie auf den hellen Seiten (Haupt in Tuerkis, Neben umrandet) */
 [data-theme="hell"] .story.on-dark .btn { background: var(--accent, #0a6f86); border-color: var(--accent, #0a6f86); color: #fff; }
@@ -984,7 +998,7 @@ html[data-theme="hell"] {
 
 /* ---- Kopfzeile ueber der hellen Geschichte: helle Variante (wie auf den Unterseiten), oben ohne Flaeche */
 [data-theme="hell"] .hdr--dark:not(.is-light) { color: var(--ink, #0b1220); }
-[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__sub { color: var(--muted, #5a6575); }
+[data-theme="hell"] .hdr--dark:not(.is-light) .hdr__sub { color: #4a5463; }
 [data-theme="hell"] .hdr--dark:not(.is-light) .hdr__link { color: var(--text, #2a3442); }
 [data-theme="hell"] .hdr--dark:not(.is-light) .hdr__link:hover,
 [data-theme="hell"] .hdr--dark:not(.is-light) .hdr__link[aria-current] { color: var(--ink, #0b1220); }

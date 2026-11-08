@@ -1141,7 +1141,10 @@ Farbfeldern und getöntem Innenraum, Tinte im Gehirn kräftiger. Das war im Verg
 - Hell am Handy (`?q=medium&hell`): beim Start 53 Programme alt und neu, Draw Calls und Dreiecke gleich, Bildzeit im
   Rahmen der Streuung (Wiederholung an drei Stellen je drei Mal: Hero, Kabel und Code im Mittel gleich).
 - Kontrast der Texte hell (Textausdehnung, ungünstigster 5-%-Wert des Hintergrunds, Text unsichtbar gemacht, ohne den
-  Off-White-Hof der Hero-Schrift): siehe `belege/kontrast-*.txt`.
+  Off-White-Hof der Hero-Schrift; `belege/kontrast-*.txt`): Desktop 1440 x 900 alle mindestens 4.8:1 (Eyebrow im Hero
+  4.85, Hero-Fakten 5.0, "Scrollen" 5.1, Stichwort-Zeile 5.65, Kicker 5.7, Untertitel der Kopfzeile 6.0, Fliesstext ab
+  8.9, Texte auf den Karten im Abendlicht ab 6.7); Handy (iPhone 13) alle mindestens 6.2:1 (Eyebrow im Hero mit der
+  hellen Unterlage 6.4).
 
 ### Seite drumherum (css/story.css, Abschnitt "Hellmodus")
 

@@ -7,8 +7,10 @@
 // (engine.compileScene), dann weiche Blende (View Transition des Browsers, sonst im FxPass). Beim Klick auf den
 // Schalter zuerst die Szene, dann die Seite (window.__codaniTheme.prepare, ARCHITEKTUR.md Kapitel 14).
 //
-// Hell: Partikel, Linien, Kabel, Code-Zeichen und das Website-Geruest sind dunkle Tinte mit normalem Blending statt
-// additivem Leuchten. Dafuer bekommt jedes additive ShaderMaterial der Szenen beim Laden einen Zusatz (patchScene),
+// Hell: Draussen (Hero, Bueste, Ausklang) sind Partikel und Linien dunkle Tinte mit normalem Blending statt additivem
+// Leuchten. Im Kopf (Gehirn, Kabel, Code und Website-Geruest) liegt im hellen Thema ein Abendlicht-Hintergrund, dort
+// leuchten die Materialien wie dunkel (themeKeep in brain.js, cables.js, dna.js; ARCHITEKTUR.md Kapitel 14).
+// Fuer die Tinte bekommt jedes additive ShaderMaterial der Szenen beim Laden einen Zusatz (patchScene),
 // der NUR mit dem Define CODANI_LIGHT in den Shader kommt: main() der Szene laeuft unveraendert, danach rechnet der
 // Zusatz die Farbe in Tinte um (Deckkraft aus der Leuchtkraft). Dunkel ist der Shader-Text genau der bisherige: gleiche
 // Programme, gleiche Rechenarbeit pro Bildpunkt. Die hellen Programme entstehen erst, wenn jemand hell waehlt.

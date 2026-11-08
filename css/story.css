@@ -1147,9 +1147,11 @@ html[data-theme="hell"] {
     radial-gradient(22vmax 18vmax at 64% 40%, rgba(255, 164, 92, 0.05), transparent 70%),
     var(--c-void);
 }
+/* Links deckend beginnen: seit dem Studio-Hintergrund (08.11.2026) sind die hellen Poster farbig und im Kopf
+   mitteltonig; mit 0.9 am Rand stand sonst eine harte Kante zum Off-White daneben. */
 [data-theme="hell"]:is(.no-gl, .no-js) .chapter__poster::after {
   background:
-    linear-gradient(90deg, rgba(243, 245, 247, 0.9) 0%, rgba(243, 245, 247, 0.58) 34%, rgba(243, 245, 247, 0) 62%),
+    linear-gradient(90deg, var(--c-void) 0%, rgba(243, 245, 247, 0.86) 12%, rgba(243, 245, 247, 0.58) 34%, rgba(243, 245, 247, 0) 62%),
     linear-gradient(to bottom, var(--c-void) 0, rgba(243, 245, 247, 0) 14%, rgba(243, 245, 247, 0) 82%, var(--c-void) 100%);
 }
 [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-image: url('../assets/img/poster-intro-hell.webp'); }

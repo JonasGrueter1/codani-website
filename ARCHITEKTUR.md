@@ -1201,6 +1201,14 @@ intro und dna stammten noch vom 03.11. mit hellem Scrim). Aufnahme mit `abnahme/
 --reload`, Handy `--vp=540x1170`), Umwandlung wie oben. Die übrigen sechs Desktop-Poster sind unverändert aktuell
 (neu aufgenommen und verglichen: Unterschiede nur durch Bewegung).
 
+08.11.2026 (Gesicht D, Studio-Hintergrund und Abendlicht im Kopf): alle 14 hellen Poster mit `posters_hell.js` neu,
+dazu die dunklen `poster-robot`, `poster-zoom` und `poster-outro` (Desktop und `-m`) mit Gesicht D, aufgenommen mit
+derselben Vorlage auf `?q=high&dunkel` (`studio-arbeit/poster-0811/tools/posters_dunkel.js`). Die übrigen dunklen Poster
+zeigen kein Gesicht und bleiben (dunkel ist pixelgleich). Weil die hellen Poster jetzt farbig und im Kopf mitteltonig
+sind, beginnt der waagrechte Verlauf über dem Poster am Desktop links deckend (`var(--c-void)`), sonst stand eine harte
+Kante zum Off-White daneben. Das OG-Bild (`assets/img/og.jpg`) trägt jetzt die Marke "Codani" statt "Jonas Grüter"
+(Vorlage `studio-arbeit/poster-0811/og/og.html`, Hintergrund unverändert die Partikel-Büste).
+
 ### Testen
 
 ```

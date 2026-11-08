@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="../css/vertrauen.css">
 <script>document.documentElement.classList.replace('no-js', 'js');</script>
 <script src="../js/site.js" defer></script>
+<script src="../js/suche.js" defer></script>
 </head>
 <body id="top" class="page page--ueber-mich">
 <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
@@ -47,6 +48,11 @@
 <li class="hdr__item"><a class="hdr__link" href="../referenzen/">Referenzen</a></li>
 <li class="hdr__item"><a class="hdr__link" href="../ueber-mich/" aria-current="page">Über mich</a></li></ul>
 </nav>
+<button class="hdr__search" type="button" data-suche-auf aria-haspopup="dialog" aria-label="Suchen auf der Website">
+<svg class="hdr__search-ico" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.1 13.1l4.4 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+<span class="hdr__search-text" aria-hidden="true">Suchen</span>
+<kbd class="hdr__search-kbd" aria-hidden="true" data-suche-kbd>Ctrl K</kbd>
+</button>
 <a class="btn btn--sm hdr__cta" href="../kontakt/">Kontakt</a>
 <button class="hdr__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen" data-label-open="Menü öffnen" data-label-close="Menü schliessen">
 <span class="hdr__toggle-text" aria-hidden="true" data-open="Menü" data-close="Schliessen">Menü</span>
@@ -92,6 +98,7 @@
 </div>
 </div>
 <div class="menu" id="menu" hidden>
+<button class="menu__suche" type="button" data-suche-auf aria-haspopup="dialog"><svg class="menu__suche-ico" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.1 13.1l4.4 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Website durchsuchen</span></button>
 <nav class="menu__nav" aria-label="Menü">
 <ul class="menu__list">
 <li><a class="menu__link" href="../">Start</a></li>

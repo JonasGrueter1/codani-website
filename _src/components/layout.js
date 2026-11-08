@@ -78,6 +78,11 @@ function navHref(ctx, id) {
   return e ? e.href : null;
 }
 
+/** Lupe fuer Suchknopf und Suchfenster */
+function lupe(cls) {
+  return `<svg class="${cls}" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.1 13.1l4.4 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+}
+
 function chevron() {
   return '<svg class="hdr__chev" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
@@ -104,6 +109,12 @@ function header(ctx, { dark = false, extra = '' } = {}) {
     '<nav class="hdr__nav" aria-label="Hauptnavigation">',
     `<ul class="hdr__list">${items}</ul>`,
     '</nav>',
+    // Suche (js/suche.js): Knopf oeffnet das Suchfenster, ohne JavaScript ausgeblendet
+    '<button class="hdr__search" type="button" data-suche-auf aria-haspopup="dialog" aria-label="Suchen auf der Website">',
+    lupe('hdr__search-ico'),
+    '<span class="hdr__search-text" aria-hidden="true">Suchen</span>',
+    '<kbd class="hdr__search-kbd" aria-hidden="true" data-suche-kbd>Ctrl K</kbd>',
+    '</button>',
     `<a class="btn btn--sm hdr__cta" href="${ctx.url(nav.kontakt.href)}"${attrs({ 'aria-current': kontaktCur })}>${esc(nav.kontakt.label)}</a>`,
     extra,
     '<button class="hdr__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen" data-label-open="Menü öffnen" data-label-close="Menü schliessen">',
@@ -163,6 +174,7 @@ function mobileMenu(ctx) {
   };
   return join([
     '<div class="menu" id="menu" hidden>',
+    `<button class="menu__suche" type="button" data-suche-auf aria-haspopup="dialog">${lupe('menu__suche-ico')}<span>Website durchsuchen</span></button>`,
     '<nav class="menu__nav" aria-label="Menü">',
     '<ul class="menu__list">',
     nav.haupt.map(li).join('\n'),

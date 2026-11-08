@@ -180,6 +180,11 @@
         if (msg && t.platzhalter) msg.placeholder = t.platzhalter;
       }
     } catch (e) { /* ohne Vorauswahl weiter */ }
+    // Frage aus der Website-Suche (?frage=) in die Nachricht uebernehmen
+    try {
+      var frage = new URLSearchParams(location.search).get('frage');
+      if (frage && msg && !msg.value) msg.value = 'Meine Frage: ' + frage.slice(0, 300) + '\n\n';
+    } catch (e) { /* ohne Vorbefuellung weiter */ }
 
     // Rueckruf: Telefon wird Pflicht, "Wann erreiche ich Sie" erscheint
     var syncCall = function () {

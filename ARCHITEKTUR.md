@@ -1270,3 +1270,32 @@ Kante). robot@0.9: 56 % auf 5 %. Desktop zum Vergleich 38 %. Dunkel unverändert
   `assets/img/codani-logo-512.png`, Adresse, Mail, Telefon, Gründer, und `WebSite` mit dem Namen "Codani" (Name der
   Website im Suchergebnis). Werte kommen aus `site.json`.
 - OG-Bild mit Helix statt Ring neu gerendert (`studio-arbeit/poster-0811/og/`).
+
+## Website-Suche (08.11.2026)
+
+Suchfeld in der Kopfzeile (ab 1280 px als Feld mit "Suchen" und Ctrl K, darunter als Lupe, unter 360 px nur im
+Handy-Menü). Öffnet ein Suchfenster (Dialog) mit Häufigen Fragen, Direktlinks und Treffern beim Tippen.
+Tasten: Ctrl+K oder Cmd+K und "/" öffnen, Pfeile wählen, Enter öffnet den ersten Treffer, Esc schliesst.
+`?suche=Begriff` in der Adresse öffnet die Suche mit diesem Begriff. Ohne Treffer führt "Frage an Jonas senden"
+auf `kontakt/?frage=...`, die Frage steht dann schon in der Nachricht (`js/site.js`).
+
+Alles läuft im Browser, ohne fremden Dienst und ohne Kosten. Die Eingabe wird nirgends hin gesendet.
+
+| Datei | Aufgabe |
+| --- | --- |
+| `_src/lib/suche.js` | Build: zerlegt jede fertige Seite in Einträge (Seite, Abschnitt mit `section id`, FAQ-Frage mit `details id`) und schreibt `assets/suche.json` |
+| `_src/data/suche.json` | Seitennamen, Synonyme und Wendungen, eigene Kundenfragen pro Ziel, Vorschläge, Direktlinks, leise Wörter, Gewichte |
+| `js/suche-kern.js` | Suchkern (Browser und Node): Normalisieren, Wortstamm (CISTEM), Synonyme, Tippfehler, zusammengesetzte Wörter, BM25F, Satzvergleich, Auszug mit Markierung |
+| `js/suche.js` | Oberfläche: Knopf, Fenster, Tasten, lädt Kern und Index erst beim ersten Öffnen (beim Darüberfahren vorab) |
+| `_src/test-suche.js` | Test mit 96 umschriebenen Kundenfragen (`node _src/test-suche.js`, einzelne Frage: `node _src/test-suche.js "Frage"`) |
+
+So versteht die Suche Umschreibungen: Wortstämme ("kostet" = "Kosten"), Synonym-Gruppen ("Homepage" = "Website",
+"AI" = "KI"), Wendungen ("wie teuer", "wer steckt dahinter"), eigene Kundenfragen pro Abschnitt, Satzvergleich der
+ganzen Frage, Tippfehler (Abstand 1 bis 2), Wortanfang beim Tippen und zusammengesetzte Wörter ("Kundenmails" ist eine
+Mail). Seltene Begriffe zählen für die Abdeckung mehr als häufige; Name und Marke sind "leise". Stand 08.11.2026:
+96 Testfragen, 99 % auf Platz 1, 100 % unter den ersten drei, rund 1 ms pro Suche. Index rund 170 KB, komprimiert
+rund 45 KB.
+
+Pflege: Neue Seite oder neuer Abschnitt braucht nichts, der Index entsteht beim Build. Neue Kundenfragen und Wörter in
+`_src/data/suche.json` ergänzen, danach `node _src/build.js` und `node _src/test-suche.js`. Ziele in `suche.json`, die
+es nicht mehr gibt, sind ein Build-Fehler. Abschnitte, die nicht in die Suche sollen: `data-suche="aus"`.

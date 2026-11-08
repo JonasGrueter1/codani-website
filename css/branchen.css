@@ -154,7 +154,12 @@
 .hero .t-display { -webkit-hyphens: manual; hyphens: manual; }
 
 /* Beispielrechnung (Komponente kiRechner, js/rechner.js): branchen/handwerk/, branchen/treuhand/ */
-.rechner { display: grid; gap: var(--sp-5); max-width: 56rem; padding: clamp(22px, 3vw, 36px); border-radius: var(--r-stage); background: var(--bg); box-shadow: var(--shadow-1); }
+.rechner { display: grid; gap: var(--sp-5); max-width: 56rem; padding: clamp(22px, 3vw, 36px); border-radius: var(--r-stage); background: var(--bg); box-shadow: 0 0 0 1px var(--frame), var(--shadow-show); }
+/* Kopf mit "Zum Ausprobieren" (nur mit JavaScript, ohne rechnet nichts mit) */
+.rechner__kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 calc(-1 * var(--sp-2)); }
+.rechner__kopf .badge { margin: 0; }
+.rechner__tipp { margin: 0; font-size: var(--fs-small); color: var(--text); }
+.no-js .rechner__kopf { display: none; }
 .rechner__felder { display: grid; gap: var(--sp-4); }
 @media (min-width: 760px) { .rechner__felder { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .rechner__feld { display: grid; gap: 8px; color: var(--ink); font-weight: 550; font-size: 0.9375rem; }

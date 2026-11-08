@@ -239,6 +239,8 @@
 .wgal__track:focus-visible { outline-offset: 4px; }
 @media (prefers-reduced-motion: no-preference) { .wgal__track { scroll-behavior: smooth; } }
 .wgal__slide { display: grid; gap: var(--sp-6); align-content: start; scroll-snap-align: start; min-width: 0; padding: clamp(20px, 3vw, 48px); border-radius: var(--r-stage); background: var(--bg); }
+.sec--stage .wgal__slide { box-shadow: 0 0 0 1px var(--frame), 0 16px 32px -22px rgba(8, 44, 60, 0.4); }
+.sec--stage .wgal__track { padding-bottom: 28px; margin-bottom: -24px; }
 @media (min-width: 1024px) { .wgal__slide { grid-template-columns: minmax(0, 7fr) minmax(0, 3fr); align-items: center; gap: var(--sp-7); } }
 .wgal__stage { padding: clamp(20px, 4vw, 48px) clamp(16px, 3vw, 40px) clamp(16px, 3vw, 36px); border-radius: 22px; }
 .wgal__slide--fahrschule .wgal__stage { background: linear-gradient(160deg, #eef3ff, #dfe8ff); }
@@ -293,10 +295,12 @@
 
 .reintrag { margin: 0; }
 .reintrag .badge { margin-bottom: var(--sp-3); }
-.reintrag__win { overflow: hidden; border-radius: var(--r-stage); background: var(--bg); box-shadow: 0 0 0 1px var(--line), var(--shadow-device); }
-.reintrag__bar { display: flex; align-items: center; gap: 12px; margin: 0; padding: 12px 18px; border-bottom: 1px solid var(--line); background: var(--bg-soft); font: 500 0.8125rem/1.3 var(--f-mono); color: var(--muted); }
+.reintrag.showcase { padding: clamp(16px, 2.6vw, 32px); }
+.reintrag__win { overflow: hidden; border-radius: 20px; background: var(--bg); box-shadow: 0 0 0 1px var(--frame), var(--shadow-show); }
+.reintrag__bar { display: flex; align-items: center; gap: 12px; margin: 0; padding: 12px 18px; background: var(--chrome); font: 500 0.8125rem/1.3 var(--f-mono); color: var(--chrome-text); }
 .reintrag__dots { display: flex; gap: 6px; }
-.reintrag__dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.reintrag__dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(238, 244, 248, 0.24); }
+.reintrag__dots i:first-child { background: var(--ember); }
 .reintrag__body { padding: clamp(20px, 2.6vw, 32px); }
 .reintrag__name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 var(--sp-5); font-size: 1.25rem; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
 .reintrag__name span { font: 500 0.75rem/1.3 var(--f-mono); color: var(--muted); letter-spacing: 0.04em; }
@@ -356,6 +360,7 @@
 @media (min-width: 760px) { .wkarten { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) { .wkarten { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .wkarte { display: flex; flex-direction: column; min-width: 0; }
+.sec--stage .wkarte { padding: clamp(14px, 1.6vw, 20px) clamp(14px, 1.6vw, 20px) clamp(20px, 2vw, 26px); border-radius: var(--r-stage); background: var(--bg); box-shadow: 0 0 0 1px var(--frame), var(--shadow-show); }
 .wkarte__stage { margin-bottom: var(--sp-5); padding: 28px 22px 22px; border-radius: var(--r-card); }
 .wkarte:nth-child(1) .wkarte__stage { background: linear-gradient(160deg, #eef3ff, #dfe8ff); }
 .wkarte:nth-child(2) .wkarte__stage { background: linear-gradient(160deg, #f6efe6, #ecdfcf); }

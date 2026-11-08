@@ -96,22 +96,53 @@
   }
 
   /* ------------------------------------------------------------ Einblenden (einmal, Versatz fuer Geschwister) */
+  // Nichts darf unsichtbar bleiben (07.11.2026): Schwelle 0 statt 15 % (sehr hohe Bloecke wie der Demo-Assistent
+  // am Handy erreichten 15 % nie), Bloecke ueber dem Bildschirm (Sprung per Anker, Zurueck) und in waagrecht
+  // wischbaren Reihen (Bildergeschichte am Handy) sofort zeigen, beim Drucken alles.
   var rev = $$('[data-reveal]');
   if (rev.length) {
-    if (reduced || !('IntersectionObserver' in window)) rev.forEach(function (el) { el.classList.add('is-in'); });
+    var showAll = function () { rev.forEach(function (el) { el.classList.add('is-in'); }); };
+    var inScroller = function (el) {
+      for (var p = el.parentElement; p && p !== d.body; p = p.parentElement) {
+        var o = getComputedStyle(p).overflowX;
+        if (o === 'auto' || o === 'scroll') return true;
+      }
+      return false;
+    };
+    window.addEventListener('beforeprint', showAll);
+    if (reduced || !('IntersectionObserver' in window)) showAll();
     else {
       var io = new IntersectionObserver(function (entries) {
         var batch = 0;
         entries.forEach(function (e) {
-          if (!e.isIntersecting) return;
           var el = e.target;
-          el.style.transitionDelay = Math.min(batch, 4) * 60 + 'ms';
-          batch += 1;
+          if (!e.isIntersecting) {
+            if (e.boundingClientRect.bottom > 0) return;
+            el.style.transitionDuration = '0s';
+          } else {
+            el.style.transitionDelay = Math.min(batch, 4) * 60 + 'ms';
+            batch += 1;
+          }
           el.classList.add('is-in');
           io.unobserve(el);
+          if (above) above.unobserve(el);
         });
-      }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
-      rev.forEach(function (el) { io.observe(el); });
+      }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+      // Zweiter Beobachter fuer alles ueber dem Bildschirm: Ein Sprung per Anker oder die Zurueck-Taste wechselt von
+      // "unterhalb" direkt zu "oberhalb", ohne dass der erste Beobachter etwas meldet.
+      var above = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting || e.target.classList.contains('is-in')) return;
+          e.target.style.transitionDuration = '0s';
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+          above.unobserve(e.target);
+        });
+      }, { threshold: 0, rootMargin: '100000px 0px -100% 0px' });
+      rev.forEach(function (el) {
+        if (inScroller(el)) el.classList.add('is-in');
+        else { io.observe(el); above.observe(el); }
+      });
     }
   }
 

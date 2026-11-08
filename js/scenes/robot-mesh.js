@@ -7,13 +7,15 @@
 // Gemeinsamer Zugriff: robot.js, particles-shape.js (Partikel-Bueste) und robot-geometry.js (Kopfform fuer die
 // Gehirn-Hardware) brauchen dieselbe Bueste. bustLevel1() laedt sie einmal und glaettet sie einmal (Promise im Cache).
 
+import { FACE_VARIANT, faceStyle, sculptFace } from './robot-face.js';
+
 export const BUST_URL = new URL('../../assets/robot/bust.bin', import.meta.url).href;
 
 let rawP = null;
 let l1P = null;
 /** Rohnetz (einmal geladen, mit Gesichtsausdruck) */
 export function bustRaw() {
-  if (!rawP) rawP = loadBust(BUST_URL).then((m) => applyExpression(m));
+  if (!rawP) rawP = loadBust(BUST_URL).then((m) => applyExpression(m, 1, FACE_VARIANT));
   return rawP;
 }
 
@@ -23,10 +25,13 @@ export function bustRaw() {
  *   Oberlid   dreht um die Augenmitte nach oben (Lidrand von etwa einem Drittel der Iris auf ihren oberen Rand)
  *   Unterlid  minimal angehoben (leichte Spannung, wacher Blick)
  *   Mund      Mundwinkel eine Spur angehoben und etwas eingezogen (neutral statt herabhaengend)
+ * face: Gesicht (robot-face.js): 'd' Standard, 'alt' Version 4 (?gesicht=alt). Der Worker kennt die Adresse der Seite
+ * nicht, darum als Parameter.
  */
-export function applyExpression(mesh, amt = 1) {
+export function applyExpression(mesh, amt = 1, face = 'd') {
   const { pos, nV, lm } = mesh;
   if (!lm || !lm.eyeL || !lm.eyeR) return mesh;
+  const lidK = faceStyle(face).lid;
   const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   for (const e of [lm.eyeL, lm.eyeR]) {
     const side = Math.sign(e[0]) || 1;
@@ -36,7 +41,7 @@ export function applyExpression(mesh, amt = 1) {
       const xm = x * side; // < 0 zur Nase hin
       const taper = ss(-0.118, -0.055, xm) * (1 - ss(0.075, 0.135, xm));
       let a = 0;
-      if (y > -0.01) a = -0.092 * ss(-0.01, 0.024, y) * (1 - ss(0.045, 0.14, y));
+      if (y > -0.01) a = -0.092 * lidK * ss(-0.01, 0.024, y) * (1 - ss(0.045, 0.14, y));
       else a = -0.034 * ss(-0.01, -0.034, y) * (1 - ss(-0.075, -0.13, y));
       a *= taper * amt;
       if (!a) continue;
@@ -62,6 +67,7 @@ export function applyExpression(mesh, amt = 1) {
     }
   }
   softenFace(mesh, amt);
+  sculptFace(mesh, face);
   return mesh;
 }
 
@@ -182,8 +188,8 @@ const onMain = (m) => { const s = catmullClark(m); computeNormals(s); return s; 
 export function bustLevel1() {
   // Die Datei holt der Hauptthread (Preload aus index.html), die Rechnung macht der Worker
   if (!l1P) {
-    l1P = fetchBust(BUST_URL).then((buf) => runWorker({ op: 'l1', buf: buf.slice(0) }, [])
-      .catch(() => onMain(applyExpression(parseBust(buf)))));
+    l1P = fetchBust(BUST_URL).then((buf) => runWorker({ op: 'l1', buf: buf.slice(0), face: FACE_VARIANT }, [])
+      .catch(() => onMain(applyExpression(parseBust(buf), 1, FACE_VARIANT))));
   }
   return l1P;
 }

@@ -6,16 +6,22 @@
    ===================================================================== */
 
 .demo {
-  position: relative; border-radius: var(--r-stage); background: var(--bg); border: 1px solid var(--line);
-  box-shadow: var(--shadow-device); overflow: clip;
+  position: relative; border-radius: var(--r-stage); background: var(--bg); border: 0;
+  box-shadow: 0 0 0 1px var(--frame), var(--shadow-show); overflow: clip;
 }
-.sec--soft .demo, .sec--tint .demo { border-color: transparent; }
 
-/* Fensterleiste und Hinweis-Band */
-.demo__bar { position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-bottom: 1px solid var(--line); background: var(--bg-soft); border-radius: var(--r-stage) var(--r-stage) 0 0; }
-.demo__dots { position: absolute; left: 20px; top: 50%; display: flex; gap: 7px; transform: translateY(-50%); }
-.demo__dots i { width: 10px; height: 10px; border-radius: 50%; background: #d5dbe2; }
-.demo__title { margin: 0; font: 500 0.8125rem/1.4 var(--f-mono); letter-spacing: 0.06em; color: var(--muted); }
+/* Fensterleiste (dunkler Rahmen wie alle Beispiel-Fenster, css/site.css "Schaufenster") und Hinweis-Band */
+.demo__bar { position: relative; display: flex; align-items: center; gap: 14px; min-height: 46px; padding: 0 12px 0 20px; background: var(--chrome); color: var(--chrome-text); border-radius: var(--r-stage) var(--r-stage) 0 0; }
+.demo__dots { display: flex; gap: 7px; flex: none; }
+.demo__dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(238, 244, 248, 0.24); }
+.demo__dots i:first-child { background: var(--ember); }
+.demo__title { margin: 0; min-width: 0; font: 500 0.8125rem/1.4 var(--f-mono); letter-spacing: 0.06em; color: var(--chrome-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* "Zum Ausprobieren" nur, wenn das Skript laeuft */
+.demo__live { display: none; align-items: center; gap: 7px; margin-left: auto; flex: none; padding: 4px 11px; border-radius: 999px; background: rgba(70, 230, 255, 0.12); box-shadow: inset 0 0 0 1px rgba(70, 230, 255, 0.4); color: #bff6ff; font: 600 0.75rem/1.3 var(--f-mono); letter-spacing: 0.04em; white-space: nowrap; }
+.demo__live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 8px var(--signal); }
+.demo.is-js .demo__live { display: inline-flex; }
+@media (max-width: 479px) { .demo__bar { gap: 10px; padding-left: 16px; } .demo__dots { display: none; } }
+@media (max-width: 379px) { .demo__bar { padding: 0 10px 0 14px; } .demo__title { font-size: 0.75rem; letter-spacing: 0; } .demo__live { padding: 3px 9px; font-size: 0.6875rem; letter-spacing: 0; } }
 .demo__band { display: flex; align-items: flex-start; gap: 10px; margin: 0; padding: 10px clamp(16px, 2.4vw, 28px); background: var(--warn-soft); color: var(--ink); font-size: 0.875rem; line-height: 1.45; }
 .demo__band .ico { width: 18px; height: 18px; margin-top: 1px; color: var(--ember-ink); }
 
@@ -177,9 +183,12 @@
 /* Steuerung: klebt unten, solange der Assistent sichtbar ist */
 .demo__ctrl {
   position: sticky; bottom: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px;
-  padding: 12px clamp(16px, 2.4vw, 28px); border-top: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.94); -webkit-backdrop-filter: saturate(1.6) blur(12px); backdrop-filter: saturate(1.6) blur(12px);
+  padding: 12px clamp(16px, 2.4vw, 28px); border-top: 1px solid var(--frame);
+  background: rgba(237, 247, 249, 0.95); -webkit-backdrop-filter: saturate(1.6) blur(12px); backdrop-filter: saturate(1.6) blur(12px);
+  box-shadow: 0 -10px 24px -18px rgba(8, 44, 60, 0.35);
 }
+/* Vor dem ersten Schritt: der Knopf zeigt, wo es weitergeht */
+.demo.is-live:not(.has-read) .demo__btns [data-act="next"] { box-shadow: 0 0 0 4px rgba(10, 111, 134, 0.2); }
 .demo__progress { margin: 0; font: 500 0.8125rem/1.4 var(--f-mono); letter-spacing: 0.04em; color: var(--ink); }
 .demo__btns { display: flex; flex-wrap: wrap; gap: 8px; }
 .demo__btns .btn[aria-disabled="true"] { opacity: 0.42; cursor: default; }
@@ -200,8 +209,9 @@
 .demo__ctrl:not([hidden]) + .demo__foot { border-top: 0; }
 
 /* Schritt fuer Schritt (nur mit JS und ohne reduzierte Bewegung) */
-.demo__empty { display: none; margin: 0; padding: 16px; border-radius: 14px; border: 1px dashed var(--line-strong); color: var(--muted); font-size: 0.9375rem; }
-.demo.is-live:not(.has-read) .demo__empty { display: block; }
+.demo__empty { display: none; gap: 14px; justify-items: start; margin: 0; padding: clamp(16px, 2vw, 22px); border-radius: 14px; background: var(--bg-tint); box-shadow: inset 0 0 0 1px var(--frame); color: var(--ink); font-size: 0.9375rem; line-height: 1.5; }
+.demo__empty p { margin: 0; }
+.demo.is-live:not(.has-read) .demo__empty { display: grid; }
 .demo.is-live:not(.has-read) .demo__steps { display: none; }
 .demo.is-live .demo__step:not(.is-on) { display: none; }
 .demo.is-live:not(.is-done) .demo__fussnote { display: none; }

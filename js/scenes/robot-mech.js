@@ -9,6 +9,7 @@
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { makeMechMaterial } from './robot-materials.js';
 import { LAYOUT } from './robot-layout.js';
+import { FACE_STYLE } from './robot-face.js';
 
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
 const smoothstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -146,7 +147,8 @@ export function buildMechanics(THREE, o) {
   const eyeGeo = new THREE.SphereGeometry(eyeR, S(56, 32), S(36, 22));
   const corneaGeo = new THREE.SphereGeometry(eyeR * 1.04, S(48, 28), S(14, 10), 0, Math.PI * 2, 0, 0.66).rotateX(Math.PI / 2);
   const eyeMat = new THREE.MeshPhysicalMaterial({
-    color: palette.white.clone().multiplyScalar(0.42), roughness: 0.32, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.12,
+    // Helligkeit des Augapfels je Gesichts-Variante (robot-face.js, Version 4: 0.42)
+    color: palette.white.clone().multiplyScalar(FACE_STYLE.sclera), roughness: 0.32, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.12,
     envMap: env, envMapIntensity: 0.8,
   });
   const EU = {

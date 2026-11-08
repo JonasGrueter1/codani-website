@@ -61,7 +61,7 @@ exports.render = (ctx) => {
       </div>`,
     }),
     c.section({
-      id: 'bericht', tone: 'soft',
+      id: 'bericht', tone: 'stage',
       head: { eyebrow: 'KI-Check', title: 'Was Sie für den KI-Check erhalten.', intro: t('Einen Bericht von drei bis vier Seiten, innert zwei Wochen nach dem Gespräch. Er gehört Ihnen, auch wenn Sie nicht weitermachen. So sieht er aus, am Beispiel einer erfundenen Verwaltung:') },
       body: `<div class="grid grid--split bericht-grid">
         <div class="bericht" data-reveal role="img" aria-label="Beispiel eines KI-Check-Berichts für eine erfundene Verwaltung: drei Abläufe bewertet, Datenschutz, Empfehlung mit Fixpreis für den Pilot">

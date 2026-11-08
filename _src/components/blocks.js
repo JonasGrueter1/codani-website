@@ -98,7 +98,8 @@ function head(ctx, { eyebrow: eb, title, intro, id, level = 2, align = '', cls: 
 }
 
 /**
- * Abschnitt mit Titelblock. tone: '' (weiss), soft, tint, warm. width: '' (1200), wide (1360), text (720).
+ * Abschnitt mit Titelblock. tone: '' (weiss), soft, tint, warm, stage (Buehne fuer Beispiele, Mockups, Demos und Rechner,
+ * siehe css/site.css "Schaufenster"). width: '' (1200), wide (1360), text (720).
  * body: HTML. id: Anker (wird auch fuer die Ueberschrift verwendet: <id>-t).
  */
 function section(ctx, { id, tone = '', width = '', head: h, body = '', cls: c = '', label } = {}) {

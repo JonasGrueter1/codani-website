@@ -639,6 +639,7 @@ Hinterkopf mit Schädelgitter und Kabelbündeln. Der frühere Helm-Roboter und V
 | Datei | Inhalt |
 | --- | --- |
 | `robot.js` | Einstieg (create), Ablauf pro Beat, Look, Hintergrund-Schalter |
+| `robot-face.js` | Gesicht und Figur (Version 5, Gesicht D): Formen auf dem Kontrollnetz, Stil (`FACE_STYLE`: Lider, Fugen, Augapfel, schlanker Rumpf, Aufheller), `?gesicht=alt` |
 | `robot-mesh.js` | `bust.bin` laden (einmal, Promise im Cache), Gesichtsausdruck (Lider, Mundwinkel), Catmull-Clark, Normalen |
 | `robot-layout.js` | Fugen und Öffnungen als Felder (GLSL): Gesichtsplatten, Lidfuge, Hinterkopf-Fenster, Glaskappe, Brustplatte |
 | `robot-materials.js` | Schale (Klarlack, Spaltmass als feine Rinne mit Fase), Muskel-Gel, Innenschale, Glas, Hologramm, Mechanik |
@@ -764,6 +765,46 @@ bildete mit der Maske die Ecken neben dem Mund), geht mit einer Rundung (`lSmin`
 Plattenfuge flacher (`lSeamK` 0.7). Die Ecken der Gesichtsmaske sind runder (`lFace`: Rundung 0.11 und 0.1 statt 0.08
 und 0.05). Vergleich vorher und nachher: `studio-arbeit/v4/start/1-gesicht-vorher-nachher.png`.
 
+### Version 5: Gesicht D, schlanker und freundlich (08.11.2026)
+
+Rückmeldung Jonas zu den Varianten A bis C vom 07.11.2026 (Ex-Machina-Stil, alle drei zu wenig verändert): "das Gebiss
+immer noch zu mollig", "die Figur soll schon einiges schlanker sein", "die Backen sind eckig", "es soll freundlich
+aussehen, es ist ja für eine Website und nicht einen Terminator-Film". Standard ist seither **Gesicht D** (aus Variante
+B weiterentwickelt), `?gesicht=alt` zeigt zum Vergleich Gesicht und Figur von Version 4 (Shader-Text und Netz dann
+genau wie in Version 4, geprüft gegen Commit 593bf90). Alles in `robot-face.js`, gelesen von `robot-mesh.js`
+(`applyExpression(mesh, amt, face)`, der Worker bekommt das Gesicht als Parameter, weil er die Adresse der Seite nicht
+kennt), `robot-layout.js` (Fugen), `robot-materials.js` (Rumpf, Aufheller), `robot-mech.js` (Augapfel) und
+`particles-shape.js` (Partikel-Büste).
+
+- **Form** (`sculptFace`, auf dem Kontrollnetz nach `softenFace`, also gleich für Schale, Hologramm, Partikel-Büste und
+  Kopfform der Gehirn-Hardware): ganzer Kopf 4 % schmaler, dazu der untere Kopf von den Wangenknochen bis zum Kiefer
+  (auch hinter dem Gesicht, das bildet vorne die Silhouette) und Wangen und Kiefer (vorne weniger als an den Seiten,
+  sonst graue Flecken auf der Wange). Gemessen in der Vorderansicht gegen `?gesicht=alt`: Wangen 9 bis 11 %, untere
+  Wange und Kiefer 14 bis 16 % schmaler. Kinn fein, leicht zulaufend und rund. Runde Wangen (Apfel unter dem Auge),
+  weicher Wangenknochen, nur eine ganz leise Mulde darunter. Feinere, kürzere Nase. Lippen geschlossen (Mundöffnung
+  bis auf 0.002 zu, Ober- und Unterlippe zur Mundlinie gestaucht, Mundlinie nach vorne: vorher hing die Oberlippe als
+  Kante über einer dunklen V-Rinne), Amorbogen, Philtrum.
+  Leises Lächeln (Mundwinkel 0.018 hoch, etwas nach aussen und zurück), Unterlid eine Spur gehoben, Oberlid entspannter
+  (Anheben x 0.8, das Lid deckt den Irisrand knapp), Brauenbogen tritt zurück, die Mulde darunter ist gefüllt und ihre
+  Verdeckung (aAO) aufgehellt. Die Landmarken (Augen, Mundlinie, Ohrmodule) wandern mit.
+- **Fugen:** eine einzige Gesichtsplatte (nur der Maskenrand), keine Stirn- und keine Wangenfuge mehr (sie rahmten das
+  Gesicht wie ein Helmvisier, die Wangenfuge bildete die Spitze am Kiefer), Lidfalte sehr leise (`lSeamK` 0.16).
+  `particles-shape.js` zeichnet im Hero dieselben Linien.
+- **Figur:** Rumpf schlanker über `abSlim` in `DEFORM_PARS` (und in `makeMechMaterial`): ab dem Hals (y -1.2) nach unten
+  bis 10 % schmaler (Schultern, Arme) und bis 4 % flacher (um z -0.3). Nur die gezeichnete Lage ändert sich: Fugen,
+  Öffnungen und Muskel-Gel rechnen weiter in der Ruhelage (`vRest`), darum passen Schulterring, Brustplatte, Gel,
+  Mechanik und Kabelfächer ohne neue Masse. Instanzen (Kolben am Hals) bleiben ungestaucht (Fehler unter 0.01).
+  `particles-shape.js` staucht die Zielpunkte gleich.
+- **Licht:** Aufheller von unten nur im Gesicht (Schale, `FACE_STYLE.fill`, nur Gesicht D): Flächen, die nach unten
+  zeigen (unter den Brauen, an den Nasenflügeln), spiegelten das schwarze Studio und ergaben das dunkle, müde Band
+  zwischen Braue und Lid. Ruhelage-Normale aus den Tangenten, Maske `lFace`, vor allem Augenpartie, unten nur 30 %,
+  mit Verdeckung (Nasenlöcher und Mundwinkel bleiben dunkel); im hellen Thema halb so stark und ohne Spiegelanteil.
+- **Augapfel** etwas heller (0.52 statt 0.42 x Weiss).
+- Kosten: gleiche Zahl Programme und Draw Calls, Dreiecke praktisch gleich; das Formen läuft einmal im Worker (wenige
+  Millisekunden). Werkzeuge und Bilder: `studio-arbeit/gesicht-0711/` (`tools/prev.js` schnelle Vorschau der Schale,
+  `tools/close.sh` Nahaufnahmen, `tools/story.sh` Stellen der Geschichte, `gesicht-D.jpg` Vergleich).
+- Offen: Poster (dunkel und hell) zeigen noch Gesicht und Figur von Version 4.
+
 ### Quellen und Lizenzen (CREDITS)
 
 - Grundmodell: **MakeHuman** (Grundnetz `base.obj` hm08, Targets, Skelett und Gewichte), ausdrücklich als **CC0 1.0**
@@ -856,6 +897,9 @@ dritte Nebelschicht. low: Verlauf, 1 Nebelschicht, Strahlen einfach, ohne Staub,
 RenderTarget rechnen und hochskalieren (weich genug, noch nicht nötig).
 
 **Hellmodus:** eigene Farbwelten `BACKDROPS_HELL` und ein eigener Lichtweg im Shader (`lightBackdrop()`, Kapitel 14).
+Seit dem 07./08.11.2026 "hell draussen, Abendlicht im Kopf": Studio mit Farbfeldern, Glasringen, Boden mit Spiegelung
+und Randabschattung, im Kopf ein getönter Abendlicht-Innenraum; die Schlüssel `vig`, `rings`, `calm`, `dusk`, `inner`
+gelten nur hell (Kapitel 14, "Hintergrund mit Tiefe, Abendlicht im Kopf").
 
 **Ändern.** Stimmung einer Szene: nur `BACKDROPS` in config.js (hell: `BACKDROPS_HELL`). Neue Bausteine: Uniform in `backdrop-glsl.js`, Schlüssel in
 `BASE`, `NUMS` oder `COLORS` von backdrop.js, Wert in den Farbwelten. Testen: `dev.html?scene=backdrop` (alle Farbwelten
@@ -941,11 +985,15 @@ kommt nur über Defines in die Shader (`CODANI_LIGHT`, im FxPass `FX_LIGHT` und 
 der bisherige. Gleiche 53 Programme, gleiche Draw Calls und Dreiecke (gemessen unten). Die Unterseiten sind schon hell
 und haben keinen Schalter.
 
-**Bildsprache hell:** helles Studio wie ein Produktfoto. Off-White bis sehr helles Kühlgrau mit weichen, kaum
-sichtbaren Lichtflächen (Türkis, Blau, ein Hauch Ember), weisses Gegenlicht hinter dem Motiv. Partikel, Linien, Kabel,
-Code-Zeichen und das Website-Gerüst sind Tinte (tiefes Türkis #0a6f86 bis #0b1220) mit normalem Blending statt
-additivem Leuchten. Die Android-Büste wirkt wie ein Produkt-Rendering, Gehirn und Röntgen sind dunkle Linien auf
-Hell, der Lichtblitz beim Schnitt ist eine ruhige Blende zum Off-White. Kaum Bloom, dezentes Korn, leise Vignette.
+**Bildsprache hell (seit 08.11.2026): "hell draussen, Abendlicht im Kopf".** Draussen (Hero, Büste, Profil bis zum
+Flug in den Kopf, Ausklang) ein helles Studio wie ein Produktfoto, aber mit Gestaltung: Hohlkehle in Blaugrau mit
+deutlicher Farbe (Türkis, Blau, Flieder, ein Ember-Akzent), heller Horizont, Boden mit Spiegelung, Kontaktschatten und
+Punktraster, Lichtbahnen, zwei grosse, unscharfe Glasringe (Echo des Helix-Logos), Lichtscheiben und Schwebeteilchen;
+Partikel-Büste und Röntgen als Tinte, die Android-Büste als Produkt-Rendering. Drinnen (ab der Mitte des Kapitels zoom
+bis zum Schnitt in den Ausklang) ein Abendlicht-Innenraum in tiefem Petrol bis Schiefer-Blau mit etwas Flieder
+(Helligkeit rund 20 bis 40 %): Gehirn, Kabel, Knoten, Helix und Website-Gerüst leuchten dort wie im dunklen Thema.
+Die Seite bleibt hell (Kopfzeile, HUD, Text-Karten). Der Lichtblitz beim Schnitt ist eine ruhige Blende zum Off-White.
+Draussen kaum Bloom, dezentes Korn; drinnen Bloom über den Lichtkernen.
 
 ### Ablauf
 
@@ -983,10 +1031,10 @@ Eigene Anpassungen im hellen Thema immer mit `#ifdef CODANI_LIGHT` schreiben, ni
 rechnet der dunkle Modus unter Umständen mit (SwiftShader führt beide Zweige aus; gemessen in der Arbeitsfassung mit
 Uniform-Vergleichen: Hero 17 % langsamer, mit Defines wie vorher).
 
-Eigene helle Wege (weil kein reines Additiv): Knoten der Kabel-Szene (`cables-shaders.js`, weisses Glas, Ring und
-Skala in Türkis, Icon in Tinte und kräftiger, leiser Schatten statt Halo, vormultipliziert), Hintergrund
-(`backdrop-glsl.js`, `lightBackdrop()`), Partikel (unscharfe Scheiben und Staub leiser, sonst Flecken). Seit Prüfung 1
-(03.11.2026) dazu:
+Eigene helle Wege (weil kein reines Additiv): Hintergrund (`backdrop-glsl.js`, `lightBackdrop()`), Partikel
+(unscharfe Scheiben und Staub leiser, sonst Flecken). Seit Prüfung 1 (03.11.2026) dazu die Teile unten. Gehirn, Kabel
+(samt Knoten) und Code haben seit dem 08.11.2026 keinen hellen Weg mehr: sie liegen hell im Abendlicht-Innenraum und
+leuchten wie dunkel (`themeKeep`, Abschnitt "Hintergrund mit Tiefe, Abendlicht im Kopf").
 
 - **Hologramm** (`makeHoloMaterial`, robot-materials.js; `themeKeep` und `themeDefine`, robot.js stellt das Blending
   um): Milchglas mit Tintenlinien statt umgerechnetem Licht. Kontur (Fresnel-Rand) in Türkis bis Tinte, Fugen und
@@ -1000,19 +1048,17 @@ Skala in Türkis, Icon in Tinte und kräftiger, leiser Schatten statt Halo, vorm
   Fenster), dafür ist sie im hellen Thema `transparent` (robot.js `setTheme`). Dunkel bleibt das feine Korn.
 - **Schale** (`makeShellMaterial`): zur Silhouette hin bis 48 % dunkler, wie Abschatter im Produktstudio. Sonst stand
   die weisse Schulter gleich hell wie das Off-White dahinter.
-- **Gehirn** (`brain-shaders.js`): nahe, unscharfe Punkte der Rinde und Schwebeteilchen bis 85 bis 90 % leiser,
-  grosse unscharfe Nervenzellen fast weg, ihr Hof halb (vorher dunkle Kleckse bis 40 px).
 
 ### Werte pro Szene
 
 | Szene | hell |
 | --- | --- |
-| backdrop | eigene Farbwelten `BACKDROPS_HELL` (config.js), gleiche Schlüssel und Dynamik wie dunkel, im Shader anders gelesen: `base`/`mid` Papier, `hi` weisses Gegenlicht, `wash*` blasse Farbflächen, `pool` Kontaktschatten auf dem Studio-Boden, Raster, Pakete, Messkreis, Scanlinie und Code-Regen in Türkis. Keine Sterne, kein Staub, kein Bokeh. Helligkeit `PAPER_GAIN` 1.16 (gilt auch für die Nebelfarbe). Weisses Gegenlicht hinter der Büste schwächer (glow robot 0.5, zoom 0.6, outro 0.45) und das Studio im Kapitel robot einen Hauch grauer (base #d9dfe4, mid #e8ecef): die weisse Schale steht vor hellem Grau statt vor gleich hellem Weiss. Am Handy (`ctx.isMobile`) überschreibt `BACKDROPS_HELL_M` einzelne Werte (Prüfung 2): robot base #cfd6dc, mid #dfe4e8, glow 0.38; zoom base #d6dde3, mid #e6ebee; outro base #dcd8d3, mid #ebe7e2, glow 0.32; cables wash 0.4 (vorher 0.7, grau-lila Dunstband oben im Bild). |
+| backdrop | eigene Farbwelten `BACKDROPS_HELL` (config.js), gleiche Schlüssel und Dynamik wie dunkel, im Shader anders gelesen (`lightBackdrop()`): `base`/`mid` Hohlkehle oben und am Horizont, `hi` Gegenlicht, `accent` und `wash*` Farbfelder, `pool` Kontaktschatten, `floorGrid` Punktraster, `floorShine` Spiegelung (auch der Ringe), `bokeh` Lichtscheiben, `dust` mit `starColor` Schwebeteilchen (draussen Tinte, drinnen hell). Nur hell: `vig`/`vigColor` Randabschattung, `rings`/`ringA`/`ringB`/`ringX` Glasringe, `calm`/`calmColor` ruhiger, heller Grund hinter dem Text, `dusk` (setzt `html.hell-abend`), `inner` (zoom mischt von zoom@0.45 bis 0.75 zum Abendlicht). Farbwelten intro, robot, zoom, outro: Studio (Config zum Beispiel robot oben #8297ad, Horizont #c3cfd9); brain, cables, dna: Abendlicht (`DUSK_BRAIN` in config.js, cables Blau, dna Petrol), Raster, Pakete und Code-Regen dort hell. Helligkeit `PAPER_GAIN` 1.16 (gilt auch für die Nebelfarbe). Handy (`BACKDROPS_HELL_M`): robot glow 0.42, outro glow 0.36. |
 | particles | Faktor 1.3, Kurve 0.75 (Flächen der Büste deutlicher, Linien gleich kräftig), Tinten-Anteil 0.3 (Linien Türkis statt fast schwarz), unscharfe Scheiben x 0.15, Staub x 0.4 (Vordergrund x 0.15), ferne Lichter x 0.3, Lichtkegel bleibt Licht. Treten erst von robot@0.14 bis 0.3 zurück (dunkel 0.05 bis 0.22), wenn das Hologramm deckt |
 | robot | `lookHell` (Belichtung high 1.05 bis 1.15, Handy-Ausklang auf high 1.18; Stufe medium/low 1.04 bis 1.08, Prüfung 2: ohne Klarlack glänzt die Schale breiter und lief am Handy im Off-White aus; Führungslicht 0.5 bis 0.6, Fülllicht 0.26 bis 0.3, Kantenlicht neutral `rimWarm` 0.45, im Ausklang 0.85 wie dunkel, Bloom 0.12, Schwelle 2.0), helles Studio für die Spiegelungen (`buildStudioEnv(..., { light: true })`: alles neutral weiss statt mit dem Blaustich von `palette.white`, Kuppel 0.14 / 0.22 / 0.5, also um den Horizont dunkler wie Abschatter; erst beim ersten Wechsel gebaut, die Materialien tauschen nur die Textur), Schale neutral weiss 0.9 (`setTheme` tauscht nur die Farbe; vorher eisblau), auf medium/low Spiegelung 1.0 bis 1.1 statt 1.45 bis 1.65 (nur hell), Abschatter zur Silhouette dort 0.62 mit Exponent 1.6 statt 0.48 und 2.2 (`#ifdef AB_CHEAP` im hellen Weg), Hologramm und Mechanik mit eigenem Weg (oben), Röntgen-Kontur bleibt bis brain@0.26 und blendet bis 0.46 aus (dunkel 0.15 bis 0.46) |
-| brain | Faktoren cortex und dust 3.2, neurons 2.6, edges und fibers 4.5, glows bleiben Licht; nahe, unscharfe Punkte und Zellen leiser (oben). Prüfung 2: Impulse, Funken und Lichtpakete in Verbindungen und Fasern nur als leise Verdichtung der Linie in Türkis (gedeckelt, vorher dunkle Striche wie Kratzer auf der Linse), unscharfe Rindenpunkte ab 5 px leiser (vorher ab 8 px), mittlere Zellen ab 6 px wie grosse behandelt und feuernde Zellen 40 % leiser (vorher Tintentropfen von 5 bis 12 px) |
-| cables | fibre 6.5, ring 2.0, tip 1.6, mote 0.4 (vorher 1.2: grauer Staub hinter dem Text), Knoten eigener heller Weg; Ring und Icon-Striche dort mindestens rund 1.5 Bildpunkte breit, Ring deckender (Prüfung 2: am Handy waren die Knoten nur blasse Ringe). Beschriftungen der Tippflächen (`.node-hits`, Hochformat) im hellen Thema mit Deckkraft min(1, 1.7 x Sichtbarkeit) (`js/nodes.js`, liest das Thema nur beim Wechsel); die Textzone, der die Beschriftungen ausweichen, beginnt hell im Hochformat direkt über dem Text statt rund 50 px darüber (Kalender bei cables@0.6 vorher Sichtbarkeit 0.13, jetzt 0.64; Beschriftungen direkt am Kicker weiter aus) |
-| dna | glyph 2.3, rung 1.8, wire 2.6, band 2.2, streak 1.4; grosse Zeichen nah an der Kamera im hellen Thema bis 70 % leiser (`GLYPH_FS`, sonst lenkt die Tinte vom Text ab). Abnahme (06.11.2026): die Zeichenspitze beim Aufbau des Gerüsts ist hell nur eine leise Verdichtung der Linie (`WIRE_FS`, `#ifdef CODANI_LIGHT`: Spitze x 0.45, Hof 0.02 statt 0.12), vorher lag am Ende jeder Linie ein dunkler, unscharfer Strich wie Schmutz |
+| brain | seit 08.11.2026 wie dunkel: alle Materialien `themeKeep` (keine Umrechnung in Tinte, gleiche Programme wie dunkel, die hellen `#ifdef`-Blöcke aus Prüfung 1 und 2 sind entfernt). `lookHell`: Bloom 0.75 (Handy 0.62, beim Eintauchen bis 45 % leiser), Schwelle 0.9 bis 1.2, Vignette 0.4 bis 0.2, Korn 0.03, keine Aberration |
+| cables | seit 08.11.2026 wie dunkel: alle Materialien `themeKeep`, der Knoten ohne eigenen hellen Weg (der `#ifdef`-Block ist entfernt), `lookHell` Bloom 0.8, Schwelle 0.9, Vignette 0.3. Beschriftungen der Tippflächen (`.node-hits`, Hochformat) im hellen Thema mit Deckkraft min(1, 1.7 x Sichtbarkeit) (`js/nodes.js`); die Textzone, der die Beschriftungen ausweichen, beginnt hell im Hochformat direkt über dem Text |
+| dna | seit 08.11.2026 wie dunkel: alle Materialien `themeKeep` (die hellen `#ifdef`-Blöcke in `dna-shaders.js` sind entfernt), `lookHell` Bloom 0.8, Schwelle 0.9, Vignette 0.45, kein kleiner Blitz beim Eintauchen |
 
 **Looks:** `BASE_LOOK_HELL` (config.js) sind die Grundwerte hell (Bloom 0.16, Schwelle 1.7, Vignette 0.08, Korn 0.02,
 keine Aberration). Die Schlüssel in `THEME_LOOK_KEYS` (exposure, bloom, bloomRadius, bloomThreshold, aberration,
@@ -1041,6 +1087,64 @@ sich der Composer im nächsten Bild das feste Bild als aktuelles Ziel und band e
 freigegeben war (pro Wechsel eine Textur mehr). Jetzt bleibt es nach vier Wechseln bei 19 Texturen (18 plus das helle
 Studio). Der Schalter fängt den Abbruch einer View Transition ab (vorher eine unbehandelte Ablehnung in der Konsole,
 wenn ein Bild sehr lange dauert).
+
+### Hintergrund mit Tiefe, Abendlicht im Kopf (07. und 08.11.2026)
+
+Rückmeldung Jonas (07.11.2026): "Der Hellmodus ist weiss, kein Hintergrund, nichts." Beim Flug ins Gehirn "sieht man
+nichts", und "diese DNA-Strähne, die da drin ist, im Gehirn, sieht man auch nicht". Erste Runde (07.11.): Studio mit
+Farbfeldern und getöntem Innenraum, Tinte im Gehirn kräftiger. Das war im Vergleich zu leise. Zweite Runde (08.11.):
+"hell draussen, Abendlicht im Kopf". Dunkel ist unverändert (gemessen unten).
+
+- **Draussen: Studio mit Gestaltung** (`lightBackdrop()` in `backdrop-glsl.js`, Farbwelten intro, robot, zoom, outro in
+  `BACKDROPS_HELL`): Hohlkehle oben Blaugrau, am Horizont hell (Verlauf steiler als vorher), drei Farbfelder um das
+  Gegenlicht (Softbox Türkis neben dem Motiv, oben Flieder, unten Ember), ein grosses Farbfeld aus `accentAt`, engeres
+  weisses Gegenlicht. Zwei grosse, unscharfe **Glasringe** (`glassRings()`): geneigte Ellipsen, ineinander
+  verschränkt wie die zwei Stränge des Helix-Logos (Türkis und Ember), auf der Seite weg vom Text, mit weichem Hof,
+  hellerem Kern und einem leisen Schatten an der Innenkante (Glaskante), drehen sehr langsam; der Boden spiegelt sie.
+  Boden mit zweistufigem Kontaktschatten, Punktraster (um das Motiv deutlicher), nah an der Kamera tiefer, Lichtkante
+  am Horizont (ausserhalb des Bodens gerechnet, sonst harte Linie). Lichtbahnen, Lichtscheiben, Schwebeteilchen in Tinte,
+  Randabschattung nur des Hintergrunds (`vig`). **Hinter dem Text** (`calm`, Zone aus `director.scrim` mit voller
+  Stärke, sobald ein Panel steht): Grund heller und ruhiger, Ringe und Randabschattung treten zurück; das Motiv bleibt.
+- **Drinnen: Abendlicht** (Farbwelten brain, cables, dna; zoom mischt über `inner` von zoom@0.45 bis 0.75 dorthin):
+  tiefes Petrol bis Schiefer-Blau mit etwas Flieder, Helligkeit rund 20 bis 40 %, Schwaden, Lichtscheiben, helle
+  Schwebeteilchen, Messraster, Bodenraster und Code-Regen in hellem Türkis. Gehirn, Kabel, Knoten, Helix und
+  Website-Gerüst leuchten dort **wie im dunklen Thema**: ihre Materialien haben `themeKeep` (keine Umrechnung in
+  Tinte, gleiche Programme wie dunkel), die hellen `#ifdef`-Blöcke in `brain-shaders.js`, `cables-shaders.js` und
+  `dna-shaders.js` sind entfernt. Bloom hell aus `lookHell` der drei Szenen (Schwelle 0.9 über dem Innenraum). Der
+  Schnitt in den Ausklang (Blende zum Off-White) bringt zurück ins helle Studio.
+- **Seite im Abendlicht** (`css/story.css`): `backdrop.js` setzt `html.hell-abend`, solange `dusk` über 0.5 liegt
+  (nur hell, nur bei Änderung). Dann ist die Kopfzeile eine feste, helle Leiste (ein heller Verlauf wirkte über dem
+  tiefen Bild wie Nebel). Die Texte von Verbindung und Websites stehen am Desktop auf einer hellen Karte wie im
+  Ausklang (0.93 deckend, ohne `backdrop-filter`); im Hochformat hat der Text ohnehin seine eigene helle Fläche.
+- **Die "DNA-Strähne im Gehirn"** ist eine Punktkette der Rinde (Material `cortex`, Windung beziehungsweise Hirnstamm
+  von innen gesehen), sichtbar beim Flug durch das Gehirn um brain@0.6 bis 0.8 links im Bild. Bestimmt durch Ausblenden
+  der Objekte einzeln (`S/hellmodus-0711/tools/ident.js`): ohne `cortex` ist sie weg, ohne Fasern, Verbindungen und
+  Lichtflecken bleibt sie. Hell war sie fast unsichtbar (nahe Punkte bis 85 % leiser), jetzt leuchtet sie wie dunkel.
+- **Kopfzeile hell, draussen** (`css/story.css`): Der Off-White-Verlauf läuft länger und weich aus (am Desktop 64 px
+  statt 40 px unter die Leiste, unter 1024 px 32 px statt 16 px), auf Höhe der Schrift gleich deckend wie vorher.
+- **Text hell** (`css/story.css`): Kicker und Eyebrow in `--c-ice` #085a6d, Stichwort-Zeile #064858, Hero-Fakten
+  #2f3a48, Hinweis "Scrollen" in `--c-text`, Untertitel der Kopfzeile #4a5463 (vor dem tieferen Grund lagen sie bei
+  3.3 bis 4.6:1). Im Hochformat trägt eine leise helle Unterlage die Eyebrow im Hero (sie kreuzt dort die
+  Schulterlinien der Partikel-Büste).
+- Hinweis: Eine Klasse `.stage` in `css/site.css` (Schaufenster der Unterseiten, 07.11.2026) traf kurz auch die 3D-Bühne
+  der Startseite (helle Ränder links und rechts). Sie heisst jetzt `.showcase`; `.stage` ist auf der Startseite allein
+  die Bühne, dort keine allgemeinen Regeln mit diesem Namen anlegen.
+
+**Messung (08.11.2026)** (Werkzeuge, Protokolle in `belege/` und Collagen in `S/hellmodus-0711/`; der Vergleich
+"alt" nimmt für die geänderten Dateien den Stand 593bf90, sonst denselben Baum):
+
+- Dunkel: alle 53 Programme nach Entfernen der hellen `#ifdef`-Blöcke gleich (`shader_cmp.py`), 44 im Wortlaut, die
+  übrigen 9 unterscheiden sich nur in hellen Blöcken. Draw Calls und Dreiecke an sechs Stellen gleich. Bilder
+  deterministisch über `dev.html?scene=all` (gleiche Zeit, gleiche Schritte) an neun Stellen: höchstens 1 von 255 pro
+  Kanal Abweichung, kein Bildpunkt über 2, mittlere Helligkeit gleich (`belege/dunkel-vergleich.txt`). Bildzeit
+  abwechselnd alt und neu (SwiftShader 640 x 400, high, je 12 s) gleich im Rahmen der Streuung (`belege/perf-summe.txt`).
+- Hell am Handy (`?q=medium&hell`): beim Start 53 Programme alt und neu, Draw Calls und Dreiecke gleich, Bildzeit im
+  Rahmen der Streuung (Wiederholung an drei Stellen je drei Mal: Hero, Kabel und Code im Mittel gleich).
+- Kontrast der Texte hell (Textausdehnung, ungünstigster 5-%-Wert des Hintergrunds, Text unsichtbar gemacht, ohne den
+  Off-White-Hof der Hero-Schrift; `belege/kontrast-*.txt`): Desktop 1440 x 900 alle mindestens 4.8:1 (Eyebrow im Hero
+  4.85, Hero-Fakten 5.0, "Scrollen" 5.1, Stichwort-Zeile 5.65, Kicker 5.7, Untertitel der Kopfzeile 6.0, Fliesstext ab
+  8.9, Texte auf den Karten im Abendlicht ab 6.7); Handy (iPhone 13) alle mindestens 6.2:1 (Eyebrow im Hero mit der
+  hellen Unterlage 6.4).
 
 ### Seite drumherum (css/story.css, Abschnitt "Hellmodus")
 
@@ -1096,6 +1200,14 @@ Hochformat weichen Hintergrund und Knoten-Beschriftungen der Textzone wieder aus
 intro und dna stammten noch vom 03.11. mit hellem Scrim). Aufnahme mit `abnahme/tools/shots.js` (`--clean --nograin
 --reload`, Handy `--vp=540x1170`), Umwandlung wie oben. Die übrigen sechs Desktop-Poster sind unverändert aktuell
 (neu aufgenommen und verglichen: Unterschiede nur durch Bewegung).
+
+08.11.2026 (Gesicht D, Studio-Hintergrund und Abendlicht im Kopf): alle 14 hellen Poster mit `posters_hell.js` neu,
+dazu die dunklen `poster-robot`, `poster-zoom` und `poster-outro` (Desktop und `-m`) mit Gesicht D, aufgenommen mit
+derselben Vorlage auf `?q=high&dunkel` (`studio-arbeit/poster-0811/tools/posters_dunkel.js`). Die übrigen dunklen Poster
+zeigen kein Gesicht und bleiben (dunkel ist pixelgleich). Weil die hellen Poster jetzt farbig und im Kopf mitteltonig
+sind, beginnt der waagrechte Verlauf über dem Poster am Desktop links deckend (`var(--c-void)`), sonst stand eine harte
+Kante zum Off-White daneben. Das OG-Bild (`assets/img/og.jpg`) trägt jetzt die Marke "Codani" statt "Jonas Grüter"
+(Vorlage `studio-arbeit/poster-0811/og/og.html`, Hintergrund unverändert die Partikel-Büste).
 
 ### Testen
 

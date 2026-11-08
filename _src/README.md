@@ -80,7 +80,7 @@ Im Kontext `ctx`:
 | Baustein | Aufruf (Auszug) |
 | --- | --- |
 | Hero (genau eine H1) | `hero({ variant: 'compact', 'split', 'stage', 'statement', 'type', crumbs, eyebrow, title, lead, buttons, line, media })` |
-| Abschnitt | `section({ id, tone: '', 'soft', 'tint', 'warm', width: '', 'wide', 'text', head: { eyebrow, title, intro }, body, label })` |
+| Abschnitt | `section({ id, tone: '', 'soft', 'tint', 'warm', 'stage', width: '', 'wide', 'text', head: { eyebrow, title, intro }, body, label })` (`stage` = Bühne für Beispiele, siehe unten) |
 | Knöpfe | `btn({ href, label, variant: 'primary', 'secondary', 'ghost' })`, `btns([...])`, `more({ href, label })` |
 | Karten, Kacheln | `cards(items, { cols: 2, 3, 4 })` (mit `href` ist die ganze Karte ein Link), `tiles(items)` mit Symbol |
 | Ablauf-Grafik | `steps([{ title, parts: [['Sie', '...'], ['Ich', '...']], text, decide }], { vertical })` |
@@ -103,6 +103,14 @@ extern). Neue Symbole dort ergänzen (24 x 24, Strich 1.5, `currentColor`).
 CSS-Klassen der hellen Seiten (css/site.css): Typo `t-eyebrow`, `t-display-xl`, `t-display`, `t-h2`, `t-h3`,
 `t-lead`, `t-small`, `t-price`, `t-stat`, Links `text-link`, `more`, Raster `wrap`, `grid grid--2 | grid--3 | grid--split`,
 Tabellen `tbl-wrap` + `tbl`, Hinweis `note`. Dunkle Inseln mit Klasse `on-dark`.
+
+**Schaufenster (07.11.2026, Rückmeldung Jonas: Beispiele gingen auf der hellen Seite unter).** Beispiele, Mockups,
+Demo-Assistent und Rechner stehen immer auf einer Bühne: ganzer Abschnitt mit `tone: 'stage'` (`.sec--stage`, kühles
+Blaugrau mit Punkteraster), in hellen Abschnitten eine Fläche mit Klasse `showcase`, im Hero `cls: 'hero--show'`
+(Werkzeug- und Branchen-Seiten). Fenster darauf haben eine dunkle Titelleiste (`--chrome`), Karten einen Rand
+(`--frame`) und `--shadow-show`. Kennzeichnung: `badge('beispiel')` (weiss mit Rand), interaktive Teile zusätzlich
+`badge('Zum Ausprobieren', { cls: 'badge--try' })` (ohne JavaScript ausgeblendet). Text direkt auf der Bühne nutzt
+dunklere Töne (`--muted` und Links werden dort automatisch nachgedunkelt, 4.5:1 auch unten im Verlauf).
 
 ## Einstellungen, die Jonas noch setzen muss (leer = ausgeblendet)
 

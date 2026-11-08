@@ -12,6 +12,9 @@
 //   (Schaedelgitter, Kabel, oben eine klare Glaskappe, die die Kopfform haelt),
 //   Hals rundum (Kopfwender, Kehlkopf, Wirbel), Schlitz zwischen den Schulterblaettern (dort tauchen die Kabel ein).
 //   Muskel offen: Rumpf vorne ausserhalb der Platten, Schulterring.
+// Fugen im Gesicht je nach Gesicht (robot-face.js, faceSeamsGLSL): Standard D eine Gesichtsplatte, ?gesicht=alt wie
+// Version 4 (gleicher Shader-Text wie damals).
+import { FACE_STYLE } from './robot-face.js';
 
 export const LAYOUT = {
   shoulder: [1.473, -2.257, -0.29],
@@ -28,6 +31,28 @@ export const LAYOUT = {
   pecC: [0.08, -1.74],
   pecR: 1.16,
 };
+
+/* Fugen im Gesicht. v4 (?gesicht=alt): Text wie in Version 4 (Stirnfuge, Wangenfuge als Linie in der Vorderansicht,
+   Lidfuge). mask (Gesicht D): nur die Maske (Haaransatz, Seite, Kiefer) und eine sehr leise Lidfalte, eine ruhige
+   Gesichtsplatte ohne Querfugen (vorher rahmten Stirn- und Wangenfuge das Gesicht wie ein Helmvisier). */
+function faceSeamsGLSL(st) {
+  if (st.seams === 'v4') {
+    return `    // Platten im Gesicht und Lidfuge
+    if (q.z > 0.12 && face < 0.05) {
+      // Plattenfugen im Gesicht etwas flacher als die Maske (weicher, Version 4)
+      float dc = max(lFaceSeams(q.xy), face);
+      if (dc < d) { d = dc; lSeamK = 0.7; }
+      float dl = lLid(q.xy);
+      if (dl < d) { d = dl; lSeamK = 0.45; }
+    }`;
+  }
+  const lid = `      float dl = lLid(q.xy);
+      if (dl < d) { d = dl; lSeamK = ${st.lidSeam.toFixed(3)}; }`;
+  return `    // Gesicht D: eine Gesichtsplatte, nur die leise Lidfalte
+    if (q.z > 0.12 && face < 0.05) {
+${lid}
+    }`;
+}
 
 const f3 = (a) => `vec3(${a.map((x) => x.toFixed(4)).join(', ')})`;
 const f2 = (a) => `vec2(${a.map((x) => x.toFixed(4)).join(', ')})`;
@@ -180,14 +205,7 @@ float seamField(vec3 p) {
     float face = lFace(q);
     // Gesichtsmaske (nur am Kopf, nicht am Hals)
     d = min(d, max(abs(face), -(q.y + 0.75 + 0.6 * max(q.z, 0.0))));
-    // Platten im Gesicht und Lidfuge
-    if (q.z > 0.12 && face < 0.05) {
-      // Plattenfugen im Gesicht etwas flacher als die Maske (weicher, Version 4)
-      float dc = max(lFaceSeams(q.xy), face);
-      if (dc < d) { d = dc; lSeamK = 0.7; }
-      float dl = lLid(q.xy);
-      if (dl < d) { d = dl; lSeamK = 0.45; }
-    }
+${faceSeamsGLSL(FACE_STYLE)}
     // Schaedeldecke: zwei Scheitelplatten, Scheitelnaht von der Maske bis zur Oeffnung hinten
     d = min(d, max(q.x, max(-face, 0.05 - lSkullWin(q))));
   }

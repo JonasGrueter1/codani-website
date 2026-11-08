@@ -4,6 +4,7 @@
 // Druck und PDF: css/vertrauen.css (@media print zeigt nur #dokument). PDF erzeugen: node studio/_src/unterlagen-pdf.js
 
 const { esc, join, when } = require('../lib/html');
+const { mark } = require('../lib/marke');
 
 const LINIE = '<span class="doc__linie" aria-hidden="true"></span>';
 
@@ -35,7 +36,7 @@ function trustDokument(ctx, d) {
   return join([
     '<article class="doc" aria-labelledby="doc-titel">',
     '<header class="doc__kopf">',
-    `<p class="doc__marke"><span class="mark" aria-hidden="true"></span>${esc(ctx.site.marke.name)}</p>`,
+    `<p class="doc__marke">${mark()}${esc(ctx.site.marke.name)}</p>`,
     `<p class="doc__stand">${esc(d.art || 'Muster')}, Stand ${esc(d.stand)}</p>`,
     '</header>',
     `<h2 class="doc__titel" id="doc-titel">${d.titel}</h2>`,

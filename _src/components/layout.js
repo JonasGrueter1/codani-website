@@ -3,6 +3,7 @@
 // Fundament: Aenderungen hier wirken auf jede Seite (auch die 3D-Startseite). Nur nach Absprache aendern.
 
 const { esc, attrs, join, when } = require('../lib/html');
+const { mark } = require('../lib/marke');
 
 /** <head>-Teile, die jede Seite hat: Zeichensatz, Titel, Beschreibung, Robots, Kanonisch, Open Graph, Icons */
 function headMeta(ctx, { themeColor = '#ffffff', colorScheme = 'light' } = {}) {
@@ -29,10 +30,39 @@ function headMeta(ctx, { themeColor = '#ffffff', colorScheme = 'light' } = {}) {
     '<meta property="og:image:height" content="630">',
     `<meta property="og:image:alt" content="${esc(page.ogAlt || 'Büste eines Androiden aus leuchtenden Lichtpunkten vor dunklem Hintergrund')}">`,
     '<meta name="twitter:card" content="summary_large_image">',
+    // Icons (Helix, 08.11.2026): ico fuer alte Programme, svg fuer Browser, png ab 48 px fuer die Google-Suche
+    `<link rel="icon" href="${ctx.url('favicon.ico')}" sizes="16x16 32x32 48x48">`,
     `<link rel="icon" href="${ctx.url('assets/img/favicon.svg')}" type="image/svg+xml">`,
-    `<link rel="icon" href="${ctx.url('assets/img/favicon-32.png')}" sizes="32x32" type="image/png">`,
+    `<link rel="icon" href="${ctx.url('assets/img/favicon-96.png')}" sizes="96x96" type="image/png">`,
+    `<link rel="icon" href="${ctx.url('assets/img/favicon-192.png')}" sizes="192x192" type="image/png">`,
     `<link rel="apple-touch-icon" href="${ctx.url('assets/img/apple-touch-icon.png')}">`,
+    when(page.id === 'start', () => structuredData(site)),
   ]);
+}
+
+/** Strukturierte Daten fuer Google (nur Startseite): Firma mit Logo und Website-Name "Codani" */
+function structuredData(site) {
+  const base = site.seite.basisUrl;
+  const k = site.kontakt;
+  const [strasse, ortTeil] = String(k.adresse || '').split(',').map((x) => x.trim());
+  const [plz, ...ort] = String(ortTeil || '').split(' ');
+  const org = {
+    '@type': 'Organization',
+    '@id': base + '#firma',
+    name: site.marke.name,
+    url: base,
+    logo: { '@type': 'ImageObject', url: base + 'assets/img/codani-logo-512.png', width: 512, height: 512 },
+    image: base + 'assets/img/og.jpg',
+    description: `${site.marke.zusatz} in der ${site.marke.gebiet}`,
+    email: k.mail,
+    telephone: k.telefon ? '+41 ' + k.telefon.replace(/^0/, '') : undefined,
+    founder: { '@type': 'Person', name: site.person.name },
+    areaServed: site.marke.gebiet,
+    address: strasse ? { '@type': 'PostalAddress', streetAddress: strasse, postalCode: plz, addressLocality: ort.join(' '), addressRegion: 'LU', addressCountry: 'CH' } : undefined,
+  };
+  const web = { '@type': 'WebSite', '@id': base + '#website', name: site.marke.name, alternateName: base.replace(/^https?:\/\//, '').replace(/\/$/, ''), url: base, inLanguage: site.seite.sprache, publisher: { '@id': base + '#firma' } };
+  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': [org, web] }).replace(/</g, '\\u003c');
+  return `<script type="application/ld+json">${json}</script>`;
 }
 
 function isActive(ctx, id) {
@@ -68,7 +98,7 @@ function header(ctx, { dark = false, extra = '' } = {}) {
     `<header class="hdr${dark ? ' hdr--dark' : ''}" id="hdr" data-hdr>`,
     '<div class="hdr__bar">',
     `<a class="hdr__brand" href="${ctx.url('')}" aria-label="${esc(site.marke.name)}, zur Startseite">`,
-    '<span class="mark" aria-hidden="true"></span>',
+    mark(),
     `<span class="hdr__brandtext"><span class="hdr__name">${esc(site.marke.name)}</span><span class="hdr__sub">${esc(site.marke.zusatz)}</span></span>`,
     '</a>',
     '<nav class="hdr__nav" aria-label="Hauptnavigation">',
@@ -166,7 +196,7 @@ function footer(ctx) {
     '<footer class="ftr on-dark" id="fuss">',
     '<div class="wrap ftr__grid">',
     '<div class="ftr__brand">',
-    `<p class="ftr__name"><span class="mark" aria-hidden="true"></span>${esc(site.marke.name)}</p>`,
+    `<p class="ftr__name">${mark()}${esc(site.marke.name)}</p>`,
     `<p>${esc(site.marke.zusatz)} in der ${esc(site.marke.gebiet)}</p>`,
     // Leitsatz nur auf Start und Über mich, sonst eine konkrete Zusage (Testkunden: Satz wirkte auf jeder Seite nach Vorlage)
     `<p class="ftr__claim">${['start', 'ueber-mich'].includes(ctx.page.id) ? 'KI entlastet Ihr Team, sie ersetzt niemanden.' : 'Code und Dokumentation gehören Ihnen. Jede Lösung lässt sich abschalten.'}</p>`,

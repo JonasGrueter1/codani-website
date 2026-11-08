@@ -3,6 +3,8 @@
 // Ohne Foto und ohne Platzhalterbild (Jonas hat noch kein professionelles). Lehrbetrieb nie beim Namen nennen.
 // Zeitleiste: nur belegte Eintraege, keine geratenen Jahreszahlen (Zeitraum der Fallstudie aus site.json).
 
+const { mark } = require('../lib/marke');
+
 exports.meta = {
   path: 'ueber-mich/',
   nav: 'ueber-mich',
@@ -17,7 +19,7 @@ exports.render = (ctx) => {
   const e = ctx.esc;
   const p = ctx.site.person;
   const steckbrief = `<div class="steckbrief" data-reveal>
-    <p class="steckbrief__name"><span class="mark" aria-hidden="true"></span>${e(p.name)}</p>
+    <p class="steckbrief__name">${mark()}${e(p.name)}</p>
     <ul class="steckbrief__liste" aria-label="Kurzfakten">
       <li><span>Alter</span><span>${e(p.alter)} Jahre</span></li>
       <li><span>Ausbildung</span><span>KV-Lehre, ${e(p.lehrjahr)}</span></li>

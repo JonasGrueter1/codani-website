@@ -1257,3 +1257,16 @@ Kante). robot@0.9: 56 % auf 5 %. Desktop zum Vergleich 38 %. Dunkel unverändert
   JavaScript ohne Fehler; Unterseiten ohne Schalter und ohne `data-theme`. axe-core (WCAG 2.1 AA) auf der Startseite
   hell und dunkel ohne Verstoss, Fokus-Rahmen #0a6f86 auf Off-White 5.3:1. Keine Meldungen in der Konsole.
 (`S` = `/home/user/studio-arbeit`.)
+
+## Markenzeichen Helix und Google (08.11.2026)
+
+- Der frühere Ring mit Punkt ist überall durch die Helix ersetzt (Kopfzeile, Fusszeile, CTA-Band, Über mich,
+  Unterlagen). Das Zeichen kommt als Inline-SVG aus `_src/lib/marke.js` (`mark()`, `mark('mark--lg')`), die Farben
+  setzt `css/site.css` (`.mark__a` Akzent bzw. Signal im Dunkeln, `.mark__b` Ember, `.mark__r` Sprossen).
+- Icons: `favicon.ico` im Wurzelverzeichnis (16, 32, 48), `assets/img/favicon.svg`, `favicon-32/48/96/192.png`,
+  `apple-touch-icon.png`. Google zeigt in der Suche das Favicon der Startseite, empfohlen sind mehr als 48 px, darum die
+  Verweise auf 96 und 192 px. Quelle: `studio-arbeit/logo-web/make.js`.
+- Startseite mit strukturierten Daten (JSON-LD, `structuredData()` in `components/layout.js`): `Organization` mit Logo
+  `assets/img/codani-logo-512.png`, Adresse, Mail, Telefon, Gründer, und `WebSite` mit dem Namen "Codani" (Name der
+  Website im Suchergebnis). Werte kommen aus `site.json`.
+- OG-Bild mit Helix statt Ring neu gerendert (`studio-arbeit/poster-0811/og/`).

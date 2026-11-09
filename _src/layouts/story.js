@@ -254,6 +254,7 @@ function story(ctx, body) {
     '<script src="vendor/gsap/gsap.min.js" defer></script>',
     '<script src="vendor/gsap/ScrollTrigger.min.js" defer></script>',
     '<script src="js/site.js" defer></script>',
+    '<script src="js/suche.js" defer></script>',
     '<script type="module" src="js/main.js"></script>',
     '</head>',
     '<body class="page page--start">',

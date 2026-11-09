@@ -20,8 +20,10 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Büste eines Androiden aus leuchtenden Lichtpunkten vor dunklem Hintergrund">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="../../assets/img/favicon-96.png" sizes="96x96" type="image/png">
+<link rel="icon" href="../../assets/img/favicon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
 <link rel="preload" href="../../assets/fonts/geist-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../css/site.css">
@@ -30,6 +32,7 @@
 <link rel="stylesheet" href="../../css/demo.css">
 <script>document.documentElement.classList.replace('no-js', 'js');</script>
 <script src="../../js/site.js" defer></script>
+<script src="../../js/suche.js" defer></script>
 <script src="../../js/demo.js" defer></script>
 </head>
 <body id="top" class="page page--ki-dokumente">
@@ -37,7 +40,7 @@
 <header class="hdr" id="hdr" data-hdr>
 <div class="hdr__bar">
 <a class="hdr__brand" href="../../" aria-label="Codani, zur Startseite">
-<span class="mark" aria-hidden="true"></span>
+<span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><path class="mark__a" d="M8 32C20 6 28 6 32 32S44 58 56 32"/><path class="mark__b" d="M8 32C20 58 28 58 32 32S44 6 56 32"/><path class="mark__r" d="M17.5 21V43M24.5 17.5V46.5M39.5 17.5V46.5M46.5 21V43"/></svg></span>
 <span class="hdr__brandtext"><span class="hdr__name">Codani</span><span class="hdr__sub">KI und Websites für KMU</span></span>
 </a>
 <nav class="hdr__nav" aria-label="Hauptnavigation">
@@ -48,6 +51,11 @@
 <li class="hdr__item"><a class="hdr__link" href="../../referenzen/">Referenzen</a></li>
 <li class="hdr__item"><a class="hdr__link" href="../../ueber-mich/">Über mich</a></li></ul>
 </nav>
+<button class="hdr__search" type="button" data-suche-auf aria-haspopup="dialog" aria-label="Suchen auf der Website">
+<svg class="hdr__search-ico" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.1 13.1l4.4 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+<span class="hdr__search-text" aria-hidden="true">Suchen</span>
+<kbd class="hdr__search-kbd" aria-hidden="true" data-suche-kbd>Ctrl K</kbd>
+</button>
 <a class="btn btn--sm hdr__cta" href="../../kontakt/">Kontakt</a>
 <button class="hdr__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen" data-label-open="Menü öffnen" data-label-close="Menü schliessen">
 <span class="hdr__toggle-text" aria-hidden="true" data-open="Menü" data-close="Schliessen">Menü</span>
@@ -93,6 +101,7 @@
 </div>
 </div>
 <div class="menu" id="menu" hidden>
+<button class="menu__suche" type="button" data-suche-auf aria-haspopup="dialog"><svg class="menu__suche-ico" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.1 13.1l4.4 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Website durchsuchen</span></button>
 <nav class="menu__nav" aria-label="Menü">
 <ul class="menu__list">
 <li><a class="menu__link" href="../../">Start</a></li>
@@ -359,7 +368,7 @@
 </section>
 <section class="cta-band on-dark" id="abschluss" aria-labelledby="abschluss-t">
 <div class="wrap cta-band__inner" data-reveal>
-<span class="mark mark--lg" aria-hidden="true"></span>
+<span class="mark mark--lg" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><path class="mark__a" d="M8 32C20 6 28 6 32 32S44 58 56 32"/><path class="mark__b" d="M8 32C20 58 28 58 32 32S44 6 56 32"/><path class="mark__r" d="M17.5 21V43M24.5 17.5V46.5M39.5 17.5V46.5M46.5 21V43"/></svg></span>
 <h2 class="t-h2" id="abschluss-t">Passt das zu Ihrem Betrieb?</h2>
 <p class="t-lead">Ein paar Sätze genügen. Ich antworte innert eines Arbeitstags, meistens am Abend.</p>
 <div class="btns"><a class="btn" href="../../kontakt/?thema=dokumente">Dieses Beispiel besprechen<span class="btn__arrow" aria-hidden="true"></span></a><a class="btn btn--secondary" href="../../kontakt/?thema=ki-check">KI-Check anfragen</a></div>
@@ -370,7 +379,7 @@
 <footer class="ftr on-dark" id="fuss">
 <div class="wrap ftr__grid">
 <div class="ftr__brand">
-<p class="ftr__name"><span class="mark" aria-hidden="true"></span>Codani</p>
+<p class="ftr__name"><span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><path class="mark__a" d="M8 32C20 6 28 6 32 32S44 58 56 32"/><path class="mark__b" d="M8 32C20 58 28 58 32 32S44 6 56 32"/><path class="mark__r" d="M17.5 21V43M24.5 17.5V46.5M39.5 17.5V46.5M46.5 21V43"/></svg></span>Codani</p>
 <p>KI und Websites für KMU in der Zentralschweiz</p>
 <p class="ftr__claim">Code und Dokumentation gehören Ihnen. Jede Lösung lässt sich abschalten.</p>
 <p class="ftr__contact">Region Sempach, Kanton Luzern<br><a href="mailto:info@codani.ch">info@codani.ch</a><br><a href="tel:0763025043">076 302 50 43</a><br>Schauensee 28a, 6204 Sempach</p>

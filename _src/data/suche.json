@@ -1,0 +1,1624 @@
+{
+  "_hinweis": "Daten der Website-Suche (js/suche.js). synonyme: Gruppen gleicher Bedeutung, auch Wendungen mit Leerzeichen. fragen: so fragen Kunden, pro Ziel (Seite, Abschnitt #id oder Frage #faq-...). Ziele, die es nicht gibt, sind ein Build-Fehler. Nach Aenderungen: node _src/build.js und node _src/test-suche.js.",
+  "seitennamen": {
+    "": "Start",
+    "ki/": "KI",
+    "ki/e-mail/": "KI · E-Mails",
+    "ki/kalender/": "KI · Termine",
+    "ki/dokumente/": "KI · Dokumente",
+    "ki/kunden/": "KI · Anfragen",
+    "websites/": "Websites",
+    "preise/": "Preise",
+    "referenzen/": "Referenzen",
+    "branchen/": "Branchen",
+    "branchen/handwerk/": "Branchen · Handwerk",
+    "branchen/treuhand/": "Branchen · Treuhand",
+    "branchen/verwaltung/": "Branchen · Verwaltung",
+    "sicherheit/": "Datenschutz und Sicherheit",
+    "support/": "Betrieb und Support",
+    "ueber-mich/": "Über mich",
+    "kontakt/": "Kontakt",
+    "unterlagen/": "Unterlagen",
+    "unterlagen/vertraulichkeit/": "Unterlagen · Vertraulichkeit",
+    "unterlagen/auftragsbearbeitung/": "Unterlagen · Auftragsbearbeitung",
+    "impressum/": "Impressum",
+    "datenschutz/": "Datenschutzerklärung"
+  },
+  "gewichte": {
+    "impressum/": 0.75,
+    "datenschutz/": 0.8,
+    "unterlagen/": 0.92,
+    "sicherheit/#quellen": 0.6
+  },
+  "stoppwoerter": [
+    "der",
+    "die",
+    "das",
+    "den",
+    "dem",
+    "des",
+    "ein",
+    "eine",
+    "einen",
+    "einem",
+    "einer",
+    "eines",
+    "und",
+    "oder",
+    "aber",
+    "auch",
+    "als",
+    "am",
+    "an",
+    "auf",
+    "aus",
+    "bei",
+    "beim",
+    "bin",
+    "bis",
+    "bist",
+    "da",
+    "dann",
+    "dass",
+    "dein",
+    "deine",
+    "deinen",
+    "deinem",
+    "du",
+    "dich",
+    "dir",
+    "durch",
+    "er",
+    "es",
+    "euch",
+    "euer",
+    "eure",
+    "euren",
+    "für",
+    "gibt",
+    "gibts",
+    "hab",
+    "habe",
+    "haben",
+    "hat",
+    "hier",
+    "ich",
+    "ihr",
+    "ihre",
+    "ihren",
+    "ihrem",
+    "ihrer",
+    "ihnen",
+    "im",
+    "in",
+    "ins",
+    "ist",
+    "ja",
+    "kann",
+    "kein",
+    "keine",
+    "mal",
+    "man",
+    "mein",
+    "meine",
+    "meinen",
+    "meinem",
+    "meiner",
+    "mich",
+    "mir",
+    "mit",
+    "nach",
+    "nicht",
+    "noch",
+    "nur",
+    "ob",
+    "so",
+    "sie",
+    "sich",
+    "sind",
+    "um",
+    "uns",
+    "unser",
+    "unsere",
+    "unseren",
+    "unserem",
+    "unserer",
+    "vom",
+    "von",
+    "vor",
+    "war",
+    "was",
+    "wann",
+    "warum",
+    "weshalb",
+    "wieso",
+    "welche",
+    "welcher",
+    "welches",
+    "welchen",
+    "wenn",
+    "wer",
+    "wie",
+    "wir",
+    "wird",
+    "wo",
+    "zu",
+    "zum",
+    "zur",
+    "über",
+    "sein",
+    "seine",
+    "etwas",
+    "einfach",
+    "bitte",
+    "gerne",
+    "denn",
+    "doch",
+    "schon",
+    "sehr",
+    "viel",
+    "viele",
+    "alle",
+    "jetzt",
+    "immer",
+    "wieder",
+    "dies",
+    "diese",
+    "dieser",
+    "dieses",
+    "diesem",
+    "diesen",
+    "hallo",
+    "grüezi",
+    "danke",
+    "werden",
+    "wurde",
+    "sollte",
+    "soll",
+    "könnte",
+    "können",
+    "muss",
+    "müssen",
+    "darf",
+    "dürfen",
+    "will",
+    "wollen",
+    "möchte",
+    "möchten",
+    "würde",
+    "wäre",
+    "geht",
+    "gehen",
+    "es",
+    "eigentlich",
+    "genau",
+    "ganz",
+    "mehr",
+    "eher",
+    "dort",
+    "dazu",
+    "dabei",
+    "damit",
+    "davon",
+    "denn",
+    "wieviel",
+    "wieviele",
+    "the",
+    "and",
+    "of",
+    "lassen",
+    "lässt",
+    "brauche",
+    "brauchen",
+    "benötige",
+    "benötigen",
+    "mache",
+    "machst",
+    "jeden",
+    "jede",
+    "jeder",
+    "komme",
+    "kommt",
+    "kommen",
+    "bekomme",
+    "bekommen",
+    "bekommt"
+  ],
+  "synonyme": [
+    [
+      "Preis",
+      "Preise",
+      "Kosten",
+      "kostet",
+      "teuer",
+      "günstig",
+      "billig",
+      "Franken",
+      "CHF",
+      "Budget",
+      "Tarif",
+      "Tarife",
+      "Gebühr",
+      "Gebühren",
+      "Honorar",
+      "Stundenansatz",
+      "Stundenlohn",
+      "Fixpreis",
+      "Pauschale",
+      "Richtwert",
+      "Preisliste",
+      "was kostet",
+      "wie teuer",
+      "wie viel kostet",
+      "wieviel kostet",
+      "was zahle ich",
+      "wie viel zahle"
+    ],
+    [
+      "Website",
+      "Websites",
+      "Webseite",
+      "Webseiten",
+      "Homepage",
+      "Internetseite",
+      "Internetauftritt",
+      "Webauftritt",
+      "Onlineauftritt",
+      "Webdesign",
+      "Landingpage",
+      "Onlinepräsenz",
+      "Online-Präsenz"
+    ],
+    [
+      "KI",
+      "AI",
+      "künstliche Intelligenz",
+      "artificial intelligence",
+      "ChatGPT",
+      "GPT",
+      "Sprachmodell",
+      "LLM",
+      "Chatbot",
+      "Bot",
+      "Assistent",
+      "Agent"
+    ],
+    [
+      "Mail",
+      "Mails",
+      "E-Mail",
+      "E-Mails",
+      "Email",
+      "Emails",
+      "Postfach",
+      "Posteingang",
+      "Inbox",
+      "Outlook",
+      "Gmail",
+      "Korrespondenz",
+      "Antwortentwurf",
+      "Antwortentwürfe",
+      "beantworten",
+      "Antwort",
+      "Antworten"
+    ],
+    [
+      "Termin",
+      "Termine",
+      "Kalender",
+      "Terminvorschlag",
+      "Terminvorschläge",
+      "Terminvereinbarung",
+      "Terminbuchung",
+      "buchen",
+      "Reservation",
+      "reservieren",
+      "Agenda",
+      "Sitzung",
+      "Besprechung",
+      "Terminplanung",
+      "Termine vereinbaren",
+      "Onlinebuchung"
+    ],
+    [
+      "Dokument",
+      "Dokumente",
+      "PDF",
+      "PDFs",
+      "Beleg",
+      "Belege",
+      "Scan",
+      "scannen",
+      "Formular",
+      "Formulare",
+      "Rechnung",
+      "Rechnungen",
+      "Lieferschein",
+      "Ablage",
+      "Akten",
+      "Papierkram",
+      "abtippen",
+      "auslesen",
+      "extrahieren",
+      "erfassen"
+    ],
+    [
+      "Anfragen",
+      "Anfrage",
+      "Kundenanfragen",
+      "Nachfragen",
+      "Leads",
+      "WhatsApp",
+      "Kanäle",
+      "Telefonnotiz",
+      "Telefonnotizen",
+      "Rückfragen"
+    ],
+    [
+      "Kundendaten",
+      "Mandantendaten",
+      "Personendaten",
+      "Daten",
+      "Kundenliste",
+      "CRM",
+      "Kundenkartei"
+    ],
+    [
+      "Datenschutz",
+      "DSG",
+      "nDSG",
+      "DSGVO",
+      "Datenschutzgesetz",
+      "Privatsphäre",
+      "Datensicherheit",
+      "Sicherheit",
+      "sicher",
+      "geschützt",
+      "schützen"
+    ],
+    [
+      "vertraulich",
+      "Vertraulichkeit",
+      "geheim",
+      "Geheimhaltung",
+      "Schweigepflicht",
+      "Berufsgeheimnis",
+      "NDA",
+      "Vertraulichkeitserklärung",
+      "Verschwiegenheit"
+    ],
+    [
+      "gespeichert",
+      "speichern",
+      "Speicherort",
+      "Server",
+      "Rechenzentrum",
+      "Cloud",
+      "Schweiz",
+      "Ausland",
+      "USA",
+      "EU",
+      "wo liegen",
+      "Amerika",
+      "amerikanisch",
+      "amerikanische",
+      "US-Anbieter",
+      "Drittland",
+      "Übersee"
+    ],
+    [
+      "trainieren",
+      "trainiert",
+      "Training",
+      "lernt",
+      "Modelltraining"
+    ],
+    [
+      "Support",
+      "Hilfe",
+      "helfen",
+      "Betreuung",
+      "betreuen",
+      "Betrieb",
+      "Wartung",
+      "Pflege",
+      "Unterhalt",
+      "Updates",
+      "Pflegepaket",
+      "Weiterentwicklung",
+      "Ansprechpartner",
+      "nach der Übergabe"
+    ],
+    [
+      "Ausfall",
+      "ausfällt",
+      "ausfallen",
+      "Störung",
+      "Panne",
+      "kaputt",
+      "Notfall",
+      "Notfälle",
+      "Problem",
+      "Probleme",
+      "funktioniert nicht",
+      "geht nicht",
+      "läuft nicht"
+    ],
+    [
+      "Fehler",
+      "falsch",
+      "Irrtum",
+      "irrt",
+      "halluziniert",
+      "Halluzination",
+      "Halluzinationen",
+      "Fehlentscheid"
+    ],
+    [
+      "Haftung",
+      "haften",
+      "haftet",
+      "Gewährleistung",
+      "Garantie",
+      "Schaden",
+      "Mangel",
+      "Mängel",
+      "Reklamation",
+      "Haftpflicht",
+      "Versicherung",
+      "unzufrieden",
+      "nicht zufrieden",
+      "Geld zurück",
+      "Rücktritt"
+    ],
+    [
+      "Kontakt",
+      "kontaktieren",
+      "erreichen",
+      "Erreichbarkeit",
+      "erreichbar",
+      "anrufen",
+      "Anruf",
+      "Telefon",
+      "Telefonnummer",
+      "Nummer",
+      "Handynummer",
+      "melden",
+      "Gespräch",
+      "Erstgespräch",
+      "Beratung",
+      "Rückruf",
+      "vorbeikommen",
+      "treffen",
+      "Kontaktformular"
+    ],
+    [
+      "Jonas",
+      "Grüter",
+      "Gründer",
+      "Inhaber",
+      "Werdegang",
+      "Lebenslauf",
+      "wer bist du",
+      "wer sind sie",
+      "wer steckt dahinter",
+      "wer macht das",
+      "über dich",
+      "über sie",
+      "wer ist jonas",
+      "wer steckt hinter",
+      "wer steht hinter",
+      "wer ist codani",
+      "dahinter"
+    ],
+    [
+      "Alter",
+      "alt",
+      "jung",
+      "16",
+      "Lernender",
+      "Lehrling",
+      "Jugendlicher",
+      "minderjährig",
+      "seriös",
+      "vertrauenswürdig",
+      "Erfahrung",
+      "wie alt",
+      "zu jung"
+    ],
+    [
+      "Lehre",
+      "KV",
+      "Lehrbetrieb",
+      "Berufsschule",
+      "Ausbildung",
+      "Lehrjahr",
+      "Lernender"
+    ],
+    [
+      "Dauer",
+      "dauert",
+      "lange",
+      "Zeitplan",
+      "Wochen",
+      "Lieferzeit",
+      "Frist",
+      "fertig",
+      "wie lange",
+      "bis wann",
+      "wann fertig"
+    ],
+    [
+      "ändern",
+      "anpassen",
+      "bearbeiten",
+      "aktualisieren",
+      "selber",
+      "selbst",
+      "CMS",
+      "WordPress",
+      "Änderungen",
+      "Änderung",
+      "austauschen"
+    ],
+    [
+      "Google",
+      "gefunden",
+      "Suchmaschine",
+      "SEO",
+      "Ranking",
+      "Platzierung",
+      "Sichtbarkeit",
+      "sichtbar",
+      "Suchergebnis",
+      "Suchmaschinenoptimierung",
+      "bei Google"
+    ],
+    [
+      "Handy",
+      "Smartphone",
+      "Mobile",
+      "mobil",
+      "iPhone",
+      "Android",
+      "Tablet",
+      "responsive"
+    ],
+    [
+      "Ablauf",
+      "Vorgehen",
+      "Vorgehensweise",
+      "Schritte",
+      "Prozess",
+      "Phasen",
+      "Stufen",
+      "Zusammenarbeit",
+      "wie läuft",
+      "wie funktioniert",
+      "wie geht das",
+      "wie gehen wir vor",
+      "wie fange ich an",
+      "wie anfangen",
+      "anfangen",
+      "starten",
+      "beginnen",
+      "Einstieg",
+      "erster Schritt"
+    ],
+    [
+      "Pilot",
+      "Pilotprojekt",
+      "Testphase",
+      "Versuch",
+      "Probelauf"
+    ],
+    [
+      "Demo",
+      "ausprobieren",
+      "testen",
+      "Vorführung",
+      "Demo-Assistent",
+      "Beispiel live",
+      "live sehen"
+    ],
+    [
+      "KI-Check",
+      "Analyse",
+      "Abklärung",
+      "Potenzialanalyse",
+      "Bestandesaufnahme",
+      "Bericht",
+      "Erstanalyse"
+    ],
+    [
+      "Programme",
+      "Programm",
+      "Software",
+      "Tools",
+      "Werkzeuge",
+      "Apps",
+      "Schnittstelle",
+      "Schnittstellen",
+      "Integration",
+      "integrieren",
+      "verbinden",
+      "anbinden",
+      "kompatibel",
+      "Microsoft 365",
+      "Office",
+      "Google Workspace",
+      "bexio",
+      "Abacus",
+      "Excel",
+      "Teams",
+      "SharePoint",
+      "Branchensoftware",
+      "ERP",
+      "Warenwirtschaft",
+      "Branchenlösung",
+      "Fibu",
+      "Finanzbuchhaltung",
+      "Kassensystem",
+      "Software-Anbindung",
+      "reden mit",
+      "spricht mit",
+      "zusammenspielen",
+      "kommunizieren"
+    ],
+    [
+      "Geräte",
+      "Computer",
+      "PC",
+      "Laptop",
+      "Hardware",
+      "Rechner",
+      "Installation",
+      "installieren"
+    ],
+    [
+      "Mitarbeitende",
+      "Mitarbeiter",
+      "Mitarbeiterin",
+      "Personal",
+      "Angestellte",
+      "Stellen",
+      "Jobs",
+      "Arbeitsplätze",
+      "ersetzen",
+      "ersetzt",
+      "Entlassung",
+      "Stellenabbau"
+    ],
+    [
+      "Handwerk",
+      "Handwerker",
+      "Handwerksbetrieb",
+      "Schreiner",
+      "Schreinerei",
+      "Maler",
+      "Malergeschäft",
+      "Elektriker",
+      "Sanitär",
+      "Installateur",
+      "Gipser",
+      "Bau",
+      "Baustelle",
+      "Gärtner",
+      "Zimmerei",
+      "Metallbau",
+      "Garage",
+      "Carrosserie",
+      "Werkstatt"
+    ],
+    [
+      "Treuhand",
+      "Treuhänder",
+      "Treuhandbüro",
+      "Buchhaltung",
+      "Buchführung",
+      "verbuchen",
+      "Mandanten",
+      "Mandant",
+      "Steuern",
+      "Steuererklärung",
+      "Lohnbuchhaltung",
+      "Jahresabschluss",
+      "Revision"
+    ],
+    [
+      "Verwaltung",
+      "Liegenschaften",
+      "Liegenschaftsverwaltung",
+      "Immobilien",
+      "Hausverwaltung",
+      "Mieter",
+      "Mieterin",
+      "Mieteranfrage",
+      "Vermieter",
+      "Wohnung",
+      "Gemeinde",
+      "Gemeindeverwaltung",
+      "Genossenschaft",
+      "Stockwerkeigentum"
+    ],
+    [
+      "Offerte",
+      "Offerten",
+      "Angebot",
+      "Kostenvoranschlag",
+      "Voranschlag",
+      "Offertentwurf"
+    ],
+    [
+      "Referenzen",
+      "Referenz",
+      "Projekte",
+      "Portfolio",
+      "Kundenstimmen",
+      "Fallstudie",
+      "bisherige Arbeiten",
+      "Arbeitsproben"
+    ],
+    [
+      "Vertrag",
+      "Verträge",
+      "Mustervertrag",
+      "Musterverträge",
+      "AVV",
+      "Auftragsbearbeitung",
+      "Auftragsverarbeitung",
+      "Vereinbarung",
+      "AGB",
+      "Unterlagen",
+      "Vorlage",
+      "Vorlagen"
+    ],
+    [
+      "Zahlung",
+      "bezahlen",
+      "zahlen",
+      "Raten",
+      "Anzahlung",
+      "QR-Rechnung",
+      "Twint",
+      "Zahlungsbedingungen",
+      "Vorauszahlung",
+      "Quartal",
+      "Rechnung stellen"
+    ],
+    [
+      "Mehrwertsteuer",
+      "MWST",
+      "MwSt",
+      "netto",
+      "brutto"
+    ],
+    [
+      "Eigentum",
+      "gehört",
+      "gehören",
+      "Besitzer",
+      "Rechte",
+      "Code",
+      "Quellcode",
+      "Urheberrecht",
+      "Lizenz",
+      "mitnehmen",
+      "Anbieterwechsel",
+      "Abhängigkeit",
+      "gebunden",
+      "Bindung",
+      "Vertragsbindung",
+      "Laufzeit",
+      "Mindestlaufzeit",
+      "abhängig"
+    ],
+    [
+      "Hosting",
+      "Domain",
+      "Webhosting",
+      "Hoster",
+      "Provider",
+      "Webspace",
+      "E-Mail-Adresse"
+    ],
+    [
+      "Anbieter",
+      "OpenAI",
+      "Microsoft",
+      "Anthropic",
+      "Claude",
+      "Mistral",
+      "Azure",
+      "Unterauftragnehmer",
+      "Dienstleister"
+    ],
+    [
+      "Impressum",
+      "Adresse",
+      "Firmensitz",
+      "Sitz",
+      "Handelsregister",
+      "UID",
+      "Anschrift",
+      "Postadresse",
+      "Standort",
+      "Sempach",
+      "wo sitzt",
+      "wo seid ihr"
+    ],
+    [
+      "sparen",
+      "Ersparnis",
+      "Zeitersparnis",
+      "lohnt",
+      "Nutzen",
+      "rechnet sich",
+      "lohnt sich",
+      "ROI",
+      "Effizienz",
+      "effizienter",
+      "Aufwand",
+      "entlasten",
+      "Entlastung",
+      "Zeit sparen",
+      "bringt mir das",
+      "bringt das was",
+      "was bringt",
+      "bringt das",
+      "komme nicht nach",
+      "zu viel Arbeit",
+      "überlastet",
+      "Überlastung",
+      "Stress",
+      "Zeitdruck",
+      "keine Zeit"
+    ],
+    [
+      "kündigen",
+      "Kündigung",
+      "aufhören",
+      "beenden",
+      "abbrechen",
+      "aussteigen",
+      "Ausstieg",
+      "abschalten",
+      "stoppen"
+    ],
+    [
+      "Ferien",
+      "Urlaub",
+      "abwesend",
+      "krank",
+      "nicht erreichbar",
+      "Stellvertretung"
+    ],
+    [
+      "Reaktionszeit",
+      "Antwortzeit",
+      "dringend",
+      "sofort",
+      "wie schnell",
+      "gleichen Tag",
+      "innert"
+    ],
+    [
+      "Dokumentation",
+      "Anleitung",
+      "Handbuch",
+      "Übergabe",
+      "Schulung"
+    ],
+    [
+      "Entwurf",
+      "Entwürfe",
+      "Vorschlag",
+      "Design",
+      "Mockup",
+      "Prototyp",
+      "kostenlos",
+      "gratis",
+      "unverbindlich"
+    ],
+    [
+      "monatlich",
+      "pro Monat",
+      "laufende Kosten",
+      "Abo",
+      "Abonnement",
+      "wiederkehrend",
+      "Betriebskosten",
+      "Fixkosten",
+      "jährlich"
+    ],
+    [
+      "Sprachnachricht",
+      "Sprachnachrichten",
+      "Sprachmemo",
+      "diktieren",
+      "Diktat",
+      "Voice",
+      "gesprochen"
+    ],
+    [
+      "Copilot",
+      "Microsoft Copilot",
+      "Microsoft 365 Copilot"
+    ],
+    [
+      "Leistungen",
+      "Dienstleistungen",
+      "was machen sie",
+      "was macht ihr",
+      "was macht codani",
+      "was bietet ihr",
+      "was bieten sie",
+      "was bieten sie an",
+      "Angebot"
+    ],
+    [
+      "enthalten",
+      "inbegriffen",
+      "inklusive",
+      "Zusatzkosten",
+      "versteckte Kosten",
+      "extra",
+      "nicht enthalten",
+      "nicht inbegriffen",
+      "nicht im Preis"
+    ],
+    [
+      "Automatisierung",
+      "automatisieren",
+      "automatisch",
+      "automatisiert",
+      "Digitalisierung",
+      "digitalisieren",
+      "Workflow",
+      "Abläufe"
+    ],
+    [
+      "vorbereiten",
+      "vorbereitet",
+      "bereitlegen",
+      "bereitliegen",
+      "bereit",
+      "vorschreiben",
+      "vorformulieren",
+      "aufsetzen"
+    ],
+    [
+      "Wochenende",
+      "Abend",
+      "abends",
+      "Samstag",
+      "Sonntag",
+      "Telefonzeiten",
+      "Bürozeiten",
+      "Öffnungszeiten",
+      "tagsüber",
+      "Feierabend"
+    ],
+    [
+      "Rabatt",
+      "Vergünstigung",
+      "vergünstigt",
+      "günstiger",
+      "Aktion",
+      "Spezialangebot",
+      "Pilotangebot",
+      "Pilotbetriebe",
+      "Prozent"
+    ],
+    [
+      "Verein",
+      "Vereine",
+      "Club",
+      "Klub",
+      "Vereinswebsite"
+    ]
+  ],
+  "fragen": {
+    "": [
+      "Was macht Codani",
+      "Was bieten Sie an",
+      "Angebot",
+      "Leistungen",
+      "Dienstleistungen",
+      "KI Agentur",
+      "Webagentur",
+      "KMU Zentralschweiz",
+      "Luzern",
+      "Sempach",
+      "Was machen Sie",
+      "Was bietet Codani"
+    ],
+    "ki/": [
+      "Was kann KI für meinen Betrieb tun",
+      "KI im Unternehmen einsetzen",
+      "Künstliche Intelligenz für KMU",
+      "Büroarbeit automatisieren",
+      "Zeit sparen im Büro",
+      "Prozesse automatisieren",
+      "KI einführen"
+    ],
+    "ki/#anwendungen": [
+      "Was kann die KI",
+      "Einsatzbereiche",
+      "Anwendungsfälle",
+      "Wofür braucht man KI",
+      "Aufgaben, die die KI übernimmt"
+    ],
+    "ki/#demo": [
+      "KI ausprobieren",
+      "Demo testen",
+      "Beispiel live sehen",
+      "Wie sieht das aus"
+    ],
+    "ki/#ablauf": [
+      "Wie läuft ein KI-Projekt ab",
+      "Vorgehen",
+      "Schritte bis zur KI-Lösung",
+      "Wie starten wir",
+      "Einstieg",
+      "KI-Check Pilot Einführung Betrieb",
+      "Wie fange ich an",
+      "Erster Schritt"
+    ],
+    "ki/#programme": [
+      "Welche Programme werden unterstützt",
+      "Funktioniert das mit meiner Software",
+      "Schnittstellen",
+      "Microsoft 365 Outlook Excel bexio Abacus",
+      "ERP",
+      "Warenwirtschaft",
+      "Branchensoftware anbinden"
+    ],
+    "ki/#grundsaetze": [
+      "Regeln",
+      "Prinzipien",
+      "Grundsätze",
+      "Der Mensch entscheidet"
+    ],
+    "ki/#preise": [
+      "Was kostet KI",
+      "KI Preise"
+    ],
+    "ki/#faq-ersetzt": [
+      "Werden Stellen abgebaut",
+      "Brauche ich dann weniger Personal",
+      "Nimmt KI Jobs weg",
+      "Ersetzt KI meine Leute"
+    ],
+    "ki/#faq-kosten": [
+      "Kosten einer KI-Lösung",
+      "Wie teuer ist KI",
+      "Budget für KI"
+    ],
+    "ki/#faq-daten": [
+      "Wo werden die Daten gespeichert",
+      "Daten in der Schweiz",
+      "Server Standort",
+      "Cloud oder lokal"
+    ],
+    "ki/#faq-vertraulich": [
+      "Sehen Sie unsere Kundendaten",
+      "Zugriff auf Mandantendaten",
+      "Vertraulichkeit beim KI-Check"
+    ],
+    "ki/#faq-training": [
+      "Lernt die KI mit meinen Daten",
+      "Werden meine Daten für Training verwendet",
+      "ChatGPT Training Kundendaten"
+    ],
+    "ki/#faq-fehler": [
+      "Macht die KI Fehler",
+      "Kann ich der KI vertrauen",
+      "Halluzinationen",
+      "Wer prüft die Antworten"
+    ],
+    "ki/#faq-ausfall": [
+      "Was wenn die KI nicht funktioniert",
+      "Störung",
+      "Ausfall des Anbieters",
+      "Läuft der Betrieb weiter"
+    ],
+    "ki/#faq-lehre": [
+      "Hast du genug Zeit neben der Lehre",
+      "Wer hilft wenn du arbeitest",
+      "Erreichbarkeit während der Lehre"
+    ],
+    "ki/#faq-copilot": [
+      "Copilot",
+      "Microsoft Copilot statt Codani",
+      "Warum nicht selber ChatGPT nutzen"
+    ],
+    "ki/#faq-programme": [
+      "Unsere Software",
+      "Passt das zu unseren Programmen",
+      "Branchensoftware",
+      "Funktioniert das mit unserem ERP"
+    ],
+    "ki/#faq-geraete": [
+      "Neue Computer nötig",
+      "Hardware kaufen",
+      "Installation"
+    ],
+    "ki/#faq-alter": [
+      "zu jung",
+      "16 Jahre alt",
+      "Ist ein Lernender seriös",
+      "Erfahrung"
+    ],
+    "ki/e-mail/": [
+      "E-Mails automatisch beantworten",
+      "Antworten vorschreiben lassen",
+      "Postfach entlasten",
+      "Mails sortieren",
+      "Outlook KI"
+    ],
+    "ki/kalender/": [
+      "Termine automatisch vereinbaren",
+      "Terminbuchung",
+      "Terminanfragen beantworten",
+      "Kalender KI",
+      "Online Termin"
+    ],
+    "ki/dokumente/": [
+      "PDF auslesen",
+      "Rechnungen erfassen",
+      "Belege abtippen",
+      "Daten aus Dokumenten",
+      "Formulare automatisch ausfüllen"
+    ],
+    "ki/dokumente/#wissen": [
+      "Fragen an eigene Dokumente",
+      "Wissensdatenbank",
+      "interne Dokumente durchsuchen",
+      "Handbuch fragen"
+    ],
+    "ki/kunden/": [
+      "Anfragen sammeln",
+      "WhatsApp Anfragen",
+      "Kundenanfragen an einem Ort",
+      "Telefonnotizen",
+      "nichts mehr vergessen"
+    ],
+    "websites/": [
+      "Neue Website erstellen lassen",
+      "Homepage machen lassen",
+      "Webseite erneuern",
+      "Webdesign",
+      "Website für KMU",
+      "Website für einen Verein",
+      "kleine Website"
+    ],
+    "websites/#zusagen": [
+      "Kostenloser Entwurf",
+      "Gratis Entwurf",
+      "unverbindlich"
+    ],
+    "websites/#eigenschaften": [
+      "Was gehört zu einer guten Website",
+      "Funktionen",
+      "schnell",
+      "Handy",
+      "Kontaktformular",
+      "mehrsprachig"
+    ],
+    "websites/#ablauf": [
+      "Wie läuft ein Website-Projekt ab",
+      "Schritte zur neuen Website",
+      "Vorgehen Website"
+    ],
+    "websites/#beispiele": [
+      "Website Beispiele",
+      "Wie sieht das aus",
+      "Muster ansehen"
+    ],
+    "websites/#preise": [
+      "Preis Website",
+      "Website Kosten",
+      "Fixpreis Website",
+      "Wunschliste"
+    ],
+    "websites/#faq-kosten": [
+      "Wie teuer ist eine Homepage",
+      "Preis für eine Webseite",
+      "Was kostet eine Internetseite"
+    ],
+    "websites/#faq-dauer": [
+      "Wie lange dauert eine Website",
+      "Wann ist die Website fertig",
+      "Lieferzeit"
+    ],
+    "websites/#faq-entwurf": [
+      "Entwurf gefällt mir nicht",
+      "Was wenn mir das Design nicht passt",
+      "Änderungen am Entwurf",
+      "Was wenn ich unzufrieden bin"
+    ],
+    "websites/#faq-aendern": [
+      "Texte selber ändern",
+      "Inhalte selbst anpassen",
+      "WordPress",
+      "Bilder selber austauschen"
+    ],
+    "websites/#faq-hosting": [
+      "Hosting",
+      "Domain",
+      "E-Mail-Adresse",
+      "Wer macht das Hosting"
+    ],
+    "websites/#faq-betreuung": [
+      "Betreuung nach der Übergabe",
+      "Wartung Website",
+      "Updates",
+      "Pflegepaket"
+    ],
+    "websites/#faq-eigentum": [
+      "Gehört mir die Website",
+      "Code gehört mir",
+      "Rechte an der Website"
+    ],
+    "websites/#faq-google": [
+      "Google Ranking",
+      "Bei Google gefunden werden",
+      "SEO",
+      "Suchmaschinenoptimierung"
+    ],
+    "websites/#faq-datenschutz": [
+      "Datenschutz Website",
+      "Cookies",
+      "Datenschutzerklärung Website"
+    ],
+    "websites/#faq-alter": [
+      "zu jung für eine Website",
+      "Ist das seriös"
+    ],
+    "preise/": [
+      "Preisliste",
+      "Alle Preise",
+      "Was kostet das",
+      "Kosten Übersicht",
+      "Tarife"
+    ],
+    "preise/#ki": [
+      "KI-Check Preis",
+      "Was kostet der KI-Check",
+      "Preis Pilot",
+      "Einführung Kosten",
+      "Betrieb pro Monat"
+    ],
+    "preise/#pilot": [
+      "Was ist ein Pilot",
+      "Pilotprojekt",
+      "Inhalt Pilot"
+    ],
+    "preise/#bericht": [
+      "Was bekomme ich beim KI-Check",
+      "Ergebnis KI-Check",
+      "Bericht"
+    ],
+    "preise/#nutzung": [
+      "KI-Nutzung Kosten",
+      "laufende Kosten KI",
+      "Kosten pro Monat für die KI",
+      "Gebühren OpenAI"
+    ],
+    "preise/#beispielrechnung": [
+      "Was kostet das im ersten Jahr",
+      "Beispielrechnung",
+      "Rechnet sich das",
+      "Gesamtkosten"
+    ],
+    "preise/#websites": [
+      "Website Preis",
+      "Fixpreis Website"
+    ],
+    "preise/#gut-zu-wissen": [
+      "Zahlungsbedingungen",
+      "Was ist nicht im Preis",
+      "Spesen",
+      "Nicht enthalten",
+      "Zusatzkosten",
+      "inbegriffen",
+      "versteckte Kosten"
+    ],
+    "preise/#faq-richtwerte": [
+      "Warum keine festen Preise",
+      "Richtwerte",
+      "Bekomme ich eine Offerte",
+      "verbindliche Offerte",
+      "Fixpreis-Offerte"
+    ],
+    "preise/#faq-aufhoeren": [
+      "Nach dem Pilot aufhören",
+      "Kündigen",
+      "aussteigen"
+    ],
+    "preise/#faq-zahlung": [
+      "Wie bezahle ich",
+      "Rechnung",
+      "Anzahlung"
+    ],
+    "preise/#faq-mwst": [
+      "MWST",
+      "Mehrwertsteuer",
+      "inklusive Mehrwertsteuer"
+    ],
+    "referenzen/": [
+      "Referenzen",
+      "Bisherige Projekte",
+      "Kunden",
+      "Portfolio",
+      "Erfahrung"
+    ],
+    "referenzen/#fallstudie": [
+      "Fallstudie",
+      "Beispielprojekt",
+      "Workflow"
+    ],
+    "referenzen/#websites": [
+      "Website Muster",
+      "Beispiel-Websites"
+    ],
+    "branchen/": [
+      "Branchen",
+      "Für welche Firmen",
+      "Für wen arbeiten Sie",
+      "Welche Branchen"
+    ],
+    "branchen/handwerk/": [
+      "Handwerker KI",
+      "Offerten schneller schreiben",
+      "Sprachnachricht Baustelle",
+      "Schreinerei",
+      "Malergeschäft",
+      "Elektriker",
+      "Garage",
+      "Autogarage",
+      "Carrosserie"
+    ],
+    "branchen/treuhand/": [
+      "Treuhand KI",
+      "Buchhaltung automatisieren",
+      "Belege verbuchen",
+      "Treuhandbüro"
+    ],
+    "branchen/treuhand/#schweigepflicht": [
+      "Berufsgeheimnis",
+      "Schweigepflicht",
+      "Mandantengeheimnis"
+    ],
+    "branchen/verwaltung/": [
+      "Liegenschaftsverwaltung KI",
+      "Mieteranfragen beantworten",
+      "Hausverwaltung",
+      "Gemeindeverwaltung",
+      "Gemeinden",
+      "Arbeiten Sie für Gemeinden"
+    ],
+    "branchen/verwaltung/#notfall": [
+      "Notfall Mieter",
+      "Wasserschaden",
+      "Notfall in der Nacht"
+    ],
+    "sicherheit/": [
+      "Ist KI sicher",
+      "Datenschutz bei KI",
+      "Sicherheit",
+      "Daten schützen"
+    ],
+    "sicherheit/#kurz": [
+      "Das Wichtigste zum Datenschutz",
+      "Kurzfassung Datenschutz"
+    ],
+    "sicherheit/#daten": [
+      "Wo liegen meine Daten",
+      "Daten in der Schweiz oder EU"
+    ],
+    "sicherheit/#loesung": [
+      "Wo läuft die Lösung",
+      "Server",
+      "Hosting KI",
+      "lokal"
+    ],
+    "sicherheit/#it": [
+      "Technischer Aufbau",
+      "Verschlüsselung",
+      "IT-Sicherheit",
+      "Zugriffsrechte"
+    ],
+    "sicherheit/#vertraulichkeit": [
+      "Vertraulichkeit",
+      "Geheimhaltung",
+      "NDA"
+    ],
+    "sicherheit/#anbieter": [
+      "Welche KI-Anbieter",
+      "OpenAI",
+      "Microsoft",
+      "Anthropic",
+      "Mistral"
+    ],
+    "sicherheit/#dsg": [
+      "Datenschutzgesetz",
+      "DSG",
+      "nDSG",
+      "DSGVO"
+    ],
+    "sicherheit/#ehrlich": [
+      "Zertifikate",
+      "ISO",
+      "Versicherung",
+      "Was fehlt"
+    ],
+    "support/": [
+      "Support",
+      "Hilfe bei Problemen",
+      "Betreuung",
+      "Wartung"
+    ],
+    "support/#reaktionszeit": [
+      "Wie schnell antwortest du",
+      "Reaktionszeit",
+      "dringend",
+      "Antwort am gleichen Tag"
+    ],
+    "support/#ausfall": [
+      "KI fällt aus",
+      "Störung",
+      "Was wenn etwas nicht läuft"
+    ],
+    "support/#abwesend": [
+      "Ferien",
+      "krank",
+      "nicht erreichbar",
+      "Vertretung"
+    ],
+    "support/#dokumentation": [
+      "Dokumentation",
+      "Anleitung",
+      "Übergabe"
+    ],
+    "support/#eigentum": [
+      "Code gehört mir",
+      "Lösung gehört mir",
+      "Abhängigkeit",
+      "Anbieter wechseln",
+      "Bin ich an Sie gebunden",
+      "Vertragslaufzeit"
+    ],
+    "support/#haftung": [
+      "Haftung",
+      "Garantie",
+      "Gewährleistung",
+      "Fehler an der Arbeit"
+    ],
+    "support/#kosten": [
+      "Laufende Kosten",
+      "Kosten im Betrieb",
+      "monatliche Kosten"
+    ],
+    "ueber-mich/": [
+      "Wer ist Jonas",
+      "Wer steckt dahinter",
+      "Über Jonas Grüter",
+      "Gründer",
+      "Inhaber"
+    ],
+    "ueber-mich/#werdegang": [
+      "Ausbildung",
+      "Lehre",
+      "Werdegang",
+      "Lebenslauf"
+    ],
+    "ueber-mich/#erreichbarkeit": [
+      "Wann bist du erreichbar",
+      "Erreichbarkeit",
+      "Telefonzeiten",
+      "am Wochenende",
+      "abends erreichbar"
+    ],
+    "ueber-mich/#technik": [
+      "Womit arbeitest du",
+      "Technik",
+      "Werkzeuge",
+      "Tools"
+    ],
+    "ueber-mich/#alter": [
+      "Wie alt bist du",
+      "16 Jahre alt",
+      "zu jung",
+      "seriös"
+    ],
+    "kontakt/": [
+      "Kontakt aufnehmen",
+      "Anfrage senden",
+      "Nachricht schreiben",
+      "Telefonnummer",
+      "E-Mail-Adresse",
+      "Erstgespräch vereinbaren",
+      "Rückruf",
+      "Beratung"
+    ],
+    "unterlagen/": [
+      "Musterverträge",
+      "Verträge ansehen",
+      "Unterlagen",
+      "Vorlagen"
+    ],
+    "unterlagen/vertraulichkeit/": [
+      "Vertraulichkeitserklärung",
+      "Geheimhaltungsvereinbarung",
+      "NDA"
+    ],
+    "unterlagen/auftragsbearbeitung/": [
+      "Auftragsbearbeitungsvertrag",
+      "AVV",
+      "Auftragsverarbeitung"
+    ],
+    "impressum/": [
+      "Impressum",
+      "Adresse",
+      "Firmenangaben",
+      "Verantwortlich"
+    ],
+    "datenschutz/": [
+      "Datenschutzerklärung",
+      "Cookies",
+      "Tracking",
+      "Datenschutz dieser Website"
+    ],
+    "referenzen/#pilot": [
+      "Rabatt",
+      "Pilotangebot",
+      "günstiger für die ersten Kunden",
+      "Plätze frei"
+    ]
+  },
+  "vorschlaege": [
+    {
+      "text": "Was kostet eine Website?"
+    },
+    {
+      "text": "Sind meine Daten in der Schweiz?"
+    },
+    {
+      "text": "Wie läuft ein KI-Check ab?"
+    },
+    {
+      "text": "Kann ich die Website selbst ändern?"
+    },
+    {
+      "text": "Was passiert, wenn die KI ausfällt?"
+    },
+    {
+      "text": "Funktioniert das mit Outlook und bexio?"
+    }
+  ],
+  "schnell": [
+    {
+      "text": "KI für meinen Betrieb",
+      "ziel": "ki/"
+    },
+    {
+      "text": "Neue Website",
+      "ziel": "websites/"
+    },
+    {
+      "text": "Preise",
+      "ziel": "preise/"
+    },
+    {
+      "text": "Kontakt",
+      "ziel": "kontakt/"
+    }
+  ],
+  "leise": [
+    "Jonas",
+    "Grüter",
+    "Codani"
+  ]
+}

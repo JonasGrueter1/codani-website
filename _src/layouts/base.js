@@ -19,6 +19,7 @@ module.exports = function base(ctx, body) {
     css,
     "<script>document.documentElement.classList.replace('no-js', 'js');</script>",
     `<script src="${ctx.url('js/site.js')}" defer></script>`,
+    `<script src="${ctx.url('js/suche.js')}" defer></script>`,
     js,
     '</head>',
     `<body id="top" class="page page--${page.id}">`,

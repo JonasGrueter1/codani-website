@@ -16,6 +16,7 @@ const { esc } = require('./lib/html');
 const fmt = require('./lib/format');
 const check = require('./lib/check');
 const leads = require('./lib/leads');
+const suche = require('./lib/suche');
 
 const SRC = __dirname;
 const STUDIO = path.resolve(SRC, '..');
@@ -154,6 +155,19 @@ if (!ONLY) {
   out.set('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
 }
 
+/* ------------------------------------------------------------------ Suchindex (assets/suche.json, siehe lib/suche.js) */
+
+if (!ONLY && data.suche) {
+  const namen = data.suche.seitennamen || {};
+  const seiten = [...pageInfo.values()].map((x) => {
+    const titel = ((x.html.match(/<title>([^<]*)<\/title>/) || [])[1] || '').split(' | ')[0].trim();
+    if (!(x.meta.path in namen)) warn('data/suche.json', `Seitenname fuer "${x.meta.path}" fehlt, nehme "${titel}"`);
+    return { path: x.meta.path, html: x.html, name: namen[x.meta.path] || titel };
+  });
+  const idx = suche.baue(seiten, data.suche, err);
+  out.set('assets/suche.json', JSON.stringify(idx));
+}
+
 /* ------------------------------------------------------------------ Pruefen */
 
 const LEADS_FILE = arg('--leads') || process.env.STUDIO_LEADS || leads.defaultPath(STUDIO);
@@ -198,6 +212,7 @@ const nameHits = (where, text) => {
 };
 
 const todo = [];
+if (out.has('assets/suche.json')) nameHits('assets/suche.json', out.get('assets/suche.json'));
 for (const [rel, html] of out) {
   if (!rel.endsWith('.html')) continue;
   const info = [...pageInfo.values()].find((x) => x.file === rel);

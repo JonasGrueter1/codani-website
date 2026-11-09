@@ -4,6 +4,7 @@
 // Seiten-Gruppe gehoeren in eine eigene Datei (z. B. components/ki-mockups.js), siehe _src/README.md.
 
 const { esc, attrs, cls, join, when, slug } = require('../lib/html');
+const { mark } = require('../lib/marke');
 
 /* ------------------------------------------------------------------ Kleinteile */
 
@@ -323,7 +324,7 @@ function ctaBand(ctx, { title, text, buttons, mail = true, id = 'abschluss' } = 
   return join([
     `<section class="cta-band on-dark" id="${esc(id)}" aria-labelledby="${esc(id)}-t">`,
     '<div class="wrap cta-band__inner" data-reveal>',
-    '<span class="mark mark--lg" aria-hidden="true"></span>',
+    mark('mark--lg'),
     `<h2 class="t-h2" id="${esc(id)}-t">${title}</h2>`,
     when(text, () => `<p class="t-lead">${text}</p>`),
     btns(ctx, buttons),

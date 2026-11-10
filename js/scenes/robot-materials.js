@@ -4,6 +4,7 @@
 // Brustkorb und Schultern atmen ueber uBreath. Die Fugen und Oeffnungen kommen aus robot-layout.js (Ruhelage-Koordinaten).
 import { LAYOUT_GLSL } from './robot-layout.js';
 import { FACE_STYLE } from './robot-face.js';
+import { TONE } from './robot-tone.js';
 
 /* ---------------------------------------------------------------- Vertex-Teile */
 export const DEFORM_PARS = /* glsl */ `
@@ -51,7 +52,7 @@ export function makeShellMaterial(THREE, U, opts) {
   if (opts.cheap) m.defines = { AB_CHEAP: '' };
   m.userData.themeDefine = true; // heller Weg (#ifdef CODANI_LIGHT): Kante zur Silhouette hin grauer
   m.onBeforeCompile = (sh) => {
-    for (const k of ['uHeadMat', 'uBreath', 'uScanY', 'uInner', 'uShellIn', 'uWall', 'uFall', 'uDebug', 'uEdgeGlow', 'uEdgeCol', 'uEdgeY', 'uTime', 'uRidge']) sh.uniforms[k] = U[k];
+    for (const k of ['uHeadMat', 'uBreath', 'uScanY', 'uInner', 'uShellIn', 'uWall', 'uFall', 'uDebug', 'uEdgeGlow', 'uEdgeCol', 'uEdgeY', 'uTime', 'uRidge', 'uTone', 'uToneK']) sh.uniforms[k] = U[k];
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
 ${DEFORM_PARS}
@@ -68,11 +69,13 @@ vT2v = normalMatrix * abDeformDir(rt2, aHead);`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 uniform float uScanY; uniform vec3 uInner; uniform vec2 uFall; uniform float uDebug; uniform float uEdgeGlow; uniform vec3 uEdgeCol; uniform float uEdgeY; uniform float uTime;
-uniform vec3 uRidge; uniform vec3 uShellIn; uniform vec3 uWall;
+uniform vec3 uRidge; uniform vec3 uShellIn; uniform vec3 uWall; uniform sampler2D uTone; uniform float uToneK;
 varying vec3 vRest; varying vec3 vT1; varying vec3 vT2; varying vec3 vT1v; varying vec3 vT2v; varying float vArm; varying float vAO;
 float abRidge = 0.0;
 float abGap = 0.0;
 float abInA = 1.0;
+float abPaint = 0.0;
+float abLip = 0.0;
 ${LAYOUT_GLSL}`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
 vec3 rp = vRest;
@@ -82,6 +85,7 @@ const float SE = 0.003;
 vec3 t1 = normalize(vT1); vec3 t2 = normalize(vT2);
 float s0 = seamField(rp);
 float abSK = lSeamK;
+float abGW = lGapW;
 vec2 sg = vec2(seamField(rp + t1 * SE) - s0, seamField(rp + t2 * SE) - s0) / SE;
 float sgl = max(length(sg), 0.35);
 float dS = s0 / sgl;
@@ -97,7 +101,7 @@ float abPx = max(length(fwidth(rp)), 1e-5);
 // Pixelrauschen an Schulter, Hals und Kabelschlitz, auch ohne MSAA (Handy)
 float abOpenA = smoothstep(-0.6 * abPx, 0.6 * abPx, dO);
 if (abOpenA < 0.004) discard;
-const float GW = 0.0021;
+float GW = abGW;
 float dG = max(dS - GW, 0.0);
 float gapCov = clamp(2.0 * GW / abPx, 0.0, 1.0);
 abGap = (1.0 - smoothstep(GW - 0.5 * abPx, GW + 0.5 * abPx, dS)) * gapCov * abSK;
@@ -146,6 +150,13 @@ if (gl_FrontFacing) {
   float neckIn = smoothstep(-1.55, -1.3, rp.y) * smoothstep(-0.5, -0.75, rp.y);
   totalEmissiveRadiance += uEdgeCol * (0.006 + 0.03 * neckIn);
 }
+${FACE_STYLE.seams === 'ref' ? `// Gesicht nach Vorlage: dunkle Bemalung (Braue, Lidstrich, Aussparungen, Schrauben)
+// Kantenbreite aus der Projektion der Vorlage (nicht aus der Ruhelage: an steilen Flaechen wie dem Lidrand waere sie
+// sonst viel zu breit und die Bemalung verblasst dort)
+abPaint = gl_FrontFacing ? lRefPaint(rp, 0.8 * length(fwidth(lRef(vec3(abs(rp.x), rp.y, rp.z))))) : lRefEyeIn(rp);
+diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.012, 0.014, 0.02), abPaint);
+abLip = gl_FrontFacing ? lRefLips(rp) : 0.0;
+diffuseColor.rgb *= mix(vec3(1.0), vec3(0.74, 0.77, 0.82), abLip);` : ''}
 if (uDebug > 0.5) { diffuseColor.rgb = mix(vec3(1.0, 0.1, 0.1), diffuseColor.rgb, smoothstep(0.0, 0.01, min(ed, dS))); }`)
       .replace('#include <clearcoat_normal_fragment_maps>', `#include <clearcoat_normal_fragment_maps>
 #ifdef USE_CLEARCOAT
@@ -198,6 +209,18 @@ ${FACE_STYLE.fill ? `  // Gesicht D: Aufheller von unten nur im Gesicht, wie ein
 outgoingLight *= 1.0 - 0.8 * abGap;
 if (gl_FrontFacing) outgoingLight += uRidge * abRidge * (0.35 + 0.65 * pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 2.0)) * mix(0.4, 1.0, vAO);
 outgoingLight *= 0.35 + 0.65 * abFall;
+${FACE_STYLE.tone ? `// Gesicht nach Vorlage: Licht der Vorlage als Helligkeitskarte (robot-tone.js) auf das fertige Licht der Schale.
+// Nur am Kopf und nur vorne (zum Hinterkopf laeuft sie aus), im hellen Thema schwaecher (uToneK).
+{
+  vec2 abR0 = lRef(rp);
+  vec2 abTp = (vec2(672.0 + abR0.x * 526.0, 410.0 - abR0.y * 526.0) - vec2(${TONE.x0.toFixed(1)}, ${TONE.y0.toFixed(1)})) / ${TONE.step.toFixed(1)};
+  float abG = texture2D(uTone, clamp((abTp + 0.5) / vec2(${TONE.w.toFixed(1)}, ${TONE.h.toFixed(1)}), 0.0, 1.0)).r * 2.55;
+  outgoingLight *= mix(1.0, abG, uToneK * smoothstep(-0.1, 0.3, rp.z) * smoothstep(-1.15, -0.95, rp.y));
+}
+` : ''}// Bemalung schluckt auch den Glanz: der gerundete Lidrand spiegelt sonst die Softbox so hell, dass er trotz Farbe
+// hellgrau bleibt
+outgoingLight = mix(outgoingLight, min(outgoingLight * 0.07, vec3(0.018, 0.024, 0.036)) + vec3(0.003, 0.004, 0.007), abPaint);
+outgoingLight *= mix(vec3(1.0), vec3(0.86, 0.88, 0.92), abLip);
 #ifdef CODANI_LIGHT
 // Helles Thema (Pruefung 1): zur Silhouette hin grauer, wie Abschatter im Produktstudio. Sonst stand die weisse
 // Schulter gleich hell wie das Off-White dahinter und die Kante loeste sich auf.
@@ -394,6 +417,10 @@ float inner = (0.03 + 0.045 * cloud + 0.035 * PD.x * abD) * (1.0 - fres) * (1.0 
 vec3 glow = uGelHi * (inner + 0.5 * fres) + uGelHi * pulse * uPulse.y * (0.2 + 0.12 * hb * aaB) * (1.0 - 0.5 * ST.x);
 glow += uGelHi * ST.y * 0.16 * (1.0 - fres);
 glow *= open * shade * (1.0 - uDim);
+${FACE_STYLE.seams === 'ref' ? `// Gesicht nach Vorlage: der Hals ist dunkle Mechanik (kein leuchtendes Gel), ab dem Kragen wieder wie bisher
+float abNeck = smoothstep(-1.85, -1.5, rp.y);
+glow *= mix(1.0, 0.1, abNeck);
+diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 0.12 + vec3(0.006, 0.008, 0.012), abNeck);` : ''}
 totalEmissiveRadiance += glow;
 roughnessFactor = mix(mix(0.85, 0.32, wall), 0.12, open);`)
       .replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
@@ -698,14 +725,20 @@ ${kind === 'gel' ? `{
   diffuseColor.rgb *= 0.55 + 0.45 * f1;
   float ph = fract(uTime * uPulse.x * 1.3 + vU.y * 0.0);
   float pulse = exp(-pow((vU.y - ph * 1.4 + 0.2) / 0.07, 2.0));
-  totalEmissiveRadiance += uGelHi * ((0.1 + 0.3 * f2 * f1) * (0.4 + 0.6 * (1.0 - fres)) + 0.35 * fres + pulse * uPulse.y * (0.5 + 0.5 * f1)) * (1.0 - uMechDim);
+  // Gesicht nach Vorlage: im Hals schwarze, glaenzende Mechanik statt leuchtendem Gel (ab dem Kragen wieder wie bisher)
+  float abNk = ${FACE_STYLE.seams === 'ref' ? 'mix(1.0, 0.02, smoothstep(-1.85, -1.5, vRest.y))' : '1.0'};
+  diffuseColor.rgb = mix(vec3(0.012, 0.014, 0.02), diffuseColor.rgb, abNk);
+  totalEmissiveRadiance += abNk * uGelHi * ((0.1 + 0.3 * f2 * f1) * (0.4 + 0.6 * (1.0 - fres)) + 0.35 * fres + pulse * uPulse.y * (0.5 + 0.5 * f1)) * (1.0 - uMechDim);
   roughnessFactor = 0.18 + 0.2 * (1.0 - f1);
 }` : ''}
 ${kind === 'housing' ? `{
   // Leuchtschlitze zwischen den Rippen (Hals-Gehaeuse), langsames Atmen
   float rib = 0.5 + 0.5 * cos(vRest.y * 75.0);
   float slot = smoothstep(0.92, 1.0, rib) * smoothstep(0.15, 0.35, abs(fract(vU.x * 6.0) - 0.5));
-  totalEmissiveRadiance += uGelHi * (slot * (0.4 + 0.15 * sin(uTime * 1.3 + vRest.y * 6.0)) + 0.04) * (1.0 - uMechDim);
+${FACE_STYLE.seams === 'ref' ? `  // Gesicht nach Vorlage: Hals-Gehaeuse dunkel, nur einzelne blaue Lichter (jede dritte Rippe)
+  diffuseColor.rgb *= 0.22;
+  float abRow = step(0.66, fract(vRest.y * 75.0 / 6.2832 / 3.0));
+  totalEmissiveRadiance += vec3(0.05, 0.3, 1.0) * slot * abRow * (0.5 + 0.2 * sin(uTime * 1.3 + vRest.y * 6.0)) * (1.0 - uMechDim);` : `  totalEmissiveRadiance += uGelHi * (slot * (0.4 + 0.15 * sin(uTime * 1.3 + vRest.y * 6.0)) + 0.04) * (1.0 - uMechDim);`}
 }` : ''}
 ${kind === 'grille' ? `{
   // feines Lochgitter (Sechseck), Loecher dunkel mit leisem Schein
@@ -753,7 +786,7 @@ ${kind === 'board' ? `{
   float st = exp(-pow(length((vU - vec2(0.82, 0.22)) * vec2(1.0, 0.7)) / 0.03, 2.0));
   totalEmissiveRadiance += uGelHi * st * 1.6 * (0.7 + 0.3 * sin(uTime * 2.3)) * (1.0 - uMechDim);
 }` : ''}
-${kind === 'led' ? `totalEmissiveRadiance += uGelHi * 2.4 * (0.75 + 0.25 * sin(uTime * 1.7)) * (1.0 - 0.6 * uMechDim);` : ''}
+${kind === 'led' ? `totalEmissiveRadiance += ${FACE_STYLE.seams === 'ref' ? 'vec3(0.1, 0.45, 1.0) * 1.7' : 'uGelHi * 2.4'} * (0.75 + 0.25 * sin(uTime * 1.7)) * (1.0 - 0.6 * uMechDim);` : ''}
 ${kind === 'cable' ? `{
   // feine Leuchtlinie entlang des Kabels, Lichtpakete laufen vom Kopf in den Rumpf
   float stripe = exp(-pow((fract(vU.x + 0.25) - 0.5) / 0.09, 2.0));

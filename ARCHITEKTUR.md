@@ -621,7 +621,7 @@ dev.html:
   (fester Punkt der Story), `&cam=orbit` (ziehen, Mausrad) oder `&cam=fix&pos=x,y,z&tgt=x,y,z&fov=30`, `&q=high`,
   `&post=0` (ohne Postprocessing), `&play` (läuft selbst), `&scroll=0` (nur Regler). Der Hintergrund (`backdrop`) läuft
   wie auf der Seite immer mit, `&bg=0` schaltet ihn ab. `?scene=backdrop` allein fährt mit dem Regler durch alle Farbwelten
-  (Kamerapfad der Seite). Szene robot zusätzlich: `&ab=mech|debug|glass|nobloom|nokey|noenv` (Diagnose).
+  (Kamerapfad der Seite). Szene robot zusätzlich: `&ab=mech|debug|glass|nobloom|nokey|noenv` (Diagnose), `&ab=still` (Kopf in Ruhelage, für Vergleichsbilder mit der Vorlage), `&ab=notone` (ohne Helligkeitskarte).
 - Scrollen auf der Testseite fährt `local` von 0 bis 1. Darum tastet `studio_capture.js` mit `--steps=N` das ganze Fenster ab.
 - In dev.html laufen Director, Runner und Looks exakt wie auf der Seite (nur ohne Dämpfung, wenn "Daempfung" aus ist).
 - Konsole: `window.__dev` (dev.html) und `window.__studio` (index.html) mit `engine`, `director`, `runner`, `ctx`.
@@ -639,11 +639,12 @@ Hinterkopf mit Schädelgitter und Kabelbündeln. Der frühere Helm-Roboter und V
 | Datei | Inhalt |
 | --- | --- |
 | `robot.js` | Einstieg (create), Ablauf pro Beat, Look, Hintergrund-Schalter |
-| `robot-face.js` | Gesicht und Figur (Version 5, Gesicht D): Formen auf dem Kontrollnetz, Stil (`FACE_STYLE`: Lider, Fugen, Augapfel, schlanker Rumpf, Aufheller), `?gesicht=alt` |
+| `robot-face.js` | Gesicht und Figur (Version 6, Gesicht nach Vorlage): Formen auf dem Kontrollnetz, Verzug auf die Vorlage (`warp`), Stil (`FACE_STYLE`: Lider, Fugen, Augapfel, schlanker Rumpf, Aufheller), `?gesicht=d` und `?gesicht=alt` zum Vergleich |
 | `robot-mesh.js` | `bust.bin` laden (einmal, Promise im Cache), Gesichtsausdruck (Lider, Mundwinkel), Catmull-Clark, Normalen |
 | `robot-layout.js` | Fugen und Öffnungen als Felder (GLSL): Gesichtsplatten, Lidfuge, Hinterkopf-Fenster, Glaskappe, Brustplatte |
 | `robot-materials.js` | Schale (Klarlack, Spaltmass als feine Rinne mit Fase), Muskel-Gel, Innenschale, Glas, Hologramm, Mechanik |
 | `robot-mech.js` | Augen (Blick folgt dezent der Kamera, Hornhaut mit Glanzlicht), Hals, Schädelgitter, Kabel, Ohrmodul |
+| `robot-tone.js` | Helligkeitskarte für das Gesicht nach Vorlage (Faktoren auf das Licht der Schale), erzeugt mit `tonemap.py` |
 | `robot-env.js` | eigene Studio-Umgebung, nur für die Spiegelungen (PMREM). Den Raum dahinter zeichnet backdrop.js |
 | `robot-geometry.js` | `makeHeadShape`: Kopfform für brain.js (Gehirn-Hardware sitzt an der Innenseite der Schale) |
 | `particles-shape.js` | Zielpunkte der Partikel-Büste (gleiches Netz, gleicher Drehpunkt `HEAD_PIVOT` wie robot.js) |
@@ -804,6 +805,75 @@ kennt), `robot-layout.js` (Fugen), `robot-materials.js` (Rumpf, Aufheller), `rob
   Millisekunden). Werkzeuge und Bilder: `studio-arbeit/gesicht-0711/` (`tools/prev.js` schnelle Vorschau der Schale,
   `tools/close.sh` Nahaufnahmen, `tools/story.sh` Stellen der Geschichte, `gesicht-D.jpg` Vergleich).
 - Offen: Poster (dunkel und hell) zeigen noch Gesicht und Figur von Version 4.
+
+### Version 6: Gesicht nach Vorlage (10.11.2026)
+
+Jonas hat am 10.11.2026 ein Bild als Vorlage geschickt (weisses Android-Gesicht von vorne: Plattenfugen, dunkle
+Aussparungen an Schläfe und Kiefer, blau leuchtende Ring-Augen, Ohrmodule wie Kopfhörer) und will es **deckungsgleich**:
+"mache alles genau wie das bild, damit wenn man danach die bilder übereinander legt es perfekt aussieht". Die Vorlage
+selbst liegt nicht im Repo und wird nicht als Textur verwendet (keine Nutzungsrechte), sie ist nur vermessen und in
+Geometrie und Shader nachgebaut. Standard ist seither **Gesicht r**. `?gesicht=d` zeigt Version 5, `?gesicht=alt`
+Version 4. Nur zum Messen: `?gesicht=rb` (ohne Verzug), `rm` (ohne den feinen Verzug der Augen), `rn` (Form von r ohne
+Bemalung, zeigt den echten Lidrand).
+
+- **Vorlagen-Koordinaten:** Die Vorlage misst 1345 x 1169 Bildpunkte, Mittelachse x 672, Massstab 526 Bildpunkte je
+  Einheit. Die Prüfkamera dazu: Position (0, -0.345, 9.65), Ziel (0, -0.345, 0.6), Öffnung 14 Grad, Fenster
+  1345 x 1169. Ein Punkt der Ruhelage landet bei `u = x * 9.0494 / (9.65 - z)` und
+  `v = -0.3317 + 9.0494 * (y + 0.345) / (9.65 - z)` (`REF_CAM` in robot-face.js, `lRef` im Shader); ein Bildpunkt der
+  Vorlage ist `u = dx / 526`, `v = (410 - y) / 526` (dx Abstand zur Mittelachse). Alle Masse in `REF`
+  (robot-layout.js) und in den Landmarken stehen in Bildpunkten der Vorlage, darum lassen sie sich direkt am Bild
+  nachmessen.
+- **Ruhelage gleich Vorlage (wichtig):** Fugen und Bemalung rechnen in der Ruhelage, gezeichnet wird der Kopf aber mit
+  dem Eigenleben (robot.js: Nicken, Drehen). Die ersten Vergleichsbilder entstanden mit 0.8 Grad Nicken: Die Form war
+  darauf angepasst, die Bemalung sass dadurch rund 5 Bildpunkte zu tief. Seither übernimmt der letzte Schritt der Form
+  (`op: 'pose'`) genau diese Haltung in die Ruhelage, und die Testseite hält den Kopf mit **`?ab=still`** in der
+  Ruhelage. Vergleichsbilder immer mit `ab=still` aufnehmen. Kontrolle: Die Schraubenköpfe liegen im Rendering auf 0.3
+  Bildpunkte bei ihren Massen.
+- **Form** (`VARIANTS.r` in robot-face.js): Formen von Gesicht D ohne das Lächeln, Augenhöhle 20 % grösser (`eyes`),
+  dann Verzüge (`warp`, Gauss-Kerne durch Landmarken und ihre Spiegelbilder, gerechnet in der Projektion der
+  Prüfkamera, zum Hinterkopf hin ausgeblendet): `R_WARP` (Kernbreite 0.13) legt Umriss, Kinn, Nase und Mund auf die
+  Vorlage, `R_EYE` (0.05) die Lidränder und das Nasenloch. Glätten (um den Mund, unter dem Auge, neben der Nase,
+  zwischen Nase und Oberlippe: die Vorlage ist glatt wie Porzellan, jede Welle zeigt sich im Glanz). Ganz am Schluss
+  `R_LID` (0.04): Lidrand genau auf die Vorlage, gemessen an `?gesicht=rn` in doppelter Grösse (Oberlid bis unter den
+  Lidstrich, Unterlid tiefer). Dann `pose`, danach die Lippen (`LIPS`, in Koordinaten der Vorlage): Mund 4 Bildpunkte
+  höher, Unterlippe voll nach vorne (sie lag 0.04 hinter der Oberlippe, im Profil ein Überbiss), Lippenbogen.
+- **Platten und Bemalung** (`REF` und `REF_GLSL` in robot-layout.js): Fugen als Linienzüge mit eigener Tiefe und
+  Breite (`lRefSeams`, die Breite geht über `lGapW` an die Schale), Kinnplatte als Kreisbogen, dunkle Aussparungen
+  als Vielecke (`lRefVentT`, `lRefVentJ`, `lRefVentS`), Schlitz oben, Schraubenköpfe. Auge als Vieleck mit 37 Punkten
+  (`REF.eye`, automatisch gemessen: dunkle Fläche um die Iris, beide Augen gemittelt) plus Strich zur Schläfe,
+  Braue als sich verjüngender Strich mit weicher Kante (`REF.brow`, je Spalte dunkelste Stelle und Breite bei halber
+  Tiefe gemessen), Mundlinie, Nasenloch als weicher Schatten (`lRefPaint`), Lippen leicht grauer (`lRefLips`). Die
+  Bemalung gilt am Auge auch für die Rückseiten der Schale (`lRefEyeIn`, sonst blitzt der Lidrand weiss) und schluckt
+  den Glanz (gerundeter Lidrand spiegelt sonst die Softbox). Kantenbreite aus der Projektion der Vorlage
+  (`fwidth(lRef)`), nicht aus der Ruhelage: an steilen Flächen verblasst die Bemalung sonst. Jedes Feld hat einen
+  Hüllkasten für den frühen Ausstieg und ist bei 0.03 gekappt: so bleibt es stetig (ein Sprung an der Kastenkante
+  ergäbe über die Ableitung der Fuge eine feine Linie).
+- **Licht nach Vorlage** (`robot-tone.js`, `uTone` und `uToneK` in der Schale): In der Vorlage kommt das Licht von
+  rechts oben, eine Gesichtshälfte liegt im Schatten, die Augenhöhlen sind dunkel. Eine Helligkeitskarte (Raster
+  24 x 31, alle 32 Bildpunkte ein Faktor 0.3 bis 2.4, weich gefiltert) legt dieses Licht auf das fertige Licht der
+  Schale: nur am Kopf, nur vorne, im hellen Thema mit 45 %. Die Karte enthält keine Bilddetails, nur das Verhältnis
+  der weichgezeichneten Helligkeit Vorlage zu Rendering. Neu messen: Aufnahme mit `ab=still,notone`, dann
+  `tools/tonemap.py <name>`, neue Aufnahme mit Karte und einmal `tools/tonemap.py <name> --iter` (die Tonwertkurve
+  ist nicht linear). Nach jeder Änderung an Form oder Material des Gesichts wiederholen. Stand: mittlere Abweichung
+  der Helligkeit im Gesicht 15 von 255 Stufen, Korrelation 0.90 (ohne Karte 42 und 0.50).
+- **Augen** (robot-mech.js): Augapfel 34 % grösser, dunkel und matt (keine Hornhaut, kein Lichtpunkt), über `eyeOff`
+  so versetzt, dass der helle Kern auf 0.1 Bildpunkte auf der Vorlage sitzt. Iris als leuchtende Scheibe: Kern weiss
+  bis Radius 3, cyan bis 7, tiefes Blau 8 bis 14, Ringe bei 18 und 22, breiter Ring bei 27.7 mit hellen Abschnitten,
+  Rand 31.5 (Bildpunkte der Vorlage). Farben am radialen Profil der Vorlage abgeglichen (`tools/iris.py`). Blick ruht
+  fast gerade und folgt der Kamera nur mit 45 %.
+- **Ohrmodule:** runde Muschel wie ein Kopfhörer (dunkles Polster, weisses Band, dunkle Kappe mit Gitter, Chromring und
+  blauen Leuchtbögen), leicht nach vorne gedreht.
+- **Hals:** schwarze, glänzende Mechanik statt leuchtendem Gel (Mechanik `gel` und `housing` oberhalb des Kragens
+  dunkel, einzelne blaue Lichter).
+- **Prüfen:** Werkzeuge in `studio-arbeit/gesicht-1011/tools/`: `shot.sh <name> [gesicht] [extra]` rendert
+  deckungsgleich zur Vorlage (`SC=2` doppelt so gross, extra `ab=still`), `ov.py` legt Rendering und Vorlage
+  übereinander (halb und halb, 50 zu 50, Kanten), `sbs.py` und `tb.py` stellen sie nebeneinander, `grid.py` zeichnet
+  ein Messraster, `tone.py` vergleicht die Helligkeit, `iris.py` die Iris, `brow.py` die Brauen, `prof.mjs` gibt das
+  Profil der Gesichtsmitte aus.
+- **Noch nicht wie die Vorlage:** keine Wimpern und keine Lidfalte, das Auge ist eine glatte dunkle Mandel; die
+  äusseren Helmlagen an der Schläfe sind nur gemalt; Ohrmodul und Hals sind einfacher gebaut; Glanzlichter liegen
+  anders (anderes Studio); Hintergrund der Seite statt Schwarz.
+- Poster (dunkel und hell, Desktop und Handy) für intro, robot, zoom und outro am 10.11.2026 neu aufgenommen.
 
 ### Quellen und Lizenzen (CREDITS)
 

@@ -21,8 +21,10 @@
 //   brain   Hologramm leise um das Gehirn, bis die Kamera eintaucht
 //   outro   Bueste wieder ganz, Augen leuchten im Lichtblitz auf
 // Hintergrund: keiner in dieser Szene. Das Studio-Gegenlicht hinter der Bueste kommt aus backdrop.js (Farbwelt robot).
-// Diagnose nur in dev.html: ?ab=mech (ohne Schale), ab=debug (Fugen rot), ab=nobloom, ab=nokey, ab=noenv.
+// Diagnose nur in dev.html: ?ab=mech (ohne Schale), ab=debug (Fugen rot), ab=nobloom, ab=nokey, ab=noenv,
+// ab=still (Kopf in Ruhelage, fuer Vergleichsbilder mit der Vorlage), ab=notone (ohne Helligkeitskarte).
 import { bustLevel1, bustLevel2, toGeometry, subMesh } from './robot-mesh.js';
+import { TONE } from './robot-tone.js';
 import { makeShellMaterial, makeMuscleMaterial, makeHoloMaterial, makeCoreMaterial, makeGlassMaterial } from './robot-materials.js';
 import { buildStudioEnv } from './robot-env.js';
 import { buildMechanics } from './robot-mech.js';
@@ -77,6 +79,8 @@ export async function create(ctx) {
 
   /* --------------------------------------------------------- Uniforms */
   const headMat = new THREE.Matrix4();
+  const toneTex = new THREE.DataTexture(Uint8Array.from(TONE.data, (v) => Math.max(0, Math.min(255, v))), TONE.w, TONE.h, THREE.RedFormat);
+  toneTex.magFilter = THREE.LinearFilter; toneTex.minFilter = THREE.LinearFilter; toneTex.needsUpdate = true;
   const U = {
     uTime: shared.uTime,
     uHeadMat: { value: headMat },
@@ -95,6 +99,9 @@ export async function create(ctx) {
     uGelHi: { value: palette.signal.clone().multiplyScalar(0.85) },
     uStruct: { value: palette.steel.clone().multiplyScalar(0.22) },
     uRidge: { value: palette.white.clone().lerp(palette.ice, 0.2).multiplyScalar(0.3) },
+    // Helligkeitskarte nach Vorlage (robot-tone.js): Faktor je Rasterpunkt, linear gefiltert. uToneK: Staerke
+    uTone: { value: toneTex },
+    uToneK: { value: 1 },
     uCoreDepth: { value: CORE },
     uPulse: { value: new THREE.Vector4(0.22, 1.0, 1.0, 0) },
     uDepth: { value: DEPTH },
@@ -159,6 +166,12 @@ export async function create(ctx) {
   const pivot = new THREE.Vector3().fromArray(lm.headPivot);
   const _v = new THREE.Vector3();
   const st = { yaw: 0, pitch: 0, eye: 0, wall: 0 };
+  // Testseite: ?ab=still haelt den Kopf in der Ruhelage (ohne Eigenleben und Maus). So ist die Vorderansicht genau die
+  // Projektion der Ruhelage, in der robot-layout.js die Bemalung nach Vorlage rechnet (Vergleichsbilder).
+  const still = !!ctx.dev && dbgFlags.includes('still');
+  // ?ab=notone: ohne Helligkeitskarte (Grundlage, um die Karte neu zu messen)
+  const noTone = !!ctx.dev && dbgFlags.includes('notone');
+  if (ctx.dev) window.__abPose = { st, euler };
   const scan = {};
   // Zustand fuer die Mechanik, einmal angelegt und pro Frame nur ueberschrieben (keine Allokation pro Frame)
   const ms = { follow: 1, scan, weight: 1, leak: 0, inOutro: false, out: null, irisBoost: 0, buildLine: 9, camPos: ctx.camera.position, gaze: 1, gazeAt: null };
@@ -231,9 +244,10 @@ export async function create(ctx) {
         const ty = clamp01((Math.atan2(gazePt.x - pivot.x, gazePt.z - pivot.z) + 0.6) / 1.2) * 1.2 - 0.6;
         outroYaw += (ty * 0.32 - outroYaw) * (1 - Math.exp(-dt * 1.2));
       } else { ms.gazeAt = null; outroYaw *= Math.exp(-dt * 2); }
-      st.yaw += ((pointer.sx * 0.26 * (1 - 0.5 * gazeMix) + idleYaw + outroYaw) * follow - st.yaw) * k;
-      st.pitch += ((-pointer.sy * 0.1 + idlePitch) * follow - st.pitch) * k;
-      const roll = (Math.sin(time * 0.11) * 0.01 - st.yaw * 0.06) * follow;
+      const poseF = still ? 0 : follow;
+      st.yaw += ((pointer.sx * 0.26 * (1 - 0.5 * gazeMix) + idleYaw + outroYaw) * poseF - st.yaw) * k;
+      st.pitch += ((-pointer.sy * 0.1 + idlePitch) * poseF - st.pitch) * k;
+      const roll = (Math.sin(time * 0.11) * 0.01 - st.yaw * 0.06) * poseF;
       euler.set(st.pitch, st.yaw, roll);
       headMat.makeRotationFromEuler(euler);
       _v.copy(pivot).applyMatrix4(headMat);
@@ -243,6 +257,8 @@ export async function create(ctx) {
       body.position.y = breath * 0.004 * follow;
 
       U.uScanY.value = Math.min(scan.scanY, buildLine);
+      // Licht nach Vorlage: im hellen Thema schwaecher (dort ist das Gesicht bewusst hell und gleichmaessig)
+      U.uToneK.value = noTone ? 0 : (ctx.theme && ctx.theme.light ? 0.45 : 1);
       // Hochformat: im Roentgen nur Kopf und Hals, der Rumpf blendet nach unten aus (sonst wirre Umrisse am Handy)
       const fallK = !inOutro && ctx.size.width / Math.max(1, ctx.size.height) < 0.85 ? scan.xray : 0;
       U.uFall.value.set(-3.5 + 1.75 * fallK, -2.95 + 1.6 * fallK);
@@ -347,6 +363,7 @@ export async function create(ctx) {
       Object.values(mats).forEach((m) => m.dispose());
       mech.dispose();
       env.dispose();
+      toneTex.dispose();
       if (envLight) envLight.dispose();
       group.clear();
     },

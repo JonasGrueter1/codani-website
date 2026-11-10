@@ -144,12 +144,17 @@ export function buildMechanics(THREE, o) {
   // Glasaugen: Augapfel (helles Porzellan-Grau), Iris in kuehlem Grau-Tuerkis mit feinen radialen Fasern, dunkle Pupille
   // mit leisem Schein, darueber eine klare Hornhaut-Kuppel mit starker Spiegelung. Im Roentgenbild ueber der Scan-Linie weg.
   const eyeR = 0.128 * (FACE_STYLE.eye || 1);
+  // Farben der Iris nach Vorlage (linear, vor der Tonwertkurve; an Aufnahmen gegen die Vorlage abgeglichen)
+  const IR = { deep: ['0.0', '0.05', '0.25'], blue: ['0.01', '0.2', '0.7'], cyan: ['0.06', '0.66', '1.0'], core: '1.3', halo: '1.25' };
+  // groesserer Augapfel sitzt entsprechend tiefer: die Iris bleibt in der Lidebene
+  const eyeBack = eyeR - 0.128;
   const eyeGeo = new THREE.SphereGeometry(eyeR, S(56, 32), S(36, 22));
   const corneaGeo = new THREE.SphereGeometry(eyeR * 1.04, S(48, 28), S(14, 10), 0, Math.PI * 2, 0, 0.66).rotateX(Math.PI / 2);
   const eyeMat = new THREE.MeshPhysicalMaterial({
     // Helligkeit des Augapfels je Gesichts-Variante (robot-face.js, Version 4: 0.42)
-    color: palette.white.clone().multiplyScalar(FACE_STYLE.sclera), roughness: 0.32, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.12,
-    envMap: env, envMapIntensity: 0.8,
+    // Leuchtaugen (glow): matter, ohne Lichtpunkt der Lampen (die Vorlage hat keinen auf der Iris)
+    color: palette.white.clone().multiplyScalar(FACE_STYLE.sclera), roughness: FACE_STYLE.glow ? 0.55 : 0.32, metalness: 0, clearcoat: FACE_STYLE.glow ? 0 : 0.6, clearcoatRoughness: 0.12,
+    envMap: env, envMapIntensity: FACE_STYLE.glow ? 0.06 : 0.8,
   });
   const EU = {
     uIris: { value: 1 },
@@ -185,23 +190,42 @@ export function buildMechanics(THREE, o) {
   diffuseColor.rgb *= (1.0 - 0.55 * limbus) * (1.0 - 0.96 * pupil);
   float ring = exp(-pow((rr - 0.435) / 0.012, 2.0)) * front;
   totalEmissiveRadiance += uIrisCol * uIris * (ring * 0.07 + pupil * 0.12 * (1.0 - rr / 0.16) + irisM * fib * 0.03);
-${FACE_STYLE.glow ? `  // Gesicht nach Vorlage: dunkles Auge, leuchtende blaue Ringe um einen hellen Kern
-  float g0 = exp(-pow(rr / 0.09, 2.0));
-  float g1 = exp(-pow((rr - 0.24) / 0.026, 2.0));
-  float g2 = exp(-pow((rr - 0.39) / 0.022, 2.0));
-  float g3 = exp(-pow((rr - 0.54) / 0.024, 2.0));
-  float halo = (1.0 - smoothstep(0.0, 0.62, rr));
-  // ganzer sichtbarer Augapfel dunkel (wie eine Kameralinse), kein weisses Auge
-  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.004, 0.01, 0.03), max(irisM, front * 0.92));
-  totalEmissiveRadiance += front * uIris * (uIrisCol * (g1 * 0.9 + g2 * 0.7 + g3 * 1.0 + halo * 0.22) + vec3(0.75, 0.9, 1.0) * g0 * 1.8);` : ''}
+${FACE_STYLE.glow ? `  // Gesicht nach Vorlage: dunkler Augapfel wie eine Kameralinse, Iris als leuchtende blaue Scheibe mit Ringen um einen
+  // hellen Kern. Radien in Bildpunkten der Vorlage (526 je Einheit), Farben am radialen Profil der Vorlage gemessen:
+  // Kern weiss bis 3, cyan bis 7, tiefes Blau 8 bis 14, Ring 18, feiner Ring 22, breiter Ring 28.4 mit hellen
+  // Abschnitten, Rand der Iris 31.5, danach dunkles Marineblau.
+  float pxr = length(vEP.xy) * 526.0;
+  float fz = smoothstep(-0.02, 0.03, vEP.z);
+  float a2 = atan(vEP.y, vEP.x);
+  vec3 cDeep = vec3(${IR.deep.join(', ')});
+  vec3 cBlue = vec3(${IR.blue.join(', ')});
+  vec3 cCyan = vec3(${IR.cyan.join(', ')});
+  float inIris = 1.0 - smoothstep(30.5, 33.0, pxr);
+  vec3 base = mix(vec3(0.0015, 0.003, 0.008), vec3(0.0, 0.004, 0.02), inIris);
+  diffuseColor.rgb = mix(diffuseColor.rgb, base, fz);
+  float core = exp(-pow(pxr / 2.7, 2.0));
+  float halo = exp(-pow(pxr / 5.2, 2.0));
+  float plat = smoothstep(13.0, 16.5, pxr) * (1.0 - smoothstep(24.5, 27.0, pxr));
+  float disc = inIris * 0.8;
+  float rA = exp(-pow((pxr - 17.8) / 1.5, 2.0));
+  float rA2 = exp(-pow((pxr - 22.0) / 1.1, 2.0));
+  float rB = exp(-pow((pxr - 27.7) / 2.0, 2.0));
+  // hellere Abschnitte des breiten Rings: links, oben rechts, rechts unten
+  float sg = max(max(smoothstep(0.95, 0.5, abs(abs(a2) - 3.0)), smoothstep(0.55, 0.25, abs(a2 - 0.9))), smoothstep(0.5, 0.2, abs(a2 + 0.45)));
+  float tick = smoothstep(0.55, 0.85, cos(a2 * 30.0)) * smoothstep(23.6, 24.4, pxr) * (1.0 - smoothstep(25.8, 26.6, pxr));
+  float outer = (1.0 - inIris) * exp(-max(pxr - 31.5, 0.0) / 7.0);
+  vec3 glow = vec3(0.9, 0.98, 1.0) * core * ${IR.core} + cCyan * halo * ${IR.halo} + cDeep * disc
+    + vec3(0.0, 0.07, 0.2) * plat + cBlue * rA * 0.4 + cBlue * rA2 * 0.25 + mix(cBlue * 0.35, cCyan * 0.95, sg) * rB
+    + cBlue * tick * 0.25 + vec3(0.0, 0.03, 0.09) * outer;
+  totalEmissiveRadiance = fz * uIris * glow;` : ''}
 }`);
   };
-  eyeMat.customProgramCacheKey = () => (FACE_STYLE.glow ? 'ab-eye3g' : 'ab-eye3');
+  eyeMat.customProgramCacheKey = () => (FACE_STYLE.glow ? 'ab-eye7g' : 'ab-eye3');
   // Hornhaut: nur Spiegelung (schwarze Grundfarbe), Deckung aus der Helligkeit der Spiegelung. So erscheint das
   // Glanzlicht der Softbox als klarer Lichtpunkt im Auge (Augenglanz), der Rest bleibt glasklar.
   const corneaMat = new THREE.MeshPhysicalMaterial({
     color: 0x000000, roughness: 0.03, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02,
-    envMap: env, envMapIntensity: 3.2, transparent: true, depthWrite: false,
+    envMap: env, envMapIntensity: FACE_STYLE.glow ? 0.1 : 3.2, transparent: true, depthWrite: false,
   });
   corneaMat.onBeforeCompile = (sh) => {
     sh.uniforms.uScanY = U.uScanY;
@@ -223,12 +247,17 @@ diffuseColor.a = ca;
   const Z = V(0, 0, 1);
   for (const e of [lm.eyeL, lm.eyeR]) {
     const m = new THREE.Mesh(eyeGeo, eyeMat);
-    m.position.set(e[0], e[1], e[2] - 0.004);
-    const rest = V(e[0] * 0.2 - e[0], 0.02, 3).normalize();
+    const eo = FACE_STYLE.eyeOff || [0, 0];
+    m.position.set(e[0] + Math.sign(e[0]) * eo[0], e[1] + eo[1], e[2] - 0.004 - eyeBack * 0.85);
+    // Gesicht nach Vorlage: fast geradeaus (der grosse Augapfel verschiebt die Iris sonst sichtbar zur Nase)
+    const rest = (FACE_STYLE.glow ? V(-e[0] * 0.25, 0, 3) : V(e[0] * 0.2 - e[0], 0.02, 3)).normalize();
     m.quaternion.setFromUnitVectors(Z, rest);
-    const c = new THREE.Mesh(corneaGeo, corneaMat);
-    c.renderOrder = 6;
-    m.add(c);
+    // Hornhaut mit Glanzlicht nur bei den Glasaugen: die Leuchtringe der Vorlage haben keinen Lichtpunkt
+    if (!FACE_STYLE.glow) {
+      const c = new THREE.Mesh(corneaGeo, corneaMat);
+      c.renderOrder = 6;
+      m.add(c);
+    }
     eyes.push({ m, rest, dir: rest.clone() });
     head.add(m);
   }
@@ -748,6 +777,38 @@ diffuseColor.a = ca;
     if (n.x * c.x < 0) n.negate();
     const R = (e.rmax || 0.18) + 0.005;
     const M = place(c.clone().addScaledVector(n, 0.002), n);
+    if (FACE_STYLE.seams === 'ref') {
+      // Gesicht nach Vorlage: Ohrmodul wie ein Kopfhoerer. Dunkles Polster am Kopf, weisse Schale, auf der
+      // Aussenflaeche ein dunkler Ring, eine kleine Sensorkappe und ein blaues Lichtband. Lage und Groesse aus der
+      // Vorlage (Mitte auf Hoehe 440 von 1169 Bildpunkten, Radius rund 140 Bildpunkte), leicht nach vorne gedreht.
+      // Darunter deckt eine flache Platte die Oeffnung der Ohrmuschel ab.
+      kits.ceramic.push(prep(new THREE.LatheGeometry([[0.0, 0.012], [R - 0.012, 0.012], [R - 0.002, 0.002], [R, -0.02], [R - 0.004, -0.06]].map(([x, y]) => new THREE.Vector2(x, y)).reverse(), S(96, 48)), 1, M));
+      const sg = Math.sign(c.x) || 1;
+      const toe = 0.06;
+      const A = V(sg * Math.cos(toe), 0, Math.sin(toe));
+      // Mitte auf der Kopfseite; t zaehlt entlang der Achse nach aussen (Polster 0 bis 0.07, Schale bis 0.146, dunkler
+      // Ring bis 0.16, Kappe bis 0.21: von vorne die vier Baender der Vorlage)
+      const C = V(sg * 0.64, -0.05, -0.065);
+      const MC = place(C, A);
+      const lathe = (pts) => new THREE.LatheGeometry(pts.map(([x, y]) => new THREE.Vector2(x, y)).reverse(), S(128, 64));
+      kits.graphiteS.push(prep(lathe([[0.0, 0.07], [0.235, 0.07], [0.255, 0.06], [0.26, 0.04], [0.255, -0.01], [0.22, -0.05]]), 1, MC));
+      kits.ceramic.push(prep(lathe([[0.0, 0.147], [0.2, 0.148], [0.25, 0.146], [0.272, 0.135], [0.28, 0.115], [0.28, 0.085], [0.27, 0.072], [0.24, 0.068]]), 1, MC));
+      kits.graphiteS.push(prep(lathe([[0.0, 0.162], [0.214, 0.162], [0.216, 0.14]]), 1, MC));
+      // Kappe dunkel (in der Vorlage ist die aeussere Scheibe schwarz glaenzend mit blauem Lichtring, weiss ist nur das Band dahinter)
+      kits.graphiteS.push(prep(lathe([[0.0, 0.207], [0.05, 0.207], [0.056, 0.212], [0.19, 0.212], [0.214, 0.204], [0.228, 0.19], [0.23, 0.172], [0.225, 0.161], [0.2, 0.158]]), 1, MC));
+      kits.grille.push(prep(new THREE.CircleGeometry(0.05, S(40, 24)).rotateX(-Math.PI / 2).translate(0, 0.2075, 0), 1, MC));
+      kits.chromeS.push(prep(new THREE.TorusGeometry(0.053, 0.005, 10, S(56, 28)).rotateX(Math.PI / 2).translate(0, 0.212, 0), 1, MC));
+      // blaue Lichter als kurze Baender auf der Wand, nach vorne gerichtet (wie in der Vorlage auf Augenhoehe aussen
+      // und zwei kleinere darunter), dazu ein Lichtring auf der Aussenflaeche
+      const inv = new THREE.Quaternion().setFromUnitVectors(up, A).invert();
+      const ang = (w) => { const l = w.clone().normalize().applyQuaternion(inv); return Math.atan2(l.z, l.x); };
+      const arc = (phi, span, r, tube, t) => new THREE.TorusGeometry(r, tube, 8, S(40, 20), span).rotateX(Math.PI / 2).rotateY(-(phi - span / 2)).translate(0, t, 0);
+      kits.led.push(prep(arc(ang(V(0, 0.02, 1)), 0.44, 0.2305, 0.0075, 0.184), 1, MC));
+      kits.led.push(prep(arc(ang(V(0, -0.5, 0.87)), 0.13, 0.281, 0.0065, 0.108), 1, MC));
+      kits.led.push(prep(arc(ang(V(0, -0.8, 0.6)), 0.1, 0.2305, 0.006, 0.184), 1, MC));
+      kits.led.push(prep(arc(ang(V(0, 0, -1)), 6.2832, 0.16, 0.0045, 0.2125), 1, MC));
+      continue;
+    }
     // flache Scheibe mit zwei Fasen, innen eine Stufe, kleines Gitter in der Mitte (Sensor), Chrom-Ring
     const prof = [
       [0.052, 0.02], [0.058, 0.026], [0.066, 0.027], [R * 0.62, 0.027], [R * 0.62 + 0.006, 0.022], [R * 0.62 + 0.012, 0.021],
@@ -877,7 +938,7 @@ diffuseColor.a = ca;
         const kk = 1 - Math.exp(-dt * 6);
         for (const E of eyes) {
           _gd.copy(_cam).sub(E.m.position).normalize();
-          const front = smoothstep(0.35, 0.75, _gd.z) * (s.gaze ?? 1);
+          const front = smoothstep(0.35, 0.75, _gd.z) * (s.gaze ?? 1) * (FACE_STYLE.glow ? 0.45 : 1);
           // Winkel begrenzen: seitlich hoechstens ~16 Grad, vertikal ~9 Grad
           const yaw = clamp(Math.atan2(_gd.x, _gd.z) - Math.atan2(E.rest.x, E.rest.z), -0.28, 0.28) * front;
           const pit = clamp(Math.asin(clamp(_gd.y, -1, 1)) - Math.asin(E.rest.y), -0.16, 0.16) * front;

@@ -40,7 +40,7 @@ const MODULES = [
   'js/scenes/cables-paths.js', 'js/scenes/cables-shaders.js', 'js/scenes/cables.js', 'js/nodes.js',
   'js/scenes/dna-atlas.js', 'js/scenes/dna-code.js', 'js/scenes/dna-build.js', 'js/scenes/dna-shaders.js', 'js/scenes/dna.js',
   'js/scenes/particles-glsl.js', 'js/scenes/particles-shape.js', 'js/scenes/particles.js',
-  'js/scenes/robot-face.js', 'js/scenes/robot-mesh.js', 'js/scenes/robot-layout.js', 'js/scenes/robot-materials.js', 'js/scenes/robot-mech.js',
+  'js/scenes/robot-face.js', 'js/scenes/robot-tone.js', 'js/scenes/robot-mesh.js', 'js/scenes/robot-layout.js', 'js/scenes/robot-materials.js', 'js/scenes/robot-mech.js',
   'js/scenes/robot-env.js', 'js/scenes/robot-geometry.js', 'js/scenes/robot.js',
 ];
 

@@ -47,19 +47,12 @@ function faceSeamsGLSL(st) {
     }`;
   }
   if (st.seams === 'ref') {
-    return `    // Gesicht nach Vorlage: Stirnplatte, Wangen- und Kinnplatten, Schrauben, Braue und Lidrand als dunkle Linie
-    if (q.z > 0.12 && face < 0.05) {
-      float dc = max(lRefSeams(q.xy), face);
-      if (dc < d) { d = dc; lSeamK = 0.85; }
-      // Schrauben, Braue und Lidstrich nur vorne (von der Seite waeren sie verzerrte Striche)
-      if (q.z > 0.42) {
-        float ds = lRefScrews(q.xy);
-        if (ds < d) { d = ds; lSeamK = 0.9; }
-        float db = lRefBrow(q.xy);
-        if (db < d) { d = db; lSeamK = 1.0; }
-        float dl = lLidRing(q.xy);
-        if (dl < d) { d = dl; lSeamK = 1.0; }
-      }
+    return `    // Gesicht nach Vorlage: Fugen, Raender der Aussparungen und Schrauben in Vorlagen-Koordinaten (nur vorne)
+    if (q.z > -0.15) {
+      vec2 r = lRef(q);
+      float kk; float ww;
+      float dr = lRefSeams(r, kk, ww);
+      if (dr < d) { d = dr; lSeamK = kk; lGapW = ww; }
     }`;
   }
   const lid = `      float dl = lLid(q.xy);
@@ -69,6 +62,147 @@ function faceSeamsGLSL(st) {
 ${lid}
     }`;
 }
+
+
+/* ------------------------------------------------------------------ Gesicht nach Vorlage (FACE_STYLE.seams 'ref') */
+// Alle Masse in Bildpunkten der Vorlage: [Abstand zur Mittelachse (x 672), Hoehe y]. Umrechnung in Vorlagen-Koordinaten
+// wie robot-face.js (526 Bildpunkte je Einheit, Ursprung y 410). Gemessen an Rasterbildern der Vorlage.
+const rp2 = (dx, y) => `vec2(${(dx / 526).toFixed(4)}, ${((410 - y) / 526).toFixed(4)})`;
+const rlen = (n) => (n / 526).toFixed(5);
+const chain = (pts) => pts.slice(1).map((q, i) => `lLine(p, ${rp2(...pts[i])}, ${rp2(...q)})`).reduce((a, b) => `min(${a}, ${b})`);
+const taper = (pts) => pts.slice(1).map((q, i) => `lTaper(p, ${rp2(pts[i][0], pts[i][1])}, ${rp2(q[0], q[1])}, ${rlen(pts[i][2])}, ${rlen(q[2])})`).reduce((a, b) => `min(${a}, ${b})`);
+// Huellkasten (Vorlagen-Koordinaten) fuer einen fruehen Ausstieg. Jedes Feld ist bei BB gekappt: ausserhalb des Kastens
+// gilt derselbe Wert, das Feld bleibt also stetig (ein Sprung an der Kastenkante ergaebe ueber die Ableitung eine Linie).
+const bbox = (pts, pad = 0) => {
+  const us = pts.map((q) => q[0] / 526); const vs = pts.map((q) => (410 - q[1]) / 526);
+  const f = (x) => x.toFixed(4);
+  return `vec2 bb = max(vec2(${f(Math.min(...us) - pad)}, ${f(Math.min(...vs) - pad)}) - p, p - vec2(${f(Math.max(...us) + pad)}, ${f(Math.max(...vs) + pad)})); float ob = max(bb.x, bb.y);`;
+};
+const poly = (name, pts) => `float ${name}(vec2 p) {
+  ${bbox(pts)}
+  if (ob > BB) return BB;
+  const vec2 v[${pts.length}] = vec2[${pts.length}](${pts.map((q) => rp2(...q)).join(', ')});
+  float d = dot(p - v[0], p - v[0]); float s = 1.0;
+  for (int i = 0, j = ${pts.length - 1}; i < ${pts.length}; j = i, i++) {
+    vec2 e = v[j] - v[i]; vec2 w = p - v[i];
+    vec2 b = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    d = min(d, dot(b, b));
+    bvec3 c = bvec3(p.y >= v[i].y, p.y < v[j].y, e.x * w.y > e.y * w.x);
+    if (all(c) || all(not(c))) s = -s;
+  }
+  return min(s * sqrt(d), BB);
+}`;
+// Kreis durch drei Punkte (Bildpunkte) -> [Mitte als GLSL, Radius]
+const circ3 = (a, b, c) => {
+  const d = 2 * (a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1]));
+  const ux = ((a[0] ** 2 + a[1] ** 2) * (b[1] - c[1]) + (b[0] ** 2 + b[1] ** 2) * (c[1] - a[1]) + (c[0] ** 2 + c[1] ** 2) * (a[1] - b[1])) / d;
+  const uy = ((a[0] ** 2 + a[1] ** 2) * (c[0] - b[0]) + (b[0] ** 2 + b[1] ** 2) * (a[0] - c[0]) + (c[0] ** 2 + c[1] ** 2) * (b[0] - a[0])) / d;
+  return [rp2(ux, uy), rlen(Math.hypot(a[0] - ux, a[1] - uy))];
+};
+export const REF = {
+  // Fugen: k Tiefe (1 Plattenfuge), w halbe Breite der Rinne in Einheiten
+  seams: [
+    { k: 1, w: 0.0042, pts: [[146, -40], [137, 0], [102, 150], [94, 158], [82, 162], [0, 160]] }, // Stirnplatte
+    { k: 0.5, w: 0.0021, pts: [[258, 60], [245, 100], [236, 160], [235, 215]] }, // Schlaefe, feine Kante
+    { k: 1, w: 0.0036, pts: [[235, 215], [239, 232], [250, 248], [298, 306], [297, 318], [287, 348]] }, // Schlaefenplatte
+    { k: 0.7, w: 0.0026, pts: [[287, 348], [290.5, 380], [294, 396], [314, 387]] }, // Kante neben dem Auge
+    { k: 1, w: 0.0036, pts: [[316, 457], [299, 480.5], [281.5, 498.6], [270.4, 505.5], [250.7, 519.4], [234, 530.5], [229.8, 540], [209.3, 568], [188.9, 592], [178.7, 602], [173.6, 612], [168.1, 640], [164.4, 680], [159.7, 720], [158.5, 733], [152, 797], [120, 826], [91, 863], [80, 881]] }, // Wange bis Kinn
+    { k: 1, w: 0.0032, pts: [[227, 702], [158.5, 733]] }, // von der Kieferaussparung zur Wangenfuge
+  ],
+  // Kinnplatte: feiner Bogen (Kreis durch die Enden und den Scheitel)
+  chin: circ3([-79.5, 881], [0, 832], [79.5, 881]),
+  chinY: 881,
+  // dunkle Aussparungen
+  ventTemple: [[305, 118], [257, 98], [256, 128], [261, 136], [302, 176], [310, 150]],
+  ventJaw: [[273, 582], [265, 592], [252.6, 612], [245, 632], [240, 655], [233.4, 680], [227, 700], [237, 694], [247.5, 676], [256, 655], [263, 632], [268.6, 610], [273, 595]],
+  slotTop: [[253, 45, 5], [204, 15, 5]],
+  // dunkler Spalt zwischen Schlaefenplatte und aeusserer Schale (aussen bleibt ein heller Steg stehen)
+  ventStrut: [[316, 180], [328, 184], [331, 250], [328, 320], [316, 322], [318, 250]],
+  // Lippen: leicht grauer als das Gesicht (Umriss von Ober- und Unterlippe)
+  lipU: [[0, 694], [12, 690], [32, 688], [60, 703], [85, 716], [111, 730], [60, 727], [0, 723]],
+  lipL: [[0, 723], [60, 727], [111, 730], [92, 748], [62, 764], [30, 771], [0, 773]],
+  // Nasenloch als weicher Schatten: Mitte, Halbachsen
+  nostril: [38, 613, 17, 8],
+  screws: [[211, 62], [299, 219], [280, 478], [219.5, 743]],
+  // Braue: Mittellinie mit halber Dicke
+  // (automatisch gemessen: dunkelste Stelle je Spalte und Breite bei halber Tiefe, beide Seiten gemittelt)
+  brow: [[284, 346, 1.2], [270, 336.5, 2.0], [250, 330, 2.6], [230, 326, 4.5], [210, 327, 5.5], [190, 329, 6.5], [170, 332.5, 7.0],
+    [150, 336, 7.5], [130, 340, 7.5], [110, 345, 8.0], [90, 353, 8.5], [75, 358.5, 7.5], [62, 364, 5.5]],
+  // Mundlinie: feiner dunkler Strich zwischen den Lippen, zu den Mundwinkeln hin duenner
+  mouth: [[0, 723, 1.7], [60, 727, 1.6], [100, 729.5, 1.2], [114, 730.5, 0.5]],
+  // Auge: dunkle Mandel (Lidstrich, Lidkante und Augapfel) als Umriss, automatisch an der Vorlage gemessen (dunkle
+  // Flaeche um die Iris, beide Augen gemittelt): oben von innen nach aussen, unten zurueck. Dazu der Strich zur Schlaefe.
+  eye: [[73, 441], [76, 430], [80, 420], [90, 404], [100, 392.5], [110, 386.5], [120, 381], [130, 378], [140, 376],
+    [150, 372.5], [160, 371.5], [180, 372], [200, 374], [210, 375.5], [220, 378.5], [230, 382.5], [240, 387],
+    [250, 395.5], [258, 404], [264, 411], [258, 419], [250, 426.5], [240, 430.5], [230, 437], [220, 442.5],
+    [210, 446.5], [200, 449], [190, 451], [170, 452], [160, 451.5], [150, 451], [140, 449.5], [130, 447.5],
+    [110, 446], [90, 447.5], [80, 448], [74, 446]],
+  wing: [[256, 412, 5], [270, 410, 3.2], [281, 404.5, 2.5], [294, 396.5, 1.2]],
+};
+const REF_GLSL = FACE_STYLE.seams !== 'ref' ? '' : `
+// ---- Gesicht nach Vorlage: Vorlagen-Koordinaten (Zentralprojektion der Pruefkamera, wie REF_CAM in robot-face.js)
+const float BB = 0.03;
+vec2 lRef(vec3 q) { float d = 9.65 - q.z; return vec2(q.x * 9.0494 / d, -0.3317 + 9.0494 * (q.y + 0.345) / d); }
+float lTaper(vec2 p, vec2 a, vec2 b, float ra, float rb) {
+  vec2 pa = p - a; vec2 ba = b - a; float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h) - mix(ra, rb, h);
+}
+${poly('lRefVentT', REF.ventTemple)}
+${poly('lRefVentJ', REF.ventJaw)}
+${poly('lRefVentS', REF.ventStrut)}
+${poly('lRefLipU', REF.lipU)}
+${poly('lRefLipL', REF.lipL)}
+// Lippen (0 .. 1), weiche Kante
+float lRefLips(vec3 p) {
+  vec3 q = vec3(abs(p.x), p.y, p.z);
+  if (q.z < 0.5 || q.y > -0.3 || q.y < -0.9) return 0.0;
+  vec2 r = lRef(q);
+  // Oberlippe etwas grauer, Unterlippe fast wie das Gesicht (in der Vorlage hell mit Glanz)
+  return max(1.0 - smoothstep(-0.004, 0.006, lRefLipU(r)), 0.45 * (1.0 - smoothstep(-0.004, 0.006, lRefLipL(r))));
+}
+float lRefSlot(vec2 p) { return ${taper(REF.slotTop)}; }
+float lRefMouth(vec2 p) { return ${taper(REF.mouth)}; }
+float lRefScrew(vec2 p) {
+  float d = 1e3;
+${REF.screws.map((c) => `  d = min(d, length(p - ${rp2(...c)}));`).join('\n')}
+  return d;
+}
+// Fugen: naechste Fuge mit Tiefe k und halber Breite w
+float lRefSeams(vec2 p, out float k, out float w) {
+  float d = 1e3; float t; k = 1.0; w = 0.0021;
+${REF.seams.map((sm) => `  { ${bbox(sm.pts)}\n    t = ob > BB ? BB : min(${chain(sm.pts)}, BB); }\n  if (t < d) { d = t; k = ${sm.k.toFixed(2)}; w = ${sm.w.toFixed(4)}; }`).join('\n')}
+  // Kinnplatte
+  t = max(abs(length(p - ${REF.chin[0]}) - ${REF.chin[1]}), ${((410 - REF.chinY) / 526).toFixed(4)} - p.y);
+  if (t < d) { d = t; k = 0.55; w = 0.0018; }
+  // Raender der Aussparungen und Schraubenkoepfe
+  t = min(min(abs(lRefVentT(p)), abs(lRefVentJ(p))), min(abs(lRefSlot(p)), abs(lRefVentS(p))));
+  if (t < d) { d = t; k = 1.0; w = 0.0024; }
+  t = abs(lRefScrew(p) - ${rlen(7)});
+  if (t < d) { d = t; k = 0.8; w = 0.0018; }
+  return d;
+}
+float lRefBrow(vec2 p) { ${bbox(REF.brow, 0.02)} if (ob > BB) return BB; return min(${taper(REF.brow)}, BB); }
+${poly('lRefEyeP', REF.eye)}
+float lRefEye(vec2 p) { return min(lRefEyeP(p), min(${taper(REF.wing)}, BB)); }
+// Auge von innen (Rueckseiten der Schale am Lidrand): 1 im Umriss des Auges
+float lRefEyeIn(vec3 p) {
+  vec3 q = vec3(abs(p.x), p.y, p.z);
+  if (q.z < 0.3 || q.y > 0.3 || q.y < -0.4) return 0.0;
+  return 1.0 - smoothstep(0.004, 0.008, lRefEyeP(lRef(q)));
+}
+// Bemalung (0 keine .. 1 dunkel): Braue, Lidstrich mit Augenhoehle, Aussparungen, Schraubenkoepfe. aa: Kantenbreite
+float lRefPaint(vec3 p, float aa) {
+  vec3 q = vec3(abs(p.x), p.y, p.z);
+  if (q.z < -0.15 || q.y < -1.1) return 0.0;
+  vec2 r = lRef(q);
+  float d = min(lRefEye(r), min(min(lRefVentT(r), lRefVentJ(r)), min(min(lRefSlot(r), lRefVentS(r)), lRefScrew(r) - ${rlen(5.2)})));
+  if (q.y < -0.3) d = min(d, lRefMouth(r));
+  float nz = 1.0 - smoothstep(0.5, 1.15, length((r - ${rp2(REF.nostril[0], REF.nostril[1])}) / vec2(${rlen(REF.nostril[2])}, ${rlen(REF.nostril[3])})));
+  // Braue mit weicher Kante (in der Vorlage laeuft sie ueber gut zwei Bildpunkte aus)
+  float br = 0.94 * (1.0 - smoothstep(-0.0045, 0.004, lRefBrow(r)));
+  return max(max(1.0 - smoothstep(-aa, aa, d), br), 0.88 * nz) * smoothstep(-0.15, 0.0, q.z);
+}
+`;
 
 const f3 = (a) => `vec3(${a.map((x) => x.toFixed(4)).join(', ')})`;
 const f2 = (a) => `vec2(${a.map((x) => x.toFixed(4)).join(', ')})`;
@@ -80,6 +214,8 @@ float lArm = 0.0;
 float lSide = 1.0;
 // Tiefe der naechsten Fuge (1 Plattenfuge, kleiner: feine Falte wie die Lidfuge), wird von seamField gesetzt
 float lSeamK = 1.0;
+// halbe Breite der Rinne der naechsten Fuge (Einheiten)
+float lGapW = 0.0021;
 float lArmSdf() { return (0.45 - lArm) * 0.35; }
 float lSmax(float a, float b, float k) { float h = clamp(0.5 - 0.5 * (b - a) / k, 0.0, 1.0); return mix(b, a, h) + k * h * (1.0 - h); }
 float lSmin(float a, float b, float k) { return -lSmax(-a, -b, k); }
@@ -120,40 +256,7 @@ float lLid(vec2 p) {
   return max(abs(length(d) - 1.0) * 0.08, (0.012 - p.y) * 0.6);
 }
 
-// Fugen nach der Vorlage (Vorderansicht, x >= 0): Stirnplatte in der Mitte, Fuge vom Augenwinkel zur Schlaefe,
-// Wangenplatte schraeg zum Kinn, Kinnplatte als Bogen, dazu vier Schrauben
-float lRefSeams(vec2 p) {
-  float d = lLine(p, vec2(0.14, 0.275), vec2(0.215, 0.64));
-  d = min(d, max(abs(p.y - 0.275), p.x - 0.14));
-  d = min(d, lLine(p, vec2(0.53, -0.02), vec2(0.74, 0.07)));
-  d = min(d, lLine(p, vec2(0.68, -0.17), vec2(0.47, -0.31)));
-  d = min(d, lLine(p, vec2(0.47, -0.31), vec2(0.41, -0.66)));
-  d = min(d, lLine(p, vec2(0.41, -0.66), vec2(0.2, -0.863)));
-  d = min(d, max(abs(length(p - vec2(0.0, -1.15)) - 0.35), max(p.x - 0.2, -1.0 - p.y)));
-  return d;
-}
-float lRefScrews(vec2 p) {
-  float d = abs(length(p - vec2(0.25, 0.47)) - 0.011);
-  d = min(d, abs(length(p - vec2(0.5, 0.2)) - 0.011));
-  d = min(d, abs(length(p - vec2(0.46, -0.5)) - 0.011));
-  d = min(d, abs(length(p - vec2(0.27, -0.78)) - 0.011));
-  return d;
-}
-// Braue: dunkler Bogen ueber dem Auge, zur Schlaefe hin duenner
-float lRefBrow(vec2 p) {
-  float y = 0.2 - 0.9 * (p.x - 0.3) * (p.x - 0.3);
-  float w = 0.007 * (1.0 - smoothstep(0.3, 0.56, p.x));
-  return max(max(abs(p.y - y) - w, 0.0), max(0.11 - p.x, p.x - 0.56));
-}
-// Lidrand rundum (wie ein Lidstrich), aussen etwas verlaengert
-float lLidRing(vec2 p) {
-  // oben kraeftig (Wimpernkranz), unten nur aussen; aussen ein kurzer Strich zur Schlaefe
-  vec2 d = (p - vec2(0.3, -0.012)) / vec2(0.158, 0.08);
-  float r = abs(length(d) - 1.0) * 0.08;
-  float up = max(max(r - 0.003, 0.0), (-0.03 - p.y) * 0.6);
-  return min(up, lLine(p, vec2(0.45, -0.01), vec2(0.52, 0.01)));
-}
-
+${REF_GLSL}
 // Hals: Polarwinkel um die Halsachse (0 vorne, pi hinten)
 float lNeckTh(vec3 q, out float rn) {
   float zn = -0.21 - 0.12 * clamp(-1.0 - q.y, -0.4, 0.6);
@@ -249,15 +352,16 @@ float lPlates(vec3 q) {
 float seamField(vec3 p) {
   lSide = p.x < 0.0 ? -1.0 : 1.0;
   lSeamK = 1.0;
+  lGapW = 0.0021;
   vec3 q = vec3(abs(p.x), p.y, p.z);
   float d = 1e3;
   if (q.y > -1.15) {
     float face = lFace(q);
-    // Gesichtsmaske (nur am Kopf, nicht am Hals)
-    d = min(d, max(abs(face), -(q.y + 0.75 + 0.6 * max(q.z, 0.0))));
+${FACE_STYLE.seams === 'ref' ? '' : `    // Gesichtsmaske (nur am Kopf, nicht am Hals)
+    d = min(d, max(abs(face), -(q.y + 0.75 + 0.6 * max(q.z, 0.0))));`}
 ${faceSeamsGLSL(FACE_STYLE)}
     // Schaedeldecke: zwei Scheitelplatten, Scheitelnaht von der Maske bis zur Oeffnung hinten
-    d = min(d, max(q.x, max(-face, 0.05 - lSkullWin(q))));
+    d = min(d, max(q.x, max(${FACE_STYLE.seams === 'ref' ? '0.02 + q.z' : '-face'}, 0.05 - lSkullWin(q))));
   }
   // Ruecken: Schulterblatt
   d = min(d, max(abs(length(q - vec3(0.78, -2.6, -1.1)) - 0.62), max(q.z + 0.45, 0.12 - q.x)));

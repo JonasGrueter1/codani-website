@@ -1,5 +1,6 @@
 // Szene "robot": Gesicht und Figur der Android-Bueste.
-// Standard ist Gesicht D (08.11.2026): Rueckmeldung Jonas zu den Varianten A bis C vom 07.11.: "das Gebiss immer noch
+// Standard ist Gesicht r (10.11.2026): deckungsgleich nach der Vorlage von Jonas (ARCHITEKTUR.md Kapitel 11, Version 6).
+// Es baut auf Gesicht D auf (?gesicht=d zeigt es zum Vergleich). Zu D (08.11.2026): Rueckmeldung Jonas zu den Varianten A bis C vom 07.11.: "das Gebiss immer noch
 // zu mollig", "die Figur soll schon einiges schlanker sein", "die Backen sind eckig", "es soll freundlich aussehen, es
 // ist ja fuer eine Website und nicht einen Terminator-Film". D baut auf Variante B auf (eine Gesichtsplatte ohne
 // Querfugen) und geht deutlich weiter:
@@ -15,15 +16,16 @@
 // Augaepfel, Ohrmodule und der dunkle Abschluss hinter dem Mund (robot-mech.js) passen. Fugen (robot-layout.js),
 // Rumpf (robot-materials.js) und Augen (robot-mech.js) lesen FACE_STYLE.
 
-/** Gesicht aus der Adresse der Seite: 'alt' (Version 4) oder 'd' (Standard). Im Web Worker steht dort die Adresse des
+/** Gesicht aus der Adresse der Seite: 'r' (Standard), 'd' (Version 5), 'alt' (Version 4), zum Messen 'rb', 'rm', 'rn'.
+    Im Web Worker steht dort die Adresse des
     Workers: robot-mesh.js gibt das Gesicht darum mit. */
 export function readFaceVariant() {
   try {
     const s = globalThis.location && globalThis.location.search ? globalThis.location.search : '';
     const g = (new URLSearchParams(s).get('gesicht') || '').toLowerCase();
-    return g === 'alt' || g === 'e' || g === 'f' || g === 'r' ? g : 'd';
+    return ['alt', 'd', 'e', 'f', 'rb', 'rm', 'rn'].includes(g) ? g : 'r';
   } catch (e) {
-    return 'd';
+    return 'r';
   }
 }
 export const FACE_VARIANT = readFaceVariant();
@@ -45,9 +47,15 @@ const STYLES = {
   f: { lid: 0.95, seams: 'mask', lidSeam: 0.08, sclera: 0.74, slim: 0.13, fill: [0.3, 0.06], eye: 1.06 },
   // r: nach der Vorlage von Jonas (10.11.2026): Plattenfugen mit Schrauben, dunkle Augenhoehle mit leuchtenden
   // blauen Ringen (glow), Brauen und Lidrand als dunkle Linie, vollere Lippen
-  r: { lid: 1.0, seams: 'ref', lidSeam: 1.0, sclera: 0.05, slim: 0.13, fill: [0.3, 0.06], eye: 1.12, glow: 1 },
+  // eyeOff: Augapfel gegenueber der Landmarke versetzt [nach aussen, nach oben], damit die Iris auf der Vorlage sitzt
+  r: { lid: 1.0, seams: 'ref', lidSeam: 1.0, sclera: 0.05, slim: 0.13, fill: [0.3, 0.06], eye: 1.34, glow: 1, eyeOff: [-0.0012, -0.0015],
+    // tone: Licht nach Vorlage als Helligkeitskarte (robot-tone.js, robot-materials.js)
+    tone: 1 },
 };
-export function faceStyle(v) { return STYLES[v] || STYLES.d; }
+STYLES.rb = STYLES.r; // Grundform von r ohne Verzug (nur zum Vermessen)
+STYLES.rm = { ...STYLES.r, seams: 'mask', lidSeam: 0.1, tone: 0 }; // nur erste Verzug-Stufe, ohne Bemalung (Lidoeffnung messen)
+STYLES.rn = STYLES.rm; // Form von r ganz, aber ohne Bemalung (Lidoeffnung messen)
+export function faceStyle(v) { return STYLES[v] || STYLES.r; }
 export const FACE_STYLE = faceStyle(FACE_VARIANT);
 
 const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -162,17 +170,103 @@ const eBase = (K) => [
 ];
 VARIANTS.e = eBase(1);
 VARIANTS.f = eBase(0.65);
-VARIANTS.r = [
-  ...eBase(0.8).filter((o) => o.op !== 'smooth'),
-  // vollere Lippen: Oberlippe nach vorne und leicht hoch, Unterlippe rund und voll
-  { op: 'blob', c: [0, -0.575, 0.9], r: [0.13, 0.03, 0.06], d: [0, 0.008, 0.02] },
-  { op: 'blob', c: [0, -0.665, 0.87], r: [0.11, 0.035, 0.06], d: [0, -0.008, 0.024] },
-  { op: 'blob', c: [0, -0.74, 0.84], r: [0.12, 0.03, 0.06], d: [0, 0, -0.01] },
-  // Wangenknochen klarer, darunter leicht eingezogen (definiertes Gesicht wie in der Vorlage)
-  { op: 'blob', c: [0.5, -0.12, 0.6], r: [0.12, 0.07, 0.16], d: [0.008, 0.004, 0.012] },
-  { op: 'blob', c: [0.44, -0.5, 0.62], r: [0.12, 0.14, 0.2], d: [-0.012, 0, -0.008] },
-  { op: 'smooth', c: [0.36, -0.4, 0.6], r: [0.46, 0.66, 0.52], it: 12, k: 0.7 },
+/*
+ * Vorlagen-Koordinaten (Gesicht r): die Vorderansicht der Vorlage von Jonas (10.11.2026). Einheit: Augenabstand der
+ * Vorlage wie im Modell (526 Bildpunkte je Einheit), Ursprung auf der Augenlinie in der Gesichtsmitte, u nach aussen,
+ * v nach oben. Die Abbildung ist die Zentralprojektion der Pruefkamera (Kamera bei z 9.65, y -0.345): so liegen
+ * Modell und Vorlage im Vergleichsbild deckungsgleich. robot-layout.js rechnet Fugen und Bemalung in denselben
+ * Koordinaten (lRef).
+ */
+export const REF_CAM = { z: 9.65, y: -0.345, k: 9.0494, v0: -0.3317 };
+// Landmarken in Bildpunkten der Vorlage (1345 x 1169, Mittelachse x 672, Augenlinie y 413.5): [Abstand zur
+// Mittelachse, Hoehe] des Modells -> der Vorlage. Gemessen an Rasterbildern von Vorlage und Rendering.
+const px = (a) => [a[0] / 526, (410 - a[1]) / 526, a[2] / 526, (410 - a[3]) / 526];
+const R_WARP = [
+  // Stirn und Scheitel: fest
+  [0, 20, 0, 20], [150, 60, 150, 60], [0, 160, 0, 160], [120, 200, 120, 200], [0, 300, 0, 300], [160, 290, 160, 290],
+  // Umriss (Grundform in neutraler Haltung gemessen, beide Seiten gemittelt): Schlaefe schmaler
+  [290, 40, 285, 40], [325, 100, 318, 100], [344, 150, 328, 150], [355, 200, 336, 200], [359, 250, 338, 250],
+  [359, 300, 334, 300], [354, 350, 318, 350], [344, 400, 314, 400], [335, 450, 315, 450], [321, 500, 320, 500],
+  // Kiefer: in der Mitte breiter, klare Kieferecke, dann gerade und steil zum schmalen Kinn
+  [312, 540, 315, 540], [304, 575, 308, 575], [292, 610, 302, 610], [277, 650, 295, 650], [262, 690, 285, 690],
+  [252, 720, 277, 720], [242, 750, 262, 750], [234, 775, 240, 778], [215, 814, 193, 815], [195, 853, 138, 849],
+  [173, 893, 104, 885], [94, 924, 60, 897], [0, 932, 0, 896], [0, 860, 0, 838],
+  // Augen: weiter auseinander (Augenmitte der Grundform liegt bei 147)
+  [147, 412, 160, 413.5],
+  // Nase: laenger, Fluegel breiter
+  [0, 413, 0, 413], [40, 470, 40, 470], [57, 603, 73, 601], [0, 560, 0, 585], [0, 608, 0, 628],
+  // Mund: hoeher, etwas breiter
+  [104, 735, 111, 730], [0, 735, 0, 723], [0, 703, 0, 691], [0, 790, 0, 773], [55, 735, 57, 725],
+].map(px);
+const R_EYE = [
+  // Lidoeffnung auf die Mandelform der Vorlage (knapp innerhalb des Lidstrichs): Winkel, Oberlid, Unterlid
+  [105, 433, 86, 440], [225, 414.5, 243, 415.5], [165, 385.5, 165, 379], [159, 442, 160, 448],
+  [128, 399.5, 125, 389], [204, 396.5, 205, 385], [122, 439, 120, 449], [201, 433, 200, 438],
+  // Umgebung fest: Braue, Nasenwurzel, Wange, Schlaefe, Augenmitte
+  [160, 335, 160, 335], [90, 350, 90, 350], [240, 350, 240, 350], [35, 430, 35, 430], [60, 490, 60, 490],
+  [160, 505, 160, 505], [260, 480, 260, 480], [290, 410, 290, 410], [160, 413.5, 160, 413.5],
+  // Nasenloecher enger zusammen, Fluegel und Spitze fest
+  [48, 612.6, 38, 613], [74, 606, 73, 602], [0, 585, 0, 585], [0, 628, 0, 628], [100, 600, 100, 600],
+  [48, 560, 48, 560], [45, 652, 45, 652],
+].map(px);
+// dritte Stufe, ganz am Schluss (nach dem Glaetten): Lidrand auf die Vorlage. Gemessen am fertigen Netz ohne Bemalung
+// (?gesicht=rn, doppelte Groesse). Oberlid bis unter den Lidstrich (die Iris wird wie in der Vorlage oben angeschnitten),
+// Unterlid tiefer und zur Nase hin weiter offen.
+const R_LID = [
+  [182, 372, 182, 381], [160, 371, 160, 381], [142, 372, 142, 383], [122, 375, 122, 387], [202, 381, 202, 384],
+  [102, 383, 102, 392], [222, 394, 222, 394], [232, 402, 232, 402],
+  [160, 440, 160, 450.5], [172, 438, 172, 451], [192, 434, 192, 450], [212, 428, 212, 445.5], [232, 420, 232, 436],
+  [132, 438, 132, 449], [112, 436, 112, 446.5], [92, 432, 92, 446.5], [75, 427, 75, 443], [240, 413, 250, 414],
+  // Umgebung fest: Braue, Nasenwurzel, Wange, Schlaefe
+  [160, 335, 160, 335], [90, 350, 90, 350], [240, 350, 240, 350], [35, 430, 35, 430], [60, 540, 60, 540],
+  [160, 545, 160, 545], [262, 530, 262, 530], [290, 410, 290, 410],
+].map(px);
+// Lippen (nach der Haltung, also in den Koordinaten der Vorlage): Oberlippenrand y -0.543, Mundlinie -0.600,
+// Unterlippenrand -0.692, Mundwinkel x 0.206. Im Profil rund: der vorderste Punkt der Oberlippe liegt am Lippenrand,
+// von dort laeuft das Lippenrot zurueck zur Mundlinie; die Unterlippe woelbt sich darunter vor.
+const LIPS = [
+  // Mund 4 Bildpunkte hoeher (Mundlinie der Vorlage bei y 723)
+  { op: 'blob', c: [0, -0.605, 0.87], r: [0.24, 0.045, 0.14], d: [0, 0.007, 0] },
+  // Unterlippe voll nach vorne (sie lag 0.04 hinter der Oberlippe: im Profil ein Ueberbiss), Rinne darunter flacher,
+  // Kinn eine Spur vor
+  { op: 'blob', c: [0, -0.636, 0.88], r: [0.13, 0.03, 0.1], d: [0, 0, 0.03] },
+  { op: 'blob', c: [0, -0.704, 0.82], r: [0.12, 0.03, 0.1], d: [0, 0, 0.02] },
+  { op: 'blob', c: [0, -0.82, 0.86], r: [0.14, 0.07, 0.15], d: [0, 0, 0.012] },
+  // Lippenbogen: zwei Spitzen am Lippenrand, dazwischen leicht zurueck
+  { op: 'blob', c: [0.058, -0.537, 0.915], r: [0.034, 0.012, 0.06], d: [0, 0.003, 0.008] },
+  { op: 'blob', c: [0, -0.548, 0.915], r: [0.018, 0.012, 0.06], d: [0, -0.003, -0.006] },
 ];
+const SMILE = new Set(['0.205,-0.612,0.775', '0.15,-0.6,0.83']);
+VARIANTS.r = [
+  // Grundform wie D (schlank, runde Wangen, feine Nase, geschlossene Lippen), aber ohne Laecheln
+  ...VARIANTS.d.filter((o) => o.op !== 'smooth' && !(o.op === 'blob' && SMILE.has(o.c.join(',')))),
+  { op: 'eyes', s: 1.2, r: 0.2 },
+  { op: 'warp', sigma: 0.13, pts: R_WARP },
+  // zweite Stufe, fein: Lidoeffnung auf die Mandelform der Vorlage (gemessen nach der ersten Stufe)
+  { op: 'warp', sigma: 0.05, pts: R_EYE },
+  // Kinn nach vorne (der Verzug arbeitet nur in der Vorderansicht, im Profil wich das Kinn zurueck)
+  { op: 'blob', c: [0, -0.84, 0.76], r: [0.2, 0.1, 0.22], d: [0, 0, 0.045] },
+  // Falten neben dem Mund glaetten (die Grundform hat dort eine Kante von der Nase zum Mundwinkel)
+  { op: 'smooth', c: [0.2, -0.56, 0.75], r: [0.2, 0.2, 0.25], it: 14, k: 0.85 },
+  { op: 'blob', c: [0.215, -0.612, 0.78], r: [0.04, 0.04, 0.07], d: [0, -0.004, -0.01] },
+  { op: 'smooth', c: [0.36, -0.4, 0.6], r: [0.46, 0.66, 0.52], it: 10, k: 0.6 },
+  // Flaeche unter dem Auge und neben der Nase ruhig (kein Traenensack, keine Wellen im Glanz)
+  { op: 'smooth', c: [0.3, -0.2, 0.7], r: [0.24, 0.09, 0.25], it: 10, k: 0.8 },
+  { op: 'smooth', c: [0.13, -0.15, 0.8], r: [0.09, 0.13, 0.15], it: 8, k: 0.7 },
+  // Flaeche zwischen Nase und Oberlippe ruhig (die Verzuege und die Lippenform hinterlassen dort Wellen im Glanz)
+  { op: 'smooth', c: [0, -0.49, 0.85], r: [0.17, 0.045, 0.2], it: 12, k: 0.8 },
+  { op: 'warp', sigma: 0.04, pts: R_LID },
+  // Alle Verzuege oben sind an Aufnahmen gemessen, in denen der Kopf durch das Eigenleben leicht geneigt war
+  // (robot.js, Zeit 0: Nicken 0.0144, Drehen -0.0040, Neigen 0.0002 um den Drehpunkt). Diese Haltung wird hier in
+  // die Ruhelage uebernommen: so ist die Ruhelage selbst deckungsgleich mit der Vorlage, und die Bemalung
+  // (robot-layout.js rechnet in der Ruhelage) sitzt genau auf der Form. Pruefen mit ?ab=still (Kopf in Ruhelage).
+  { op: 'pose', e: [0.014441887659919658, -0.0040322856931844, 0.00024193714159105934] },
+  ...LIPS,
+];
+
+VARIANTS.rb = VARIANTS.r.filter((o) => o.op !== 'warp');
+VARIANTS.rm = VARIANTS.r.filter((o) => !(o.op === 'warp' && o.pts === R_EYE));
+VARIANTS.rn = VARIANTS.r;
 
 /** Form der Variante auf das Kontrollnetz (nach Gesichtsausdruck und softenFace). Ohne Variante: unveraendert. */
 export function sculptFace(mesh, v) {
@@ -258,6 +352,21 @@ export function sculptFace(mesh, v) {
         p[1] += dy * zf;
         return true;
       });
+    } else if (o.op === 'pose') {
+      // Drehung um den Kopf-Drehpunkt, Reihenfolge YXZ wie robot.js (Euler)
+      const a = Math.cos(o.e[0]); const b = Math.sin(o.e[0]); const c = Math.cos(o.e[1]); const d = Math.sin(o.e[1]);
+      const e = Math.cos(o.e[2]); const f = Math.sin(o.e[2]);
+      const R = [c * e + d * f * b, d * e * b - c * f, a * d, a * f, a * e, -b, c * f * b - d * e, d * f + c * e * b, a * c];
+      const pv = (lm && lm.headPivot) || [0, -0.3, -0.09];
+      each((p) => {
+        const x = p[0] - pv[0]; const y = p[1] - pv[1]; const z = p[2] - pv[2];
+        p[0] = pv[0] + R[0] * x + R[1] * y + R[2] * z;
+        p[1] = pv[1] + R[3] * x + R[4] * y + R[5] * z;
+        p[2] = pv[2] + R[6] * x + R[7] * y + R[8] * z;
+        return true;
+      });
+    } else if (o.op === 'warp') {
+      warpRef(o, each);
     } else if (o.op === 'ao') {
       // offline gerechnete Verdeckung (aAO) aufhellen, wo die Variante eine Mulde fuellt (sonst bleibt sie dunkel)
       const ao = mesh.ao;
@@ -273,6 +382,59 @@ export function sculptFace(mesh, v) {
     else if (o.op === 'smooth') smoothRegion(mesh, o);
   }
   return mesh;
+}
+
+/* Verzug in Vorlagen-Koordinaten: radiale Basisfunktionen (Gauss, Breite sigma) durch alle Landmarken und ihre
+   Spiegelbilder. Jede Ecke wird in die Vorderansicht der Pruefkamera projiziert, dort verschoben und bei gleicher
+   Tiefe zurueckgerechnet. Nach hinten laeuft der Verzug aus (Hinterkopf bleibt). */
+function warpRef(o, each) {
+  const P = [];
+  for (const [su, sv, tu, tv] of o.pts) {
+    P.push([su, sv, tu - su, tv - sv]);
+    if (su > 1e-4) P.push([-su, sv, -(tu - su), tv - sv]);
+  }
+  const n = P.length;
+  if (!n) return;
+  const s2 = o.sigma * o.sigma;
+  const phi = (ax, ay, bx, by) => Math.exp(-((ax - bx) * (ax - bx) + (ay - by) * (ay - by)) / (2 * s2));
+  // (K + lambda I) c = d, Gauss-Elimination mit Pivot, zwei rechte Seiten
+  const A = [];
+  for (let i = 0; i < n; i++) {
+    const row = new Float64Array(n + 2);
+    for (let j = 0; j < n; j++) row[j] = phi(P[i][0], P[i][1], P[j][0], P[j][1]) + (i === j ? 2e-3 : 0);
+    row[n] = P[i][2]; row[n + 1] = P[i][3];
+    A.push(row);
+  }
+  for (let c = 0; c < n; c++) {
+    let piv = c;
+    for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[piv][c])) piv = r;
+    [A[c], A[piv]] = [A[piv], A[c]];
+    const d = A[c][c];
+    if (Math.abs(d) < 1e-12) continue;
+    for (let r = 0; r < n; r++) {
+      if (r === c) continue;
+      const f = A[r][c] / d;
+      if (!f) continue;
+      for (let k = c; k < n + 2; k++) A[r][k] -= f * A[c][k];
+    }
+  }
+  const cu = new Float64Array(n); const cv = new Float64Array(n);
+  for (let i = 0; i < n; i++) { cu[i] = A[i][n] / A[i][i]; cv[i] = A[i][n + 1] / A[i][i]; }
+  const C = REF_CAM;
+  each((p) => {
+    const zf = ss(-0.45, 0.0, p[2]);
+    if (!zf) return false;
+    const d = C.z - p[2];
+    const u = p[0] * C.k / d; const v = C.v0 + C.k * (p[1] - C.y) / d;
+    let du = 0; let dv = 0;
+    for (let i = 0; i < n; i++) {
+      const w = phi(u, v, P[i][0], P[i][1]);
+      if (w < 1e-5) continue;
+      du += cu[i] * w; dv += cv[i] * w;
+    }
+    p[0] += du * zf * d / C.k; p[1] += dv * zf * d / C.k;
+    return true;
+  });
 }
 
 /* Lippen schliessen. Die Mundoeffnung ist ein Randring (Kanten mit nur einem Viereck). Er wird an den Mundwinkeln in

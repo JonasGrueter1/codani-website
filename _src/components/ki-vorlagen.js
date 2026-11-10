@@ -45,7 +45,7 @@ function kiBranchenKarten(ctx, { ohne = '', cols } = {}) {
 function kiAufwand(ctx, text, { ids = ['ki-check', 'pilot', 'betrieb', 'nutzung'] } = {}) {
   return join([
     `<div class="grid grid--2 ki-aufwand">`,
-    `<div><p class="t-lead">${ctx.t(text)}</p><p class="ki-aufwand__links">${ctx.c.more({ href: 'support/', label: 'Was bei einem Ausfall passiert' })}${ctx.site.pilotangebot && ctx.site.pilotangebot.plaetze ? ctx.c.more({ href: 'referenzen/#pilot', label: ctx.t('Angebot für die ersten {{pilot_plaetze}} Pilotbetriebe') }) : ''}</p></div>`,
+    `<div><p class="t-lead">${ctx.t(text)}</p><p class="ki-aufwand__links">${ctx.c.more({ href: 'support/', label: 'Was bei einem Ausfall passiert' })}${ctx.site.pilotangebot && ctx.site.pilotangebot.plaetze ? ctx.c.more({ href: 'referenzen/#pilot', label: ctx.t('Pilotangebot: KI-Check {{pilot_rabatt}} günstiger') }) : ''}</p></div>`,
     `<div>${ctx.c.priceStrip(ids)}</div>`,
     '</div>',
   ]);

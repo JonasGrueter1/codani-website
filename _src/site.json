@@ -147,18 +147,18 @@
     "sicherheit": "31. Oktober 2026"
   },
   "referenzen": {
-    "stand": "2026-10-31",
-    "zeitraum": "24. bis 30. Oktober 2026",
+    "stand": "2026-11-10",
+    "zeitraum": "24. Oktober bis 10. November 2026",
     "zahlen": {
-      "websitesGesichtet": 40,
-      "betriebeAnalysiert": 40,
-      "befunde": 316,
+      "websitesGesichtet": 62,
+      "betriebeAnalysiert": 62,
+      "befunde": 468,
       "befundeMin": 3,
       "befundeMax": 12,
-      "demosGebaut": 28,
-      "mailsGesendet": 28,
+      "demosGebaut": 45,
+      "mailsGesendet": 38,
       "nichtAngeschrieben": 7,
-      "antworten": 2
+      "antworten": 15
     }
   },
   "daten": {

@@ -265,7 +265,7 @@ main:focus, [tabindex="-1"]:focus { outline: none; }
   .hdr__toggle { display: none; }
   .hdr__cta { margin-left: var(--sp-2); }
 }
-@media (max-width: 419px) {
+@media (max-width: 599px) {
   .hdr__sub { display: none; }
   .hdr__name { white-space: nowrap; }
   .hdr__cta { padding: 0 14px; }

@@ -76,7 +76,7 @@ exports.render = (ctx) => ctx.c.branchenSeite({
       annahme: 'Annahme zum Start: 10 Offerten pro Woche, heute je 40 Minuten Abtippen und Suchen, mit Entwurf je 15 Minuten, CHF 60 pro Stunde.', // beispiel
     }),
   }],
-  programmeText: 'Ehrlich eingestuft, nach dem, was die Hersteller öffentlich dokumentieren. Selbst angebunden habe ich noch keines dieser Programme. Das kläre ich im KI-Check, bevor Sie etwas bestellen.',
+  programmeText: 'Eingestuft nach dem, was die Hersteller öffentlich dokumentieren. Wie die Anbindung in Ihrem Fall aussieht, kläre ich im KI-Check, bevor Sie etwas bestellen.',
   programmeStand: '1. November 2026',
   programmeListe: [
     { name: 'bexio', status: 'ja', weg: 'Kontakte, Offerten und Rechnungen über die öffentlich dokumentierte Schnittstelle. Der Offertentwurf kann direkt in bexio entstehen.' },

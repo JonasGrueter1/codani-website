@@ -635,10 +635,10 @@ main { position: relative; z-index: 1; }
   /* Motiv etwas nach oben, unten steht der Text */
   :is(.no-gl, .no-js) .chapter__poster { background-size: 100% auto; background-position: 50% -7vh; margin-left: 0; }
   /* Hero: Partikel-Bueste hoeher, damit die Kapitelmarke nicht auf den hellen Schultern steht */
-  :is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-position: 50% -22vh; }
+  :is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster { background-position: 50% -3vh; }
   /* Hero: Verlauf frueher deckend, die Kapitelmarke steht nie auf den hellen Partikel-Schultern */
   :is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster::after {
-    background: linear-gradient(to bottom, var(--c-void) 0, rgba(4, 6, 10, 0) 14%, rgba(4, 6, 10, 0) 26%, rgba(4, 6, 10, 0.9) 44%, var(--c-void) 62%);
+    background: linear-gradient(to bottom, var(--c-void) 0, rgba(4, 6, 10, 0) 12%, rgba(4, 6, 10, 0) 34%, rgba(4, 6, 10, 0.9) 49%, var(--c-void) 62%);
   }
   :is(.no-gl, .no-js) .chapter__poster::after {
     background: linear-gradient(to bottom, var(--c-void) 0, rgba(4, 6, 10, 0) 16%, rgba(4, 6, 10, 0) 42%, rgba(4, 6, 10, 0.88) 72%, var(--c-void) 100%);
@@ -1169,7 +1169,7 @@ html[data-theme="hell"] {
   [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="dna"] .chapter__poster { background-image: url('../assets/img/poster-dna-hell-m.webp'); }
   [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="outro"] .chapter__poster { background-image: url('../assets/img/poster-outro-hell-m.webp'); }
   [data-theme="hell"]:is(.no-gl, .no-js) [data-scene="intro"] .chapter__poster::after {
-    background: linear-gradient(to bottom, var(--c-void) 0, rgba(243, 245, 247, 0) 14%, rgba(243, 245, 247, 0) 26%, rgba(243, 245, 247, 0.92) 44%, var(--c-void) 62%);
+    background: linear-gradient(to bottom, var(--c-void) 0, rgba(243, 245, 247, 0) 12%, rgba(243, 245, 247, 0) 34%, rgba(243, 245, 247, 0.92) 49%, var(--c-void) 62%);
   }
   [data-theme="hell"]:is(.no-gl, .no-js) .chapter__poster::after {
     background: linear-gradient(to bottom, var(--c-void) 0, rgba(243, 245, 247, 0) 16%, rgba(243, 245, 247, 0) 42%, rgba(243, 245, 247, 0.9) 72%, var(--c-void) 100%);

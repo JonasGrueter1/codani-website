@@ -28,7 +28,7 @@ export function bustRaw() {
  * face: Gesicht (robot-face.js): 'd' Standard, 'alt' Version 4 (?gesicht=alt). Der Worker kennt die Adresse der Seite
  * nicht, darum als Parameter.
  */
-export function applyExpression(mesh, amt = 1, face = 'd') {
+export function applyExpression(mesh, amt = 1, face = 'r') {
   const { pos, nV, lm } = mesh;
   if (!lm || !lm.eyeL || !lm.eyeR) return mesh;
   const lidK = faceStyle(face).lid;

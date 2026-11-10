@@ -77,7 +77,7 @@ exports.render = (ctx) => ctx.c.branchenSeite({
       '</div></div>',
     ].join('\n'),
   }],
-  programmeText: 'Ob Ihre Liegenschaftssoftware angebunden werden kann, ist oft die wichtigste Frage. Unten steht, was die Hersteller öffentlich dokumentieren. Selbst angebunden habe ich noch keines dieser Programme. Für Ihren Fall kläre ich das im KI-Check, bevor Sie etwas bestellen.',
+  programmeText: 'Ob Ihre Liegenschaftssoftware angebunden werden kann, ist oft die wichtigste Frage. Unten steht, was die Hersteller öffentlich dokumentieren. Wie die Anbindung in Ihrem Fall aussieht, kläre ich im KI-Check, bevor Sie etwas bestellen.',
   programmeStand: '1. November 2026',
   programmeListe: [
     { name: 'Outlook und Microsoft 365', status: 'ja', weg: 'Postfach, Kalender und Dateien über Microsoft Graph, die offizielle Schnittstelle von Microsoft.' },

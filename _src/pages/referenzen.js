@@ -7,7 +7,7 @@ exports.meta = {
   nav: 'referenzen',
   css: ['websites'],
   title: 'Referenzen und Fallstudie | {{marke}}',
-  description: 'Fallstudie mit echten Zahlen: ein KI-Workflow, der Betriebe analysiert, Website-Entwürfe baut und persönliche Mails vorbereitet. Dazu Musterbeispiele.',
+  description: 'Fallstudie mit echten Zahlen aus dem eigenen Betrieb. Dazu KI-Lösungen für KMU, jede mit einem Beispiel zum Durchklicken, und Website-Beispiele.',
 };
 
 const LOESUNG = [
@@ -19,12 +19,14 @@ const LOESUNG = [
   { title: 'Freigabe', text: 'Ich prüfe jede Mail und sende sie selbst. Antworten werden jeden Abend automatisch überwacht.', decide: true },
 ];
 
-// Labortests mit erfundenen Daten (Testkunden Runde 2). status: geplant, laeuft, fertig. ergebnis erst mit echten Zahlen.
-const LABOR_STATUS = { geplant: 'Geplant', laeuft: 'Läuft', fertig: 'Abgeschlossen' };
-const LABOR = [
-  { status: 'geplant', titel: 'Microsoft 365: Antwortentwürfe in einem Testkonto', text: 'Ein Prototyp in einer Testumgebung von Microsoft 365, mit Azure OpenAI in der Region Schweiz. Eine Testmail kommt an, der Entwurf liegt danach im Entwurfsordner. Die App darf nur auf ein Postfach zugreifen.', mass: 'ob die Beschränkung auf ein Postfach hält, wie lange ein Entwurf dauert. Dazu ein kurzes Bildschirmvideo und die Liste der Berechtigungen.' },
-  { status: 'geplant', titel: 'Treuhand: 50 Musterbelege', text: 'Fünfzig erfundene Belege nach KMU-Kontenrahmen, darunter Fremdwährung, neue Lieferanten und Privatanteile.', mass: 'wie viele richtig kontiert, wie viele richtig als Sonderfall markiert und wie viele falsch.' },
-  { status: 'geplant', titel: 'Handwerk: 10 Sprachnachrichten in Mundart', text: 'Zehn selbst aufgenommene Sprachnachrichten von einer Besichtigung, wie sie in einer Schreinerei vorkommen.', mass: 'wie viele Positionen und Masse richtig erkannt werden und wie viele Minuten ein Offertentwurf danach noch braucht.' },
+// Loesungen, die Codani fuer KMU baut (Karten mit Link auf die Detailseite samt Beispiel zum Ausprobieren).
+const BAUE = [
+  { icon: 'mail', title: 'Antwortentwürfe im Postfach', text: 'Die KI liest neue Anfragen, erkennt das Anliegen und legt einen Entwurf in Ihrem Ton bereit. Ihr Team prüft und sendet.', href: 'ki/e-mail/', linkLabel: 'Beispiel ansehen' },
+  { icon: 'kalender', title: 'Terminvorschläge und Erinnerungen', text: 'Die KI erkennt Terminwünsche, schaut in Ihren Kalender und schlägt freie Zeiten vor. Auf Wunsch erinnert sie Kunden am Vortag.', href: 'ki/kalender/', linkLabel: 'Beispiel ansehen' },
+  { icon: 'dokument', title: 'Belege und PDFs auslesen', text: 'Lieferscheine, Rechnungen und Formulare werden gelesen, geprüft und als Tabelle oder Buchungsvorschlag vorbereitet.', href: 'ki/dokumente/', linkLabel: 'Beispiel ansehen' },
+  { icon: 'liste', title: 'Anfragen aus allen Kanälen in einer Liste', text: 'Telefonnotiz, Mail, Formular und WhatsApp landen sortiert an einem Ort, mit Dringlichkeit und nächstem Schritt.', href: 'ki/kunden/', linkLabel: 'Beispiel ansehen' },
+  { icon: 'werkzeug', title: 'Offertentwurf aus der Sprachnachricht', text: 'Für Handwerksbetriebe: Masse und Wünsche von der Baustelle werden zum Offertentwurf mit Ihren Preisen.', href: 'branchen/handwerk/', linkLabel: 'Beispiel ansehen' },
+  { icon: 'haus', title: 'Mieteranfragen und Schadenmeldungen', text: 'Für Verwaltungen: Anfragen landen geordnet in einer Liste. Die KI sucht die Antwort in Ihren Unterlagen und schlägt einen Text vor.', href: 'branchen/verwaltung/', linkLabel: 'Beispiel ansehen' },
 ];
 
 exports.render = (ctx) => {
@@ -34,9 +36,9 @@ exports.render = (ctx) => {
   return [
     c.hero({
       eyebrow: 'Referenzen',
-      title: 'Referenzen: was ich gebaut habe, mit echten Zahlen.',
-      lead: 'Ehrlich vorweg: Mein erster KI-Pilot bei einem Kunden ist in Vorbereitung. Bis dahin zeige ich, was ich für meinen eigenen Betrieb gebaut habe.',
-      line: 'Fallstudie · Musterbeispiele · Erster Pilot in Vorbereitung',
+      title: 'Referenzen: gebaut, gezählt und zum Ausprobieren.',
+      lead: 'Eine Fallstudie aus dem eigenen Betrieb mit gezählten Zahlen. Dazu die Lösungen, die ich für KMU baue, jede mit einem Beispiel zum Durchklicken.',
+      line: 'Fallstudie · KI-Lösungen · Website-Beispiele',
     }),
     c.section({
       id: 'fallstudie',
@@ -45,7 +47,7 @@ exports.render = (ctx) => {
         '<div class="rfall">',
         '<div class="rfall__text" data-reveal>',
         '<h3 class="t-h3">Ausgangslage</h3>',
-        '<p>Neben der Lehre habe ich keine Zeit, Betriebe einzeln zu recherchieren, ihre Websites zu prüfen und persönliche Mails zu schreiben. Genau diese Art von wiederkehrender Arbeit kann KI vorbereiten.</p>',
+        '<p>Betriebe einzeln recherchieren, ihre Websites prüfen und persönliche Mails schreiben kostet viele Stunden. Genau diese Art von wiederkehrender Arbeit kann KI vorbereiten.</p>',
         '<h3 class="t-h3">Lösung</h3>',
         '<p>Ein Ablauf aus mehreren KI-Agenten, der von der Recherche bis zum fertigen Mailentwurf alles vorbereitet. Am Schluss entscheide ich.</p>',
         '</div>',
@@ -62,10 +64,9 @@ exports.render = (ctx) => {
         c.refBalken(),
         '<div class="rzahlen__side">',
         c.stat({ value: String(z.befunde), label: 'belegte Befunde', sub: t('{{ref_befunde_min}} bis {{ref_befunde_max}} pro Betrieb, jeder mit Quelle') }),
-        c.stat({ value: '<span class="rstat-text">am selben Tag</span>', label: 'erste Rückmeldung zum Design', sub: 'nach dem Versand' }),
+        c.stat({ value: String(z.antworten), label: 'Rückmeldungen von Betrieben', sub: 'per Mail oder am Telefon' }),
         '</div>',
         '</div>',
-        `<p class="note">${t('Antworten bisher: {{ref_antworten}}. Die letzten Mails sind erst wenige Tage alt.')}</p>`,
       ].join('\n'),
     }),
     c.section({
@@ -82,39 +83,31 @@ exports.render = (ctx) => {
       ].join('\n'),
     }),
     c.section({
+      id: 'loesungen', tone: 'soft',
+      head: { eyebrow: 'KI-Lösungen', title: 'Das baue ich für Ihren Betrieb.', intro: 'Sechs Abläufe, die in vielen KMU täglich Zeit kosten. Zu jedem gibt es ein Beispiel, das Sie Schritt für Schritt durchklicken können.' },
+      body: [
+        c.cards(BAUE, { cols: 3 }),
+        `<p class="sec__foot">${c.more({ href: 'ki/', label: 'Alle KI-Lösungen im Überblick' })}${c.more({ href: 'ki/#ablauf', label: 'So läuft ein Projekt ab' })}</p>`,
+      ].join('\n'),
+    }),
+    ctx.site.pilotangebot && ctx.site.pilotangebot.plaetze ? c.section({
       id: 'pilot', tone: 'warm',
-      label: 'Erster KI-Pilot bei einem Kunden',
+      label: 'Pilotangebot',
       body: `<div class="pilot-karte" data-reveal>
-        <p class="t-eyebrow">In Vorbereitung</p>
-        <h2 class="t-h2">Erster KI-Pilot bei einem Kunden: in Vorbereitung.</h2>
-        <p class="t-lead">Sobald er läuft und der Betrieb zustimmt, stehen hier Ergebnisse mit Zahlen.</p>
-        <ul class="pilot-karte__plan" aria-label="Was hier später steht">
-          <li><span>Ausgangslage</span></li><li><span>Lösung</span></li><li><span>Ergebnis mit Zahlen</span></li><li><span>Aussage des Betriebs, mit Freigabe</span></li>
-        </ul>
-        ${ctx.site.pilotangebot && ctx.site.pilotangebot.plaetze ? `<div class="pilot-angebot">
-          <h3 class="t-h3">${t('Angebot für die ersten {{pilot_plaetze}} Pilotbetriebe.')}</h3>
-          <p class="pilot-angebot__frei">Stand heute: noch ${ctx.esc(ctx.site.pilotangebot.frei === undefined ? ctx.site.pilotangebot.plaetze : ctx.site.pilotangebot.frei)} von ${ctx.esc(ctx.site.pilotangebot.plaetze)} Plätzen frei.</p>
+        <p class="t-eyebrow">Pilotangebot</p>
+        <h2 class="t-h2">${t('KI-Check {{pilot_rabatt}} günstiger für {{pilot_plaetze}} Pilotbetriebe.')}</h2>
+        <p class="t-lead">Für Betriebe, die ihre Lösung als Fallstudie mit Zahlen begleiten lassen.</p>
+        <div class="pilot-angebot">
+          <p class="pilot-angebot__frei">Noch ${ctx.esc(ctx.site.pilotangebot.frei === undefined ? ctx.site.pilotangebot.plaetze : ctx.site.pilotangebot.frei)} Plätze frei.</p>
           <dl class="pilot-angebot__liste">
-            <div><dt>Sie erhalten</dt><dd>${t('Den KI-Check {{pilot_rabatt}} günstiger: {{preis_ki_check_pilot}} statt {{preis_ki_check}}. Dazu persönliche Begleitung im Pilot und eine Auswertung mit Zahlen aus Ihrem Alltag.')}</dd></div>
-            <div><dt>Ich bitte Sie um</dt><dd>Ehrliche Rückmeldung während des Pilots. Sind Sie zufrieden, eine Nennung mit kurzem Zitat. Ohne Ihre schriftliche Zustimmung veröffentliche ich nichts.</dd></div>
-            <div><dt>Abbruch</dt><dd>Vor dem Start legen wir fest, woran wir den Erfolg messen, zum Beispiel wie viele Entwürfe ohne grosse Änderung passen und wie viele Minuten pro Fall wegfallen. Wird das Ziel nicht erreicht, hören wir auf. Sie bezahlen nur den vereinbarten Pilotpreis.</dd></div>
+            <div><dt>Sie erhalten</dt><dd>${t('Den KI-Check für {{preis_ki_check_pilot}} statt {{preis_ki_check}}. Dazu persönliche Begleitung im Pilot und eine Auswertung mit Zahlen aus Ihrem Alltag.')}</dd></div>
+            <div><dt>Ich bitte Sie um</dt><dd>Offene Rückmeldung während des Pilots. Sind Sie zufrieden, eine Nennung mit kurzem Zitat. Ohne Ihre schriftliche Zustimmung veröffentliche ich nichts.</dd></div>
+            <div><dt>Erfolgsziel</dt><dd>Vor dem Start legen wir fest, woran wir den Erfolg messen, zum Beispiel wie viele Entwürfe ohne grosse Änderung passen und wie viele Minuten pro Fall wegfallen. Wird das Ziel nicht erreicht, hören wir auf. Sie bezahlen nur den vereinbarten Pilotpreis.</dd></div>
           </dl>
-        </div>` : ''}
+        </div>
         ${c.btns([{ href: 'kontakt/?thema=pilot', label: 'Pilotbetrieb werden' }, { href: 'ki/#ablauf', label: 'Ablauf eines Pilots', variant: 'secondary' }])}
       </div>`,
-    }),
-    c.section({
-      id: 'labor',
-      head: { eyebrow: 'Labortests', title: 'Bis zum ersten Kunden: messen statt behaupten.', intro: 'Diese Tests mache ich mit erfundenen Daten, bevor ein Betrieb seine Daten anvertraut. Die Ergebnisse stehen hier, auch wenn sie nicht gut ausfallen.' },
-      body: `<ul class="labor">${LABOR.map((x) => `<li class="labor__item" data-reveal>
-        <p class="labor__status labor__status--${x.status}">${LABOR_STATUS[x.status]}</p>
-        <h3 class="t-h3">${x.titel}</h3>
-        <p>${x.text}</p>
-        <p class="labor__mass"><strong>Gemessen wird:</strong> ${x.mass}</p>
-        ${x.ergebnis ? `<p class="labor__ergebnis"><strong>Ergebnis:</strong> ${x.ergebnis}</p>` : ''}
-      </li>`).join('\n')}</ul>
-      <p class="note">Labortests ersetzen keinen echten Kunden. Sie zeigen aber, ob ein Ablauf technisch hält, was diese Website beschreibt.</p>`,
-    }),
+    }) : '',
     c.section({
       id: 'websites', tone: 'stage',
       head: { eyebrow: 'Websites', title: 'Musterbeispiele für Websites.', intro: 'Diese Beispiele zeigen Aufbau und Stil. Die Betriebe sind erfunden.' },

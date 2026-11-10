@@ -16,7 +16,8 @@ design generation einzelfirma gründer gruender haustechnik motorrad motorrad-fa
 geschäftsführer geschäftsführerin geschäftsinhaber geschäftsinhaberin geschäftsleitung impressum website seite
 oktober november büro über firma handelsregister mitglied präsident präsidentin fachausweis team-seite teamseite
 laut gemäss eintrag verzeichnis vermutlich vorname nachname fahrlehrerin
-jonas grüter grueter muster beispiel`.split(/\s+/).filter(Boolean));
+jonas grüter grueter muster beispiel
+kern`.split(/\s+/).filter(Boolean));
 
 function defaultPath(studioDir) {
   // Dieses Repo liegt neben workflow-leads (z. B. /home/user/codani-website und /home/user/workflow-leads).

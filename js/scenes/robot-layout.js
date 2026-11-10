@@ -46,6 +46,22 @@ function faceSeamsGLSL(st) {
       if (dl < d) { d = dl; lSeamK = 0.45; }
     }`;
   }
+  if (st.seams === 'ref') {
+    return `    // Gesicht nach Vorlage: Stirnplatte, Wangen- und Kinnplatten, Schrauben, Braue und Lidrand als dunkle Linie
+    if (q.z > 0.12 && face < 0.05) {
+      float dc = max(lRefSeams(q.xy), face);
+      if (dc < d) { d = dc; lSeamK = 0.85; }
+      // Schrauben, Braue und Lidstrich nur vorne (von der Seite waeren sie verzerrte Striche)
+      if (q.z > 0.42) {
+        float ds = lRefScrews(q.xy);
+        if (ds < d) { d = ds; lSeamK = 0.9; }
+        float db = lRefBrow(q.xy);
+        if (db < d) { d = db; lSeamK = 1.0; }
+        float dl = lLidRing(q.xy);
+        if (dl < d) { d = dl; lSeamK = 1.0; }
+      }
+    }`;
+  }
   const lid = `      float dl = lLid(q.xy);
       if (dl < d) { d = dl; lSeamK = ${st.lidSeam.toFixed(3)}; }`;
   return `    // Gesicht D: eine Gesichtsplatte, nur die leise Lidfalte
@@ -102,6 +118,40 @@ float lLid(vec2 p) {
   vec2 r = vec2(0.15, 0.078);
   vec2 d = (p - vec2(0.3, -0.012)) / r;
   return max(abs(length(d) - 1.0) * 0.08, (0.012 - p.y) * 0.6);
+}
+
+// Fugen nach der Vorlage (Vorderansicht, x >= 0): Stirnplatte in der Mitte, Fuge vom Augenwinkel zur Schlaefe,
+// Wangenplatte schraeg zum Kinn, Kinnplatte als Bogen, dazu vier Schrauben
+float lRefSeams(vec2 p) {
+  float d = lLine(p, vec2(0.14, 0.275), vec2(0.215, 0.64));
+  d = min(d, max(abs(p.y - 0.275), p.x - 0.14));
+  d = min(d, lLine(p, vec2(0.53, -0.02), vec2(0.74, 0.07)));
+  d = min(d, lLine(p, vec2(0.68, -0.17), vec2(0.47, -0.31)));
+  d = min(d, lLine(p, vec2(0.47, -0.31), vec2(0.41, -0.66)));
+  d = min(d, lLine(p, vec2(0.41, -0.66), vec2(0.2, -0.863)));
+  d = min(d, max(abs(length(p - vec2(0.0, -1.15)) - 0.35), max(p.x - 0.2, -1.0 - p.y)));
+  return d;
+}
+float lRefScrews(vec2 p) {
+  float d = abs(length(p - vec2(0.25, 0.47)) - 0.011);
+  d = min(d, abs(length(p - vec2(0.5, 0.2)) - 0.011));
+  d = min(d, abs(length(p - vec2(0.46, -0.5)) - 0.011));
+  d = min(d, abs(length(p - vec2(0.27, -0.78)) - 0.011));
+  return d;
+}
+// Braue: dunkler Bogen ueber dem Auge, zur Schlaefe hin duenner
+float lRefBrow(vec2 p) {
+  float y = 0.2 - 0.9 * (p.x - 0.3) * (p.x - 0.3);
+  float w = 0.007 * (1.0 - smoothstep(0.3, 0.56, p.x));
+  return max(max(abs(p.y - y) - w, 0.0), max(0.11 - p.x, p.x - 0.56));
+}
+// Lidrand rundum (wie ein Lidstrich), aussen etwas verlaengert
+float lLidRing(vec2 p) {
+  // oben kraeftig (Wimpernkranz), unten nur aussen; aussen ein kurzer Strich zur Schlaefe
+  vec2 d = (p - vec2(0.3, -0.012)) / vec2(0.158, 0.08);
+  float r = abs(length(d) - 1.0) * 0.08;
+  float up = max(max(r - 0.003, 0.0), (-0.03 - p.y) * 0.6);
+  return min(up, lLine(p, vec2(0.45, -0.01), vec2(0.52, 0.01)));
 }
 
 // Hals: Polarwinkel um die Halsachse (0 vorne, pi hinten)

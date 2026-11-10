@@ -21,7 +21,7 @@ export function readFaceVariant() {
   try {
     const s = globalThis.location && globalThis.location.search ? globalThis.location.search : '';
     const g = (new URLSearchParams(s).get('gesicht') || '').toLowerCase();
-    return g === 'alt' || g === 'e' || g === 'f' ? g : 'd';
+    return g === 'alt' || g === 'e' || g === 'f' || g === 'r' ? g : 'd';
   } catch (e) {
     return 'd';
   }
@@ -43,6 +43,9 @@ const STYLES = {
   // eye: Faktor auf den Augapfel (robot-mech.js), groessere Augen wirken jung und freundlich
   e: { lid: 0.95, seams: 'mask', lidSeam: 0.08, sclera: 0.74, slim: 0.13, fill: [0.3, 0.06], eye: 1.1 },
   f: { lid: 0.95, seams: 'mask', lidSeam: 0.08, sclera: 0.74, slim: 0.13, fill: [0.3, 0.06], eye: 1.06 },
+  // r: nach der Vorlage von Jonas (10.11.2026): Plattenfugen mit Schrauben, dunkle Augenhoehle mit leuchtenden
+  // blauen Ringen (glow), Brauen und Lidrand als dunkle Linie, vollere Lippen
+  r: { lid: 1.0, seams: 'ref', lidSeam: 1.0, sclera: 0.05, slim: 0.13, fill: [0.3, 0.06], eye: 1.12, glow: 1 },
 };
 export function faceStyle(v) { return STYLES[v] || STYLES.d; }
 export const FACE_STYLE = faceStyle(FACE_VARIANT);
@@ -159,6 +162,17 @@ const eBase = (K) => [
 ];
 VARIANTS.e = eBase(1);
 VARIANTS.f = eBase(0.65);
+VARIANTS.r = [
+  ...eBase(0.8).filter((o) => o.op !== 'smooth'),
+  // vollere Lippen: Oberlippe nach vorne und leicht hoch, Unterlippe rund und voll
+  { op: 'blob', c: [0, -0.575, 0.9], r: [0.13, 0.03, 0.06], d: [0, 0.008, 0.02] },
+  { op: 'blob', c: [0, -0.665, 0.87], r: [0.11, 0.035, 0.06], d: [0, -0.008, 0.024] },
+  { op: 'blob', c: [0, -0.74, 0.84], r: [0.12, 0.03, 0.06], d: [0, 0, -0.01] },
+  // Wangenknochen klarer, darunter leicht eingezogen (definiertes Gesicht wie in der Vorlage)
+  { op: 'blob', c: [0.5, -0.12, 0.6], r: [0.12, 0.07, 0.16], d: [0.008, 0.004, 0.012] },
+  { op: 'blob', c: [0.44, -0.5, 0.62], r: [0.12, 0.14, 0.2], d: [-0.012, 0, -0.008] },
+  { op: 'smooth', c: [0.36, -0.4, 0.6], r: [0.46, 0.66, 0.52], it: 12, k: 0.7 },
+];
 
 /** Form der Variante auf das Kontrollnetz (nach Gesichtsausdruck und softenFace). Ohne Variante: unveraendert. */
 export function sculptFace(mesh, v) {

@@ -153,7 +153,7 @@ export function buildMechanics(THREE, o) {
   });
   const EU = {
     uIris: { value: 1 },
-    uIrisCol: { value: palette.signal.clone().multiplyScalar(1.6) },
+    uIrisCol: { value: FACE_STYLE.glow ? new THREE.Color(0x1f86ff).multiplyScalar(1.6) : palette.signal.clone().multiplyScalar(1.6) },
     uIrisBase: { value: palette.steel.clone().lerp(palette.signal, 0.48).multiplyScalar(0.8) },
     uScanY: U.uScanY,
   };
@@ -185,9 +185,18 @@ export function buildMechanics(THREE, o) {
   diffuseColor.rgb *= (1.0 - 0.55 * limbus) * (1.0 - 0.96 * pupil);
   float ring = exp(-pow((rr - 0.435) / 0.012, 2.0)) * front;
   totalEmissiveRadiance += uIrisCol * uIris * (ring * 0.07 + pupil * 0.12 * (1.0 - rr / 0.16) + irisM * fib * 0.03);
+${FACE_STYLE.glow ? `  // Gesicht nach Vorlage: dunkles Auge, leuchtende blaue Ringe um einen hellen Kern
+  float g0 = exp(-pow(rr / 0.09, 2.0));
+  float g1 = exp(-pow((rr - 0.24) / 0.026, 2.0));
+  float g2 = exp(-pow((rr - 0.39) / 0.022, 2.0));
+  float g3 = exp(-pow((rr - 0.54) / 0.024, 2.0));
+  float halo = (1.0 - smoothstep(0.0, 0.62, rr));
+  // ganzer sichtbarer Augapfel dunkel (wie eine Kameralinse), kein weisses Auge
+  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.004, 0.01, 0.03), max(irisM, front * 0.92));
+  totalEmissiveRadiance += front * uIris * (uIrisCol * (g1 * 0.9 + g2 * 0.7 + g3 * 1.0 + halo * 0.22) + vec3(0.75, 0.9, 1.0) * g0 * 1.8);` : ''}
 }`);
   };
-  eyeMat.customProgramCacheKey = () => 'ab-eye3';
+  eyeMat.customProgramCacheKey = () => (FACE_STYLE.glow ? 'ab-eye3g' : 'ab-eye3');
   // Hornhaut: nur Spiegelung (schwarze Grundfarbe), Deckung aus der Helligkeit der Spiegelung. So erscheint das
   // Glanzlicht der Softbox als klarer Lichtpunkt im Auge (Augenglanz), der Rest bleibt glasklar.
   const corneaMat = new THREE.MeshPhysicalMaterial({

@@ -180,7 +180,7 @@ function pilotHinweis(ctx) {
   const pa = ctx.site.pilotangebot || {};
   const frei = pa.frei === undefined ? pa.plaetze : pa.frei;
   if (!(pa.plaetze > 0 && frei > 0)) return '';
-  return `<span class="price__pilot">${ctx.t('Pilotangebot: {{preis_ki_check_pilot}} statt {{preis_ki_check}}.')} Noch ${ctx.esc(frei)} von ${ctx.esc(pa.plaetze)} Plätzen frei. <a class="text-link" href="${ctx.url('referenzen/#pilot')}">Bedingungen</a></span>`;
+  return `<span class="price__pilot">${ctx.t('Pilotangebot: {{preis_ki_check_pilot}} statt {{preis_ki_check}}.')} Noch ${ctx.esc(frei)} Plätze frei. <a class="text-link" href="${ctx.url('referenzen/#pilot')}">Bedingungen</a></span>`;
 }
 
 function content(ctx) {
@@ -228,7 +228,7 @@ function content(ctx) {
         { icon: 'liste', title: 'Preise', text: 'Richtwerte für jede Stufe, offen auf einer Seite.', href: 'preise/' },
         { icon: 'schild', title: 'Datenschutz und Sicherheit', text: t('Wo Ihre Daten und die Lösung liegen, standardmässig {{daten_standard}}.'), href: 'sicherheit/' },
         { icon: 'schalter', title: 'Betrieb und Support', text: 'Was passiert, wenn etwas ausfällt, und wem die Lösung gehört.', href: 'support/' },
-        { icon: 'haken', title: 'Referenzen', text: 'Mein eigener KI-Workflow, mit echten Zahlen.', href: 'referenzen/' },
+        { icon: 'haken', title: 'Referenzen', text: 'Fallstudie mit echten Zahlen und Lösungen zum Ausprobieren.', href: 'referenzen/' },
       ], { cols: 4, cls: 'cards--white' }),
     }),
     c.section({

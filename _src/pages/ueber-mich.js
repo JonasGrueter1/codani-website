@@ -24,7 +24,7 @@ exports.render = (ctx) => {
       <li><span>Alter</span><span>${e(p.alter)} Jahre</span></li>
       <li><span>Ausbildung</span><span>KV-Lehre, ${e(p.lehrjahr)}</span></li>
       <li><span>Region</span><span>${e(ctx.site.marke.region)}</span></li>
-      <li><span>Arbeitsweise</span><span>mit KI-Agenten, getestet mit erfundenen Daten</span></li>
+      <li><span>Arbeitsweise</span><span>mit KI-Agenten, jeder Schritt geprüft</span></li>
       <li><span>Antwort</span><span>${e(ctx.site.support.reaktionszeit)}</span></li>
     </ul>
   </div>`;
@@ -47,7 +47,7 @@ exports.render = (ctx) => {
         ${c.trustZeitleiste([
           { when: 'Lehre', title: t('KV-Lehre, heute im {{lehrjahr}}'), text: 'Bei einer grossen Versicherung.' },
           { when: t('{{ref_zeitraum}}'), title: 'KI-Workflow für die eigene Kundensuche', text: t('{{ref_analysiert}} Betriebe analysiert, {{ref_demos}} Website-Demos gebaut. Jede Mail selbst geprüft.') },
-          { when: 'Jetzt', title: 'KI-Lösungen und Websites für KMU', text: 'Der erste KI-Pilot bei einem Kunden ist in Vorbereitung.', now: true },
+          { when: 'Jetzt', title: 'KI-Lösungen und Websites für KMU', text: 'KI-Check, Pilot und Betrieb für Büroabläufe. Websites zum Fixpreis.', now: true },
           { when: 'Ziel', title: 'Eine Software-Firma für KMU', text: t('Kleine, verständliche KI-Lösungen für Betriebe in der {{gebiet}}.'), ziel: true },
         ])}
       </div>`,

@@ -19,7 +19,7 @@ exports.render = (ctx) => {
   const pilotStunden = Math.round(ctx.preis('pilot').betrag / ctx.site.preise.stundenansatz);
   // Pilotangebot direkt beim KI-Check (Testkunden: auf Referenzen allein zu versteckt)
   const pilotText = pa.plaetze > 0 && (pa.frei === undefined || pa.frei > 0)
-    ? `<span class="price__pilot">${t('Pilotangebot: {{preis_ki_check_pilot}} statt {{preis_ki_check}}.')} Noch ${e(pa.frei === undefined ? pa.plaetze : pa.frei)} von ${e(pa.plaetze)} Plätzen frei. <a class="text-link" href="${ctx.url('referenzen/#pilot')}">Bedingungen</a></span>`
+    ? `<span class="price__pilot">${t('Pilotangebot: {{preis_ki_check_pilot}} statt {{preis_ki_check}}.')} Noch ${e(pa.frei === undefined ? pa.plaetze : pa.frei)} Plätze frei. <a class="text-link" href="${ctx.url('referenzen/#pilot')}">Bedingungen</a></span>`
     : '';
   return [
     // Abnahme V4: Zahlen schon im ersten Bildschirm (vorher leere rechte Hälfte, erste Preiskarte erst nach dem Scrollen)

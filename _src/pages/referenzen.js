@@ -64,7 +64,7 @@ exports.render = (ctx) => {
         c.refBalken(),
         '<div class="rzahlen__side">',
         c.stat({ value: String(z.befunde), label: 'belegte Befunde', sub: t('{{ref_befunde_min}} bis {{ref_befunde_max}} pro Betrieb, jeder mit Quelle') }),
-        c.stat({ value: '<span class="rstat-text">am selben Tag</span>', label: 'erste Rückmeldung zum Design', sub: 'nach dem Versand' }),
+        c.stat({ value: String(z.antworten), label: 'Rückmeldungen von Betrieben', sub: 'per Mail oder am Telefon' }),
         '</div>',
         '</div>',
       ].join('\n'),

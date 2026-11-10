@@ -235,7 +235,7 @@ function content(ctx) {
       id: 'wer',
       head: { eyebrow: 'Über mich', title: 'Wer dahinter steht.' },
       body: `<div class="grid grid--split">
-        <p class="t-lead" data-reveal>${t('Ich bin Jonas Grüter, {{alter}} Jahre alt, aus der {{region}}. Ich mache eine KV-Lehre und baue daneben KI-Lösungen und Websites für KMU. Mein Ziel ist eine Software-Firma, die KMU in der Zentralschweiz den Alltag erleichtert.')}</p>
+        <p class="t-lead" data-reveal>${t('Ich bin Jonas Grüter aus der {{region}}, Gründer von {{marke}}. Ich komme aus dem Büroalltag und baue KI-Lösungen und Websites für KMU. Mein Ziel ist eine Software-Firma, die KMU in der Zentralschweiz den Alltag erleichtert.')}</p>
         <div data-reveal>${c.principle('KI entlastet Ihr Team, sie ersetzt niemanden.')}<p class="sec__foot">${c.more({ href: 'ueber-mich/', label: 'Mehr über mich' })}</p></div>
       </div>`,
     }),

@@ -170,8 +170,8 @@ function trustZeitleiste(ctx, items) {
 /** Erreichbarkeit an einem Werktag, ohne genaue Uhrzeiten */
 function trustTag(ctx) {
   return join([
-    `<div class="tag" role="img" aria-label="${esc(ctx.t('Ein Werktag: tagsüber Lehre oder Berufsschule, am Abend Mails und Gespräche. Antwort {{reaktionszeit}}.'))}" data-reveal>`,
-    '<div class="tag__bar" aria-hidden="true"><span class="tag__seg tag__seg--lehre">Tagsüber: Lehre oder Berufsschule</span><span class="tag__seg tag__seg--abend">Abends: Mails und Gespräche</span></div>',
+    `<div class="tag" role="img" aria-label="${esc(ctx.t('Ein Werktag: tagsüber Ausbildung, am Abend Mails und Gespräche. Antwort {{reaktionszeit}}.'))}" data-reveal>`,
+    '<div class="tag__bar" aria-hidden="true"><span class="tag__seg tag__seg--lehre">Tagsüber: Ausbildung</span><span class="tag__seg tag__seg--abend">Abends: Mails und Gespräche</span></div>',
     `<p class="tag__legend" aria-hidden="true"><span>Ein Werktag</span><span>${esc(ctx.t('Antwort {{reaktionszeit}}'))}</span></p>`,
     '</div>',
   ]);

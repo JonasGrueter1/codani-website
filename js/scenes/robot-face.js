@@ -20,7 +20,8 @@
 export function readFaceVariant() {
   try {
     const s = globalThis.location && globalThis.location.search ? globalThis.location.search : '';
-    return (new URLSearchParams(s).get('gesicht') || '').toLowerCase() === 'alt' ? 'alt' : 'd';
+    const g = (new URLSearchParams(s).get('gesicht') || '').toLowerCase();
+    return g === 'alt' || g === 'e' || g === 'f' ? g : 'd';
   } catch (e) {
     return 'd';
   }
@@ -39,6 +40,9 @@ export const FACE_VARIANT = readFaceVariant();
 const STYLES = {
   alt: { lid: 1, seams: 'v4', lidSeam: 0.45, sclera: 0.42, slim: 0, fill: 0 },
   d: { lid: 0.8, seams: 'mask', lidSeam: 0.16, sclera: 0.52, slim: 0.1, fill: [0.24, 0.05] },
+  // eye: Faktor auf den Augapfel (robot-mech.js), groessere Augen wirken jung und freundlich
+  e: { lid: 0.95, seams: 'mask', lidSeam: 0.08, sclera: 0.74, slim: 0.13, fill: [0.3, 0.06], eye: 1.1 },
+  f: { lid: 0.95, seams: 'mask', lidSeam: 0.08, sclera: 0.74, slim: 0.13, fill: [0.3, 0.06], eye: 1.06 },
 };
 export function faceStyle(v) { return STYLES[v] || STYLES.d; }
 export const FACE_STYLE = faceStyle(FACE_VARIANT);
@@ -123,6 +127,38 @@ const VARIANTS = {
     { op: 'smooth', c: [0.38, -0.4, 0.6], r: [0.42, 0.62, 0.5], it: 12, k: 0.7 },
   ],
 };
+// Gesicht E (10.11.2026): deutlich anderes Gesicht statt Feinschliff. Jung und freundlich: grosse Augen, kurzes
+// Untergesicht, schmaler Kiefer, kleiner Mund mit Laecheln, kleine Nase. Baut auf D auf.
+const eBase = (K) => [
+  ...VARIANTS.d.filter((o) => o.op !== 'smooth'),
+  // Augen groesser (Lidspalte um die Augenmitte skaliert), der Augapfel waechst weniger mit (FACE_STYLE.eye): so
+  // bleibt neben der Iris Weiss sichtbar
+  { op: 'eyes', s: 1 + 0.2 * K, r: 0.2 },
+  // Untergesicht kuerzer (unter der Nase gestaucht): juengere Proportionen
+  { op: 'squash', y0: -0.42, y1: -1.02, y2: -1.5, k: 0.1 * K },
+  // Wangen und Kiefer schmaler, aber als Oval: das Kinn bleibt rund und kommt leicht nach vorne
+  { op: 'band', y0: -0.05, y1: -0.45, y2: -0.95, y3: -1.25, k: 0.025 * K },
+  { op: 'blob', c: [0, -0.9, 0.8], r: [0.2, 0.1, 0.2], d: [0, 0, 0.03 * K] },
+  { op: 'blob', c: [0.2, -0.86, 0.66], r: [0.14, 0.12, 0.24], d: [0.03 * K, 0, 0.012 * K] },
+  { op: 'blob', c: [0.42, -0.62, 0.5], r: [0.16, 0.16, 0.26], d: [0.02 * K, 0, 0] },
+  // Mund etwas schmaler, Laecheln deutlicher (Mundwinkel hoch, Wange darueber voller)
+  { op: 'pinch', c: [0, -0.56, 0.84], r: [0.26, 0.09, 0.14], k: 0.1 * K },
+  { op: 'blob', c: [0.18, -0.56, 0.78], r: [0.05, 0.035, 0.06], d: [0.003, 0.02 * K, -0.005] },
+  { op: 'blob', c: [0.3, -0.42, 0.74], r: [0.1, 0.08, 0.1], d: [0.004, 0.008 * K, 0.012 * K] },
+  // Nase kuerzer und kleiner (nur die Spitze, der Ruecken bleibt)
+  { op: 'blob', c: [0, -0.3, 0.98], r: [0.1, 0.09, 0.09], d: [0, 0.016 * K, -0.022 * K] },
+  { op: 'blob', c: [0, -0.08, 0.86], r: [0.06, 0.14, 0.08], d: [0, 0, -0.008 * K] },
+  // Brauen weicher: der Wulst tritt zurueck, die Flaeche unter der Braue zeigt nach vorne (kein strenger Blick)
+  { op: 'blob', c: [0.28, 0.24, 0.9], r: [0.22, 0.07, 0.1], d: [0, 0.006 * K, -0.02 * K] },
+  { op: 'blob', c: [0.3, 0.13, 0.8], r: [0.14, 0.05, 0.08], d: [0, 0.004 * K, 0.014 * K] },
+  { op: 'ao', c: [0.3, 0.1, 0.78], r: [0.2, 0.1, 0.14], k: 0.5 * K },
+  // Wangen voller (Apfel), Stirn runder
+  { op: 'blob', c: [0.36, -0.22, 0.76], r: [0.14, 0.12, 0.11], d: [0.002, 0.008 * K, 0.016 * K] },
+  { op: 'blob', c: [0, 0.55, 0.78], r: [0.4, 0.3, 0.2], d: [0, 0, 0.02 * K] },
+  { op: 'smooth', c: [0.36, -0.4, 0.6], r: [0.46, 0.66, 0.52], it: 16, k: 0.8 },
+];
+VARIANTS.e = eBase(1);
+VARIANTS.f = eBase(0.65);
 
 /** Form der Variante auf das Kontrollnetz (nach Gesichtsausdruck und softenFace). Ohne Variante: unveraendert. */
 export function sculptFace(mesh, v) {
@@ -183,6 +219,29 @@ export function sculptFace(mesh, v) {
         const t = ss(o.y0, o.y1, p[1]) * ss(o.x0, o.x1, Math.abs(p[0])) * (1 - 0.5 * ss(-0.05, -0.3, p[2])) * zf;
         if (!t) return false;
         p[0] *= 1 - o.k * t;
+        return true;
+      });
+    } else if (o.op === 'eyes') {
+      const E = lm && lm.eyeL ? [[lm.eyeL[0], lm.eyeL[1], lm.eyeL[2]], [lm.eyeR[0], lm.eyeR[1], lm.eyeR[2]]] : [];
+      each((p) => {
+        let hit = false;
+        for (const e of E) {
+          const dx = p[0] - e[0]; const dy = p[1] - e[1]; const dz = p[2] - e[2];
+          const d2 = (dx * dx + dy * dy + dz * dz * 0.5) / (o.r * o.r);
+          if (d2 > 6) continue;
+          const w = Math.exp(-d2) * (o.s - 1);
+          // zur Nase hin nicht in x schieben (sonst wird der Nasenruecken eingeschnuert)
+          p[0] += dx * w * ss(0.1, 0.24, Math.abs(p[0])); p[1] += dy * w * 1.1;
+          hit = true;
+        }
+        return hit;
+      });
+    } else if (o.op === 'squash') {
+      each((p) => {
+        if (p[1] > o.y0 || p[1] < o.y2) return false;
+        const zf = ss(-0.95, -0.1, p[2]);
+        const dy = p[1] > o.y1 ? o.k * (o.y0 - p[1]) : o.k * (o.y0 - o.y1) * (1 - ss(o.y1, o.y2, p[1]));
+        p[1] += dy * zf;
         return true;
       });
     } else if (o.op === 'ao') {

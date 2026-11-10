@@ -143,7 +143,7 @@ export function buildMechanics(THREE, o) {
   /* ------------------------------------------------------------------ Augen */
   // Glasaugen: Augapfel (helles Porzellan-Grau), Iris in kuehlem Grau-Tuerkis mit feinen radialen Fasern, dunkle Pupille
   // mit leisem Schein, darueber eine klare Hornhaut-Kuppel mit starker Spiegelung. Im Roentgenbild ueber der Scan-Linie weg.
-  const eyeR = 0.128;
+  const eyeR = 0.128 * (FACE_STYLE.eye || 1);
   const eyeGeo = new THREE.SphereGeometry(eyeR, S(56, 32), S(36, 22));
   const corneaGeo = new THREE.SphereGeometry(eyeR * 1.04, S(48, 28), S(14, 10), 0, Math.PI * 2, 0, 0.66).rotateX(Math.PI / 2);
   const eyeMat = new THREE.MeshPhysicalMaterial({

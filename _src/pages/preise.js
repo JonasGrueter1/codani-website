@@ -132,7 +132,8 @@ exports.render = (ctx) => {
       body: `<div class="grid grid--2 preise-wissen">
         <div class="wissen" data-reveal><h3 class="t-h3">Zahlung</h3>${c.list([
           'KI-Check: Rechnung nach Erhalt des Berichts.',
-          'Pilot, Einführung und Website: die Hälfte bei Auftrag, die Hälfte bei Übergabe, zahlbar innert 30 Tagen mit QR-Rechnung.',
+          'Pilot und Einführung: die Hälfte bei Auftrag, die Hälfte bei Übergabe, zahlbar innert 30 Tagen mit QR-Rechnung.',
+          'Website: 30 Prozent bei Auftrag, 70 Prozent nach der Abnahme, zahlbar innert 30 Tagen mit QR-Rechnung.',
           'Betrieb und Pflege: Rechnung pro Quartal im Voraus. Kündigen Sie, erstatte ich zu viel Bezahltes zurück.',
           t('Brechen Sie einen Auftrag ab, bezahlen Sie nur die geleistete Arbeit zum Stundenansatz von {{stundenansatz}}.'),
         ], { style: 'dot' })}</div>
@@ -152,7 +153,7 @@ exports.render = (ctx) => {
         { id: 'richtwerte', q: 'Warum nennen Sie Richtwerte und keine festen Preise?', a: 'Jeder Betrieb ist anders: wie viele Abläufe, welche Programme, ob eine Schnittstelle da ist. Die Richtwerte zeigen den Rahmen. Den KI-Check gibt es zum Fixpreis. Danach erhalten Sie für den nächsten Schritt eine Offerte mit Fixpreis.' },
         { id: 'nutzung', q: 'Was kostet die KI-Nutzung genau?', a: t('Das hängt davon ab, wie viel Text verarbeitet wird und welches Modell passt. Typisch sind {{ki_nutzung}}. Ich rechne es im KI-Check für Ihren Fall aus. Läuft das Konto auf Ihren Namen, sehen Sie jede Rechnung des Anbieters selbst.') },
         { id: 'aufhoeren', q: 'Kann ich nach dem Pilot aufhören?', a: 'Ja. Nach jeder Stufe entscheiden Sie, ob es weitergeht. Reicht der Nutzen nicht, hören wir auf. Sie bezahlen nur, was bis dahin vereinbart war.' },
-        { id: 'zahlung', q: 'Wie wird bezahlt?', a: 'Den KI-Check nach Erhalt des Berichts. Pilot, Einführung und Website zur Hälfte bei Auftrag und zur Hälfte bei Übergabe, mit QR-Rechnung. Betrieb und Pflege pro Quartal im Voraus, auf Ende jedes Monats kündbar.' },
+        { id: 'zahlung', q: 'Wie wird bezahlt?', a: 'Den KI-Check nach Erhalt des Berichts. Pilot und Einführung zur Hälfte bei Auftrag und zur Hälfte bei Übergabe, eine Website zu 30 Prozent bei Auftrag und zu 70 Prozent nach der Abnahme, mit QR-Rechnung. Betrieb und Pflege pro Quartal im Voraus, auf Ende jedes Monats kündbar.' },
         { id: 'mwst', q: 'Kommt Mehrwertsteuer dazu?', a: ctx.esc(ctx.site.preise.mwst) },
       ], { name: 'preise' }),
     }),
